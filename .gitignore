@@ -1,0 +1,17 @@
+# Dependencias y cobertura
+node_modules/
+coverage/
+
+# Secretos y configuración local
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Registros y artefactos locales
+*.log
+.DS_Store
+Thumbs.db
+

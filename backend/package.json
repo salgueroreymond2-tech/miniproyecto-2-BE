@@ -1,0 +1,19 @@
+{
+  "name": "nexotico-hr-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Servicios de servidor para el portal interno de NexoTico.",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "db:verify": "node src/database/verifyConnection.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "pg": "^8.16.3",
+    "zod": "^4.6.7"
+  }
+}
