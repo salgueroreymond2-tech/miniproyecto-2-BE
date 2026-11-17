@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+:root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #17304a; background: #f2f6f8; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+.shell { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+.card { width: min(100%, 440px); background: white; padding: 38px; border: 1px solid #dce6ea; border-radius: 18px; box-shadow: 0 18px 55px #1b3b4b14; }
+.eyebrow { color: #047c70; font-size: 12px; font-weight: 700; letter-spacing: .12em; }
+h1 { font-size: 28px; margin: 18px 0 8px; }
+.subtitle { color: #5c7181; line-height: 1.5; margin-bottom: 28px; }
+label { display: block; font-weight: 600; font-size: 14px; margin: 18px 0 7px; }
+input { width: 100%; border: 1px solid #bfced5; border-radius: 8px; padding: 12px; font: inherit; }
+input:focus-visible, button:focus-visible { outline: 3px solid #7ad9c8; outline-offset: 2px; }
+button { width: 100%; background: #047c70; color: white; border: 0; border-radius: 8px; padding: 13px; font: inherit; font-weight: 700; margin-top: 24px; cursor: pointer; }
+button:disabled { opacity: .6; cursor: wait; }
+.error { color: #a32626; font-size: 14px; }
