@@ -5,7 +5,8 @@ flowchart LR
   UI[React] --> API[Express - JWT y roles]
   API --> MYSQL[(MySQL: datos administrativos y documentos RAG)]
   DRIVE[Google Drive: contrato futuro] -.-> API
-  GEMINI[Gemini embeddings: contrato] -.-> API
+  API --> DEEPSEEK[DeepSeek: generación]
+  API --> E5[E5 local: embeddings de 384 dimensiones]
 ```
 
 ```mermaid
@@ -21,7 +22,7 @@ erDiagram
   COLABORADORES ||--o{ EVALUACIONES_DESEMPENO : recibe
   USUARIOS ||--o{ CONSULTAS_CHAT : realiza
   CONSULTAS_CHAT ||--o{ LOGS_AGENTES : registra
-  DOCUMENTOS ||--o{ DOCUMENT_CHUNKS : contiene
+  DOCUMENTOS ||--o{ DOCUMENT_CHUNKS_E5 : contiene
 ```
 
-La relación `documentos` → `document_chunks` se implementa mediante una clave foránea en MySQL.
+La relación `documentos` → `document_chunks_e5` se implementa mediante una clave foránea en MySQL. La tabla anterior se conserva separada y no participa en las búsquedas actuales.

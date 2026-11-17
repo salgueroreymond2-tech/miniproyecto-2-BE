@@ -1,8 +1,8 @@
 # Almacenamiento de NexoTico
 
-MySQL 8 / `portal_rrhh` contiene información administrativa y fragmentos documentales. `mysql/schema.sql` es el esquema inicial aplicado por la primera migración Sequelize; la migración posterior crea `document_chunks`. `mysql/reports.sql` contiene consultas de indicadores y `mysql/roles.sql` ejemplos de mínimos privilegios.
+MySQL 8 / `portal_rrhh` contiene información administrativa y fragmentos documentales. `mysql/schema.sql` es el esquema inicial aplicado por la primera migración Sequelize; migraciones posteriores crean `document_chunks` y `document_chunks_e5`. `mysql/reports.sql` contiene consultas de indicadores y `mysql/roles.sql` ejemplos de mínimos privilegios.
 
-`document_chunks.document_id` es una clave foránea física hacia `documentos.id`. La tabla almacena vectores JSON de 768 componentes y restringe el modelo a `gemini-embedding-001`. Una migración y el re-embebido serían necesarios para cambiar el modelo o la dimensión.
+`document_chunks_e5.document_id` es una clave foránea física hacia `documentos.id`. La tabla activa almacena vectores JSON de 384 componentes y restringe el modelo a `Xenova/multilingual-e5-small`. `document_chunks` conserva por separado los vectores antiguos de 768 componentes; la búsqueda actual no los compara ni los borra.
 
 ## Consulta y publicación
 
@@ -14,7 +14,7 @@ Los fragmentos nuevos quedan pendientes e inactivos. `publishVersion` comprueba 
 
 Las restricciones de privilegios se configuran con `mysql/roles.sql` después de revisión. La autorización por usuario y rol sigue siendo responsabilidad del backend; no se usa RLS de PostgreSQL.
 
-Modelo fijado: `gemini-embedding-001` con `outputDimensionality=768`; Google admite una dimensión de salida configurable para este modelo. Véase la [API de Gemini](https://ai.google.dev/gemini-api/docs/migrate).
+El modelo local `Xenova/multilingual-e5-small` utiliza los prefijos `query: ` y `passage: `, mean pooling y normalización. Véase la [tarjeta del modelo original](https://huggingface.co/intfloat/multilingual-e5-small).
 
 ## Archivos históricos
 

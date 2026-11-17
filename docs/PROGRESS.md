@@ -1,8 +1,8 @@
 # Progreso del proyecto
 
 **Última actualización:** 17 de noviembre de 2026<br>
-**Fase actual:** Consolidación del almacenamiento en MySQL.<br>
-**Estado:** Migración documental aplicada y búsqueda vectorial verificada en MySQL local.
+**Fase actual:** Servicios DeepSeek y embeddings locales.<br>
+**Estado:** Servicios implementados y comprobados con DeepSeek y MySQL reales; pendiente cargar el corpus documental.
 
 ## Tareas completadas
 
@@ -28,13 +28,16 @@
 
 - La fase inicial se limitó al diagnóstico y a los archivos de gobierno; las fases posteriores fueron autorizadas mediante instrucciones específicas.
 - Decisión vigente: MySQL 8 con Sequelize/mysql2 almacena los datos administrativos y los fragmentos documentales. Los módulos y scripts PostgreSQL/Supabase anteriores fueron retirados del árbol y permanecen en Git.
-- La tabla MySQL `document_chunks` acepta únicamente embeddings de `gemini-embedding-001` con 768 dimensiones en JSON. La similitud coseno se calcula de forma exacta en el backend, por lotes; cambiar modelo o dimensión exige migración y re-embebido.
+- La tabla activa `document_chunks_e5` acepta únicamente embeddings de `Xenova/multilingual-e5-small` con 384 dimensiones en JSON. Los vectores anteriores permanecen separados en `document_chunks` y no participan en la búsqueda. La similitud coseno se calcula de forma exacta en el backend, por lotes.
+- DeepSeek es el proveedor de generación. E5 se ejecuta localmente con los prefijos `query:` y `passage:`, mean pooling, normalización, calentamiento y reutilización de una sola carga del modelo.
 - El JWT pertenece a la API Express; cada petición autenticada consulta el estado y rol actual del usuario. El frontend no consulta tablas directamente.
 - El límite de login se guarda en memoria por instancia; para despliegue con varias instancias se requiere un almacén compartido y configuración de proxy revisada.
 - Se creó `backend/.env` a petición del usuario; permanece excluido de Git. La conexión MySQL local está configurada sin registrar ni mostrar su contraseña.
 - Se definieron 15 modelos Sequelize, migración MySQL, seeder de demostración, repositorios parametrizados y una conexión separada de solo lectura.
 - Se prepararon los cinco scripts de Supabase, RPC de búsqueda coseno y publicación atómica de versiones completas, y servicios de vectores y embeddings.
 - Se sustituyó el almacén vectorial externo por `document_chunks` en MySQL, con clave foránea hacia `documentos`, publicación transaccional y consultas que excluyen contenido pendiente o inactivo. Los scripts de Supabase preparados anteriormente quedaron obsoletos y se retiraron.
+- Se implementaron `deepseek.service.js` y el servicio local `embedding.service.js`, se retiró el SDK anterior de Gemini y se instaló `@huggingface/transformers`. La configuración de `backend/.env` se agrupó y se retiraron campos anteriores vacíos sin mostrar ni alterar la clave proporcionada.
+- Se aplicó la migración `20261117000400-create-e5-document-chunks` en MySQL sin eliminar o modificar la tabla anterior de vectores.
 - Markdown es la fuente de verdad para recuperación RAG; los PDF y DOCX son copias de distribución y la matriz XLSX permite importación estructurada en Google Sheets.
 - Las obligaciones legales verificadas se mantienen separadas de las reglas internas ficticias de NexoTico para evitar que el sistema RAG confunda una política corporativa con un derecho legal.
 - El corpus prohíbe incorporar expedientes personales, diagnósticos, denuncias, identificaciones, cuentas bancarias o evaluaciones individuales en RAG sin aprobación del Comité de Gobierno de Información y revisión específica.
@@ -67,13 +70,18 @@
 - La nueva migración `20261117000300-create-document-chunks` se aplicó en MySQL local. Una prueba de integración con datos ficticios dentro de una transacción comprobó inserción idempotente, bloqueo de publicación incompleta, publicación completa, recuperación por similitud y protección frente al borrado de fragmentos activos; los datos de prueba se revirtieron.
 - La prueba real detectó un defecto previo de campos compartidos en las definiciones de Sequelize. Se corrigió creando definiciones independientes por columna y la prueba volvió a pasar.
 - Tras la integración se confirmó que permanecen 50 colaboradores y 50 usuarios y que no quedaron documentos ni fragmentos de prueba. `npm test` del backend pasó 12 pruebas aisladas (1 integración omitida en la ejecución predeterminada); la integración MySQL se ejecutó aparte y pasó. El frontend pasó 3 pruebas y su compilación de producción.
+- DeepSeek: el primer intento real de consulta a `/models` devolvió HTTP 401; tras la corrección de la clave por el usuario, `/models` y `/chat/completions` respondieron HTTP 200. `deepseek-flash` apareció disponible y la respuesta JSON cumplió el esquema de prueba; la latencia de la generación fue 1237 ms en esa ejecución.
+- E5: se descargó el modelo público a una caché local excluida de Git y se generaron embeddings reales normalizados de 384 dimensiones para una pregunta y un pasaje ficticios; su similitud coseno fue aproximadamente 0.878. La repetición con la caché local también pasó.
+- La prueba `mysql-e5-real.integration.test.js` generó embeddings E5 reales, almacenó un fragmento ficticio, publicó la versión y lo recuperó mediante búsqueda MySQL; revirtió todos los datos de prueba. También pasó la prueba MySQL de versiones y filtrado.
+- `npm test` del backend pasó 16 pruebas y omitió las 2 integraciones de MySQL por defecto; ambas integraciones se ejecutaron por separado y pasaron.
+- Después de las pruebas se confirmó que permanecen 50 colaboradores y 50 usuarios y que ambas tablas de fragmentos contienen cero filas; el contenido ficticio se revirtió y el corpus real aún no se ha ingerido.
 
 ## Errores e incidencias
 
 - El daemon de Docker no está en ejecución, por lo que no está disponible para contenedores locales actualmente.
 - El entorno aislado no puede leer `C:\Users\HP8D8\.docker\config.json`; no se modificó ese archivo.
 - En la fase anterior no había `DATABASE_URL` ni cliente `psql`; esa configuración ya no es necesaria para los datos administrativos.
-- MySQL local ya está conectado y poblado con datos ficticios. La integración con Gemini aún requiere su clave y no se ha comprobado mediante una llamada real al proveedor.
+- El corpus de políticas aún no se ha ingerido en `document_chunks_e5`; las pruebas reales utilizaron contenido ficticio transitorio. La similitud mínima de RAG debe calibrarse con preguntas evaluadas.
 - Si se ejecutaron los scripts PostgreSQL históricos en un proyecto Supabase, su posible contenido administrativo debe revisarse con el usuario. No se eliminaron datos remotos.
 - Las pruebas de login y permisos todavía no se han ejecutado de extremo a extremo contra cuentas MySQL reales.
 - La publicación hacia GitHub no se realizó: el entorno requiere autorización explícita antes de exportar los archivos del proyecto al remoto.
@@ -86,7 +94,7 @@
 - Esperar autorización antes de iniciar una nueva fase o modificar el corpus documental.
 - Contrastar las políticas contra el enunciado académico cuando sea suministrado.
 - Revisar la versión vigente de las normas y los trámites de PRODHAB con asesoría legal antes de una publicación o uso real.
-- Configurar Gemini si se requiere generar embeddings reales y revisar el contenido documental antes de publicarlo para impedir datos personales.
+- Revisar el contenido documental antes de una futura ingesta para impedir datos personales y calibrar el umbral de búsqueda con el banco de preguntas.
 - Configurar las cuentas dedicadas MySQL, asignar contraseñas bcrypt y ejecutar pruebas de integración con usuarios ficticios de ambos roles.
 - Contrastar el esquema con el catálogo de campos académico cuando sea suministrado y crear migraciones no destructivas si hay diferencias.
 - Continuar con la lógica completa de agentes solo después de recibir autorización.
