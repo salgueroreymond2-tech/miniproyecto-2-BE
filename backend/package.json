@@ -13,14 +13,12 @@
     "user:set-password": "node src/database/setPassword.js",
     "db:verify": "node src/database/verifyConnection.js",
     "db:mysql:verify": "node src/database/verifyConnection.js",
-    "db:supabase:verify": "node src/database/verifySupabase.js",
     "db:migrate": "sequelize-cli db:migrate",
     "db:seed": "sequelize-cli db:seed:all",
     "test": "node --test"
   },
   "dependencies": {
     "@google/genai": "^3.4.0",
-    "@supabase/supabase-js": "^2.119.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^16.6.1",

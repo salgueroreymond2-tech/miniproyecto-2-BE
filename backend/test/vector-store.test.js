@@ -8,6 +8,10 @@ test('acepta únicamente vectores válidos de 768 dimensiones y modelo fijado', 
   assert.equal(store.vector.safeParse(Array(768).fill(0)).success, false);
   assert.equal(store.chunkSchema.safeParse({ embedding_model: 'otro-modelo' }).success, false);
 });
-test('sin credenciales no se establece conexión a Supabase', async () => {
-  await assert.rejects(store.checkConnection(), { code: 'SUPABASE_NOT_CONFIGURED' });
+test('calcula similitud coseno sin necesidad de una base vectorial externa', () => {
+  const first = Array(768).fill(0); first[0] = 1;
+  const equal = Array(768).fill(0); equal[0] = 2;
+  const perpendicular = Array(768).fill(0); perpendicular[1] = 1;
+  assert.equal(store.similarity(first, equal), 1);
+  assert.equal(store.similarity(first, perpendicular), 0);
 });
