@@ -5,6 +5,7 @@ const readline = require('node:readline');
 const bcrypt = require('bcrypt');
 const { z } = require('zod');
 const db = require('../config/database');
+const { initModels } = require('../models');
 
 async function main() {
   if (!process.stdin.isTTY || !process.stdout.isTTY) throw new Error('Se requiere una terminal interactiva.');
@@ -21,8 +22,8 @@ async function main() {
   const validEmail = z.string().trim().email().max(254).parse(email);
   if (password.length < 12 || Buffer.byteLength(password, 'utf8') > 72) throw new Error('La contraseña debe tener al menos 12 caracteres y como máximo 72 bytes UTF-8.');
   const hash = await bcrypt.hash(password, 12);
-  const result = await db.query('UPDATE usuarios SET password_hash = $1 WHERE email = $2 RETURNING id', [hash, validEmail]);
-  if (result.rowCount !== 1) throw new Error('No se encontró el usuario.');
+  const [count] = await initModels().Usuario.update({ password_hash: hash }, { where: { email: validEmail } });
+  if (count !== 1) throw new Error('No se encontró el usuario o la contraseña no cambió.');
   console.log('Contraseña actualizada.');
 }
 

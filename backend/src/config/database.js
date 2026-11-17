@@ -1,98 +1,45 @@
 'use strict';
 
-const { Pool } = require('pg');
+const { Sequelize } = require('sequelize');
 const { z } = require('zod');
-
-const environmentSchema = z.object({
-  NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-  DATABASE_URL: z.string().url().optional(),
-  DATABASE_POOL_MAX: z.coerce.number().int().min(1).max(20).default(10),
-  DATABASE_IDLE_TIMEOUT_MS: z.coerce.number().int().min(1000).default(30000),
-  DATABASE_CONNECT_TIMEOUT_MS: z.coerce.number().int().min(1000).default(5000),
-  DATABASE_SSL: z.enum(['true', 'false']).default('false'),
-  DATABASE_SSL_REJECT_UNAUTHORIZED: z.enum(['true', 'false']).default('true')
+const configSchema = z.object({
+  DB_HOST: z.string().min(1).default('localhost'),
+  DB_PORT: z.coerce.number().int().min(1).max(65535).default(3306),
+  DB_NAME: z.string().min(1).default('portal_rrhh'),
+  DB_USER: z.string().optional(), DB_PASSWORD: z.string().optional(),
+  DB_READ_USER: z.string().optional(), DB_READ_PASSWORD: z.string().optional()
 });
-
-const environment = environmentSchema.parse(process.env);
-let pool;
-
-function databaseIsConfigured() {
-  return Boolean(environment.DATABASE_URL);
-}
-
-function getPool() {
-  if (!databaseIsConfigured()) {
-    const error = new Error('DATABASE_URL no está configurada en el entorno del servidor.');
+const settings = configSchema.parse(process.env);
+let writeConnection;
+let readConnection;
+function makeConnection(user, password) {
+  if (!user || !password) {
+    const error = new Error('Credenciales MySQL no configuradas.');
     error.code = 'DATABASE_NOT_CONFIGURED';
     throw error;
   }
-
-  if (!pool) {
-    // Esta configuración vive solo en Node.js; nunca se expone a Vite o al navegador.
-    pool = new Pool({
-      connectionString: environment.DATABASE_URL,
-      max: environment.DATABASE_POOL_MAX,
-      idleTimeoutMillis: environment.DATABASE_IDLE_TIMEOUT_MS,
-      connectionTimeoutMillis: environment.DATABASE_CONNECT_TIMEOUT_MS,
-      ssl: environment.DATABASE_SSL === 'true'
-        ? { rejectUnauthorized: environment.DATABASE_SSL_REJECT_UNAUTHORIZED === 'true' }
-        : undefined
-    });
-  }
-
-  return pool;
+  return new Sequelize(settings.DB_NAME, user, password, {
+    host: settings.DB_HOST, port: settings.DB_PORT, dialect: 'mysql', logging: false,
+    timezone: '+00:00', dialectOptions: { charset: 'utf8mb4', connectTimeout: 5000 },
+    pool: { max: 10, min: 0, acquire: 10000, idle: 10000 }
+  });
 }
-
-async function query(sql, values = []) {
-  if (typeof sql !== 'string' || sql.trim().length === 0) {
-    throw new TypeError('La consulta SQL debe ser un texto no vacío.');
-  }
-  if (!Array.isArray(values)) {
-    throw new TypeError('Los valores de la consulta deben enviarse como arreglo parametrizado.');
-  }
-  return getPool().query(sql, values);
+function getConnection() {
+  if (!writeConnection) writeConnection = makeConnection(settings.DB_USER, settings.DB_PASSWORD);
+  return writeConnection;
 }
-
-async function withTransaction(callback) {
-  const client = await getPool().connect();
-  try {
-    await client.query('BEGIN');
-    const result = await callback(client);
-    await client.query('COMMIT');
-    return result;
-  } catch (error) {
-    await client.query('ROLLBACK');
-    throw error;
-  } finally {
-    client.release();
-  }
+function getReadConnection() {
+  if (!readConnection) readConnection = makeConnection(settings.DB_READ_USER, settings.DB_READ_PASSWORD);
+  return readConnection;
 }
-
+function databaseIsConfigured() { return Boolean(settings.DB_USER && settings.DB_PASSWORD); }
 async function checkDatabaseConnection() {
-  if (!databaseIsConfigured()) {
-    return { configured: false, connected: false, reason: 'DATABASE_URL no configurada' };
-  }
-
-  try {
-    const result = await query('SELECT current_database() AS database_name, now() AS checked_at');
-    return { configured: true, connected: true, ...result.rows[0] };
-  } catch (error) {
-    return { configured: true, connected: false, reason: error.message };
-  }
+  if (!databaseIsConfigured()) return { configured: false, connected: false, reason: 'Credenciales MySQL no configuradas' };
+  try { await getConnection().authenticate(); return { configured: true, connected: true }; }
+  catch (error) { return { configured: true, connected: false, reason: error.name }; }
 }
-
 async function closePool() {
-  if (pool) {
-    await pool.end();
-    pool = undefined;
-  }
+  await Promise.all([writeConnection?.close(), readConnection?.close()]);
+  writeConnection = undefined; readConnection = undefined;
 }
-
-module.exports = {
-  checkDatabaseConnection,
-  closePool,
-  databaseIsConfigured,
-  getPool,
-  query,
-  withTransaction
-};
+module.exports = { getConnection, getReadConnection, databaseIsConfigured, checkDatabaseConnection, closePool };

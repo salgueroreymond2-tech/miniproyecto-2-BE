@@ -1,32 +1,11 @@
 'use strict';
-
-const { query } = require('../config/database');
-
-async function findById(colaboradorId) {
-  const result = await query(
-    `SELECT id, codigo, nombres, apellidos, email_corporativo, departamento,
-            puesto, modalidad, estado, fecha_ingreso, fecha_salida
-       FROM colaboradores
-      WHERE id = $1`,
-    [colaboradorId]
-  );
-
-  return result.rows[0] ?? null;
+const { initModels } = require('../models');
+async function findById(id) {
+  const m = initModels();
+  return m.Colaborador.findOne({ where: { id }, attributes: ['id', 'codigo', 'nombres', 'apellidos', 'email_corporativo', 'modalidad', 'estado', 'fecha_ingreso', 'fecha_salida'], raw: true });
 }
-
 async function listByDepartment(departamento) {
-  const result = await query(
-    `SELECT id, codigo, nombres, apellidos, puesto, estado
-       FROM colaboradores
-      WHERE departamento = $1
-      ORDER BY apellidos, nombres`,
-    [departamento]
-  );
-
-  return result.rows;
+  const m = initModels();
+  return m.Colaborador.findAll({ attributes: ['id', 'codigo', 'nombres', 'apellidos', 'estado'], include: [{ model: m.Departamento, attributes: [], where: { nombre: departamento }, required: true }], order: [['apellidos', 'ASC'], ['nombres', 'ASC']], raw: true });
 }
-
-module.exports = {
-  findById,
-  listByDepartment
-};
+module.exports = { findById, listByDepartment };

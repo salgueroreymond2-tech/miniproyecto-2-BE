@@ -8,7 +8,7 @@ async function main() {
   const status = await checkDatabaseConnection();
   console.log(JSON.stringify(status, null, 2));
 
-  if (status.configured && !status.connected) {
+  if (!status.connected) {
     process.exitCode = 1;
   }
 }
