@@ -2,7 +2,7 @@
 
 **Última actualización:** 17 de noviembre de 2026<br>
 **Fase actual:** Separación MySQL administrativa y Supabase vectorial.<br>
-**Estado:** Preparación local; las verificaciones reales y la aplicación de migraciones están pendientes de credenciales.
+**Estado:** Migración y datos ficticios aplicados en MySQL local; Supabase vectorial pendiente de configuración y validación.
 
 ## Tareas completadas
 
@@ -59,13 +59,17 @@
 - `npm run db:mysql:verify` y `npm run db:supabase:verify` terminaron con código 1 al no encontrar credenciales; no se intentó una conexión remota.
 - `npm audit --omit=dev` reportó 2 vulnerabilidades moderadas asociadas a `uuid` vía Sequelize 6; no se aplicó la corrección sugerida que implica cambiar a una versión principal antigua e incompatible.
 - Se comprobó la configuración local de MySQL Workbench y se completó el usuario de conexión en `backend/.env`; host y puerto locales ya figuraban en el archivo. El usuario confirmó que la base se llama `portal_rrhh`, coincidiendo con la configuración. `npm run db:mysql:verify` informó que faltan credenciales, por lo que no se ha verificado la conexión.
+- Tras configurar la contraseña local, `npm run db:mysql:verify` confirmó conexión con MySQL 8.0.43. Se inspeccionó `portal_rrhh` y se comprobó que estaba vacía antes de ejecutar `npm run db:migrate`; la migración y el seeder finalizaron correctamente.
+- Se verificaron en MySQL 50 colaboradores y 50 usuarios ficticios, 6 departamentos, 12 puestos, 30 solicitudes, 6 incapacidades, 62 movimientos, 24 pagos, 40 evaluaciones y 20 consultas de chat. Se observaron 12 claves foráneas y ningún registro huérfano en las relaciones de colaboradores con usuarios, departamentos y puestos.
+- Se verificaron movimientos de ingreso y ascenso en septiembre, octubre y noviembre de 2026, además de salidas en noviembre; las solicitudes contienen 10 pendientes, 10 aprobadas y 10 rechazadas.
+- Se generó una contraseña temporal en memoria para el seeder; no se guardó ni se mostró. Para acceder a una cuenta ficticia deberá establecerse una contraseña con `npm run user:set-password`.
 
 ## Errores e incidencias
 
 - El daemon de Docker no está en ejecución, por lo que no está disponible para contenedores locales actualmente.
 - El entorno aislado no puede leer `C:\Users\HP8D8\.docker\config.json`; no se modificó ese archivo.
 - En la fase anterior no había `DATABASE_URL` ni cliente `psql`; esa configuración ya no es necesaria para los datos administrativos.
-- Para la arquitectura actual faltan los valores de MySQL y Supabase en `backend/.env`; por tanto, migraciones, semillas, índices, RPC, RLS e inserción y recuperación de embeddings aún no están verificados en servicios reales.
+- MySQL local ya está conectado y poblado con datos ficticios. Las credenciales de Supabase siguen ausentes, por lo que sus índices, RPC, RLS e inserción y recuperación de embeddings aún no están verificados en un servicio real.
 - Si se ejecutaron los scripts PostgreSQL históricos en un proyecto Supabase, su posible contenido administrativo debe revisarse con el usuario. No se eliminaron datos remotos.
 - Las pruebas de login y permisos no se han ejecutado contra PostgreSQL/Supabase real; tampoco se ha validado la migración de RLS en esa instancia.
 - La publicación hacia GitHub no se realizó: el entorno requiere autorización explícita antes de exportar los archivos del proyecto al remoto.
@@ -78,7 +82,7 @@
 - Esperar autorización antes de iniciar una nueva fase o modificar el corpus documental.
 - Contrastar las políticas contra el enunciado académico cuando sea suministrado.
 - Revisar la versión vigente de las normas y los trámites de PRODHAB con asesoría legal antes de una publicación o uso real.
-- Completar las credenciales MySQL y Supabase en `backend/.env`, ejecutar las migraciones y el seeder en una base de desarrollo, y probar conexión, integridad referencial y búsqueda vectorial real.
+- Completar las credenciales de Supabase en `backend/.env`, aplicar sus scripts en una instancia de desarrollo y probar conexión, permisos y búsqueda vectorial real.
 - Revisar el aislamiento, contenido y permisos reales de Supabase y confirmar que no contiene datos personales; una clave privilegiada puede omitir RLS.
 - Configurar las cuentas dedicadas MySQL, asignar contraseñas bcrypt y ejecutar pruebas de integración con usuarios ficticios de ambos roles.
 - Contrastar el esquema con el catálogo de campos académico cuando sea suministrado y crear migraciones no destructivas si hay diferencias.
