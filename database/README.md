@@ -1,27 +1,23 @@
 # Almacenamiento de NexoTico
 
-MySQL 8 / `portal_rrhh` contiene únicamente información administrativa. `mysql/schema.sql` es el esquema fuente que aplica la migración Sequelize; `mysql/reports.sql` contiene consultas de indicadores y `mysql/roles.sql` ejemplos de mínimos privilegios.
+MySQL 8 / `portal_rrhh` contiene información administrativa y fragmentos documentales. `mysql/schema.sql` es el esquema inicial aplicado por la primera migración Sequelize; la migración posterior crea `document_chunks`. `mysql/reports.sql` contiene consultas de indicadores y `mysql/roles.sql` ejemplos de mínimos privilegios.
 
-Supabase contiene únicamente `public.document_chunks`. `document_id` referencia lógicamente `documentos.id` en MySQL: no existe transacción ni clave foránea entre los dos sistemas.
+`document_chunks.document_id` es una clave foránea física hacia `documentos.id`. La tabla almacena vectores JSON de 768 componentes y restringe el modelo a `gemini-embedding-001`. Una migración y el re-embebido serían necesarios para cambiar el modelo o la dimensión.
 
-## SQL Editor de Supabase
+## Consulta y publicación
 
-En un proyecto de desarrollo, revisa y ejecuta **una sola vez**, en orden:
+Desde `backend/`, `npm run db:migrate` aplica las migraciones pendientes. No uses `sync({ force: true })` ni vuelvas a ejecutar el esquema inicial sobre una base ya poblada. Las migraciones MySQL con DDL tienen confirmación implícita y deben revisarse ante cualquier error.
 
-1. `supabase/01_extensions.sql`
-2. `supabase/02_tables.sql`
-3. `supabase/03_indexes.sql`
-4. `supabase/04_match_documents.sql`
-5. `supabase/05_security.sql`
+La búsqueda calcula la similitud coseno exacta en el backend, leyendo fragmentos activos por lotes bajo una transacción de lectura consistente. `RAG_TOP_K` controla el máximo y `RAG_SIMILARITY_THRESHOLD` el umbral. El costo crece con el número de fragmentos: no existe índice ANN o HNSW en esta implementación.
 
-Si `vector` ya existe fuera del esquema `extensions`, el primer script se detendrá para evitar modificar la instalación; las referencias deben adaptarse a ese esquema antes de continuar. La extensión debe soportar HNSW. Los scripts se deben probar con las credenciales reales antes de su uso en producción.
+Los fragmentos nuevos quedan pendientes e inactivos. `publishVersion` comprueba que el documento esté validado, que coincida la versión y que exista una secuencia completa de fragmentos antes de activar la versión dentro de una transacción MySQL. Un bloqueo de la fila del documento serializa las escrituras del servicio. La validación humana del contenido debe hacerse antes de cambiar el estado del documento a `VALIDADO`.
 
-Los nuevos fragmentos se guardan inactivos y pendientes. `publish_document_version` comprueba el número y la secuencia antes de activar una versión completa y desactivar la anterior en una transacción de Supabase. El llamador debe comprobar previamente la validación humana del documento y reconciliar su estado en MySQL. La función no crea por sí sola una transacción distribuida ni sustituye el proceso de ingesta.
+Las restricciones de privilegios se configuran con `mysql/roles.sql` después de revisión. La autorización por usuario y rol sigue siendo responsabilidad del backend; no se usa RLS de PostgreSQL.
 
-Modelo fijado: `gemini-embedding-001` con `outputDimensionality=768`; Google admite dimensiones de salida reducidas para este modelo. `embedding_model` impide mezclar otro modelo. Cambiar modelo/dimensión requiere migrar, regenerar vectores y reconstruir índices. Índice HNSW por distancia coseno: [Supabase HNSW](https://supabase.com/docs/guides/ai/vector-indexes/hnsw-indexes); [API Gemini](https://ai.google.dev/gemini-api/docs/migrate).
+Modelo fijado: `gemini-embedding-001` con `outputDimensionality=768`; Google admite una dimensión de salida configurable para este modelo. Véase la [API de Gemini](https://ai.google.dev/gemini-api/docs/migrate).
 
 ## Archivos históricos
 
-Los scripts PostgreSQL anteriores `extensions.sql`, `schema.sql`, `indexes.sql`, `permissions.sql`, `seed.sql` y `auth-permissions.sql` están conservados solo como historial local. **No los ejecutes en Supabase para la arquitectura actual**: contienen tablas administrativas, incompatibles con la separación solicitada. No se han borrado ni modificado datos remotos.
+Los scripts de PostgreSQL y Supabase anteriores se retiraron del árbol, pero se pueden recuperar desde Git. No se han borrado ni modificado datos remotos.
 
 El enunciado académico original no estaba disponible al diseñar las tablas. Compara los campos con ese documento antes de afirmar cobertura total.

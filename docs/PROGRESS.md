@@ -1,8 +1,8 @@
 # Progreso del proyecto
 
 **Última actualización:** 17 de noviembre de 2026<br>
-**Fase actual:** Separación MySQL administrativa y Supabase vectorial.<br>
-**Estado:** Migración y datos ficticios aplicados en MySQL local; Supabase vectorial pendiente de configuración y validación.
+**Fase actual:** Consolidación del almacenamiento en MySQL.<br>
+**Estado:** Migración documental aplicada y búsqueda vectorial verificada en MySQL local.
 
 ## Tareas completadas
 
@@ -27,13 +27,14 @@
 ## Decisiones técnicas
 
 - La fase inicial se limitó al diagnóstico y a los archivos de gobierno; las fases posteriores fueron autorizadas mediante instrucciones específicas.
-- Decisión vigente: MySQL 8 con Sequelize/mysql2 almacena los datos administrativos; Supabase con pgvector se usa exclusivamente para conocimiento documental. Los scripts administrativos PostgreSQL anteriores son históricos y no deben ejecutarse.
-- La tabla `fragmentos_documentos` acepta únicamente embeddings de `gemini-embedding-001` con 768 dimensiones. Cambiar modelo o dimensión exige una migración y re-embebido completo.
+- Decisión vigente: MySQL 8 con Sequelize/mysql2 almacena los datos administrativos y los fragmentos documentales. Los módulos y scripts PostgreSQL/Supabase anteriores fueron retirados del árbol y permanecen en Git.
+- La tabla MySQL `document_chunks` acepta únicamente embeddings de `gemini-embedding-001` con 768 dimensiones en JSON. La similitud coseno se calcula de forma exacta en el backend, por lotes; cambiar modelo o dimensión exige migración y re-embebido.
 - El JWT pertenece a la API Express; cada petición autenticada consulta el estado y rol actual del usuario. El frontend no consulta tablas directamente.
 - El límite de login se guarda en memoria por instancia; para despliegue con varias instancias se requiere un almacén compartido y configuración de proxy revisada.
-- Se creó `backend/.env` con campos vacíos, a petición del usuario; permanece excluido de Git. No se han recibido credenciales.
+- Se creó `backend/.env` a petición del usuario; permanece excluido de Git. La conexión MySQL local está configurada sin registrar ni mostrar su contraseña.
 - Se definieron 15 modelos Sequelize, migración MySQL, seeder de demostración, repositorios parametrizados y una conexión separada de solo lectura.
 - Se prepararon los cinco scripts de Supabase, RPC de búsqueda coseno y publicación atómica de versiones completas, y servicios de vectores y embeddings.
+- Se sustituyó el almacén vectorial externo por `document_chunks` en MySQL, con clave foránea hacia `documentos`, publicación transaccional y consultas que excluyen contenido pendiente o inactivo. Los scripts de Supabase preparados anteriormente quedaron obsoletos y se retiraron.
 - Markdown es la fuente de verdad para recuperación RAG; los PDF y DOCX son copias de distribución y la matriz XLSX permite importación estructurada en Google Sheets.
 - Las obligaciones legales verificadas se mantienen separadas de las reglas internas ficticias de NexoTico para evitar que el sistema RAG confunda una política corporativa con un derecho legal.
 - El corpus prohíbe incorporar expedientes personales, diagnósticos, denuncias, identificaciones, cuentas bancarias o evaluaciones individuales en RAG sin aprobación del Comité de Gobierno de Información y revisión específica.
@@ -63,15 +64,18 @@
 - Se verificaron en MySQL 50 colaboradores y 50 usuarios ficticios, 6 departamentos, 12 puestos, 30 solicitudes, 6 incapacidades, 62 movimientos, 24 pagos, 40 evaluaciones y 20 consultas de chat. Se observaron 12 claves foráneas y ningún registro huérfano en las relaciones de colaboradores con usuarios, departamentos y puestos.
 - Se verificaron movimientos de ingreso y ascenso en septiembre, octubre y noviembre de 2026, además de salidas en noviembre; las solicitudes contienen 10 pendientes, 10 aprobadas y 10 rechazadas.
 - Se generó una contraseña temporal en memoria para el seeder; no se guardó ni se mostró. Para acceder a una cuenta ficticia deberá establecerse una contraseña con `npm run user:set-password`.
+- La nueva migración `20261117000300-create-document-chunks` se aplicó en MySQL local. Una prueba de integración con datos ficticios dentro de una transacción comprobó inserción idempotente, bloqueo de publicación incompleta, publicación completa, recuperación por similitud y protección frente al borrado de fragmentos activos; los datos de prueba se revirtieron.
+- La prueba real detectó un defecto previo de campos compartidos en las definiciones de Sequelize. Se corrigió creando definiciones independientes por columna y la prueba volvió a pasar.
+- Tras la integración se confirmó que permanecen 50 colaboradores y 50 usuarios y que no quedaron documentos ni fragmentos de prueba. `npm test` del backend pasó 12 pruebas aisladas (1 integración omitida en la ejecución predeterminada); la integración MySQL se ejecutó aparte y pasó. El frontend pasó 3 pruebas y su compilación de producción.
 
 ## Errores e incidencias
 
 - El daemon de Docker no está en ejecución, por lo que no está disponible para contenedores locales actualmente.
 - El entorno aislado no puede leer `C:\Users\HP8D8\.docker\config.json`; no se modificó ese archivo.
 - En la fase anterior no había `DATABASE_URL` ni cliente `psql`; esa configuración ya no es necesaria para los datos administrativos.
-- MySQL local ya está conectado y poblado con datos ficticios. Las credenciales de Supabase siguen ausentes, por lo que sus índices, RPC, RLS e inserción y recuperación de embeddings aún no están verificados en un servicio real.
+- MySQL local ya está conectado y poblado con datos ficticios. La integración con Gemini aún requiere su clave y no se ha comprobado mediante una llamada real al proveedor.
 - Si se ejecutaron los scripts PostgreSQL históricos en un proyecto Supabase, su posible contenido administrativo debe revisarse con el usuario. No se eliminaron datos remotos.
-- Las pruebas de login y permisos no se han ejecutado contra PostgreSQL/Supabase real; tampoco se ha validado la migración de RLS en esa instancia.
+- Las pruebas de login y permisos todavía no se han ejecutado de extremo a extremo contra cuentas MySQL reales.
 - La publicación hacia GitHub no se realizó: el entorno requiere autorización explícita antes de exportar los archivos del proyecto al remoto.
 - El sitio oficial de PRODHAB respondió 403 desde el entorno de investigación. Se dejó constancia de la limitación y se verificó el objetivo de la Ley N.° 8968 mediante SCIJ/PGR; no se inventó contenido de PRODHAB.
 - No se recibió ni se encontró en el repositorio el enunciado académico o banco de preguntas contra el cual realizar una cobertura literal; se documentó este pendiente en el informe.
@@ -82,8 +86,7 @@
 - Esperar autorización antes de iniciar una nueva fase o modificar el corpus documental.
 - Contrastar las políticas contra el enunciado académico cuando sea suministrado.
 - Revisar la versión vigente de las normas y los trámites de PRODHAB con asesoría legal antes de una publicación o uso real.
-- Completar las credenciales de Supabase en `backend/.env`, aplicar sus scripts en una instancia de desarrollo y probar conexión, permisos y búsqueda vectorial real.
-- Revisar el aislamiento, contenido y permisos reales de Supabase y confirmar que no contiene datos personales; una clave privilegiada puede omitir RLS.
+- Configurar Gemini si se requiere generar embeddings reales y revisar el contenido documental antes de publicarlo para impedir datos personales.
 - Configurar las cuentas dedicadas MySQL, asignar contraseñas bcrypt y ejecutar pruebas de integración con usuarios ficticios de ambos roles.
 - Contrastar el esquema con el catálogo de campos académico cuando sea suministrado y crear migraciones no destructivas si hay diferencias.
 - Continuar con la lógica completa de agentes solo después de recibir autorización.

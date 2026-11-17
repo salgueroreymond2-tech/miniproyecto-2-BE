@@ -3,8 +3,7 @@
 ```mermaid
 flowchart LR
   UI[React] --> API[Express - JWT y roles]
-  API --> MYSQL[(MySQL: datos administrativos)]
-  API --> VECTOR[(Supabase pgvector: conocimiento documental)]
+  API --> MYSQL[(MySQL: datos administrativos y documentos RAG)]
   DRIVE[Google Drive: contrato futuro] -.-> API
   GEMINI[Gemini embeddings: contrato] -.-> API
 ```
@@ -22,7 +21,7 @@ erDiagram
   COLABORADORES ||--o{ EVALUACIONES_DESEMPENO : recibe
   USUARIOS ||--o{ CONSULTAS_CHAT : realiza
   CONSULTAS_CHAT ||--o{ LOGS_AGENTES : registra
-  DOCUMENTOS ||--o{ DOCUMENT_CHUNKS : "referencia lógica entre almacenes"
+  DOCUMENTOS ||--o{ DOCUMENT_CHUNKS : contiene
 ```
 
-La relación `documentos` → `document_chunks` es lógica; Mermaid no implica una clave foránea entre MySQL y Supabase.
+La relación `documentos` → `document_chunks` se implementa mediante una clave foránea en MySQL.

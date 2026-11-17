@@ -12,7 +12,7 @@ No se debe avanzar a otra fase sin autorización explícita.
 
 - **Frontend:** React, Vite, JavaScript y Tailwind CSS.
 - **Backend:** Node.js, Express 5 y CommonJS.
-- **Almacenamiento:** MySQL 8 o superior con Sequelize y mysql2 para información administrativa; Supabase con pgvector exclusivamente para fragmentos de conocimiento documental.
+- **Almacenamiento:** MySQL 8 o superior con Sequelize y mysql2 para la información administrativa y el conocimiento documental del sistema RAG.
 - **Inteligencia artificial:** Gemini será el proveedor inicial; la arquitectura debe permitir incorporar DeepSeek sin reescrituras mayores.
 - **Autenticación:** JWT y bcrypt.
 - **Validaciones:** Zod.
