@@ -9,8 +9,9 @@ En el SQL Editor de un proyecto Supabase, ejecute los archivos en este orden:
 3. `indexes.sql`
 4. `permissions.sql`
 5. `seed.sql` (solo desarrollo y demostración)
+6. `auth-permissions.sql` para la API de autenticación del backend.
 
-Los scripts se destinan a una base nueva. Para entornos ya creados deben convertirse en migraciones revisadas; no ejecute `schema.sql` sobre datos existentes.
+Los scripts se destinan a una base nueva. Para entornos ya creados deben convertirse en migraciones revisadas; no ejecute `schema.sql` sobre datos existentes. `auth-permissions.sql` modifica privilegios y crea políticas para el backend: revíselo y ejecútelo una sola vez después de `permissions.sql`. La aplicación usa un JWT propio, no una sesión de Supabase Auth; los clientes no deben consultar las tablas directamente.
 
 ## Enlace seguro desde backend
 
