@@ -1,8 +1,8 @@
 # Progreso del proyecto
 
 **Última actualización:** 17 de noviembre de 2026<br>
-**Fase actual:** Autenticación y control de acceso.<br>
-**Estado:** Implementación local y pruebas aisladas completadas; pendiente integración con Supabase real.
+**Fase actual:** Separación MySQL administrativa y Supabase vectorial.<br>
+**Estado:** Preparación local; las verificaciones reales y la aplicación de migraciones están pendientes de credenciales.
 
 ## Tareas completadas
 
@@ -11,7 +11,7 @@
 - Se creó este registro de progreso.
 - Se verificó que el repositorio Git usa la rama local `main` y tiene configurado el remoto `origin` hacia `https://github.com/salgueroreymond2-tech/miniproyecto-2-BE.git`.
 - Se creó el commit local `a813cd6` (`docs: add project governance and initial progress`) con los archivos de gobierno iniciales.
-- Se corrigió la decisión de base de datos por instrucción explícita: PostgreSQL en Supabase con pgvector sustituye MySQL.
+- En una fase anterior se utilizó PostgreSQL administrativo; esta decisión fue sustituida por la arquitectura vigente MySQL más Supabase vectorial.
 - Se definió la identidad ficticia única: NexoTico Servicios Tecnológicos, S.R.L., empresa B2B de servicios tecnológicos en Costa Rica con 50 colaboradores ficticios.
 - Se investigaron fuentes oficiales del MTSS, SCIJ/PGR, CCSS y PRODHAB para fundamentar el corpus documental.
 - Se crearon diez políticas en Markdown para RAG, cada una con objetivo, alcance, obligaciones legales verificadas, política interna ficticia, procedimiento, excepciones, preguntas de recuperación y fuentes.
@@ -26,12 +26,14 @@
 
 ## Decisiones técnicas
 
-- No se creó código, configuración de aplicación ni estructura funcional, porque esta tarea está limitada al diagnóstico y a los archivos de gobierno del proyecto.
-- Las decisiones de implementación se tomarán en una fase posterior y requerirán autorización previa.
-- PostgreSQL en Supabase es la única base de datos permitida para el proyecto; `pgvector` se usa para el corpus RAG.
+- La fase inicial se limitó al diagnóstico y a los archivos de gobierno; las fases posteriores fueron autorizadas mediante instrucciones específicas.
+- Decisión vigente: MySQL 8 con Sequelize/mysql2 almacena los datos administrativos; Supabase con pgvector se usa exclusivamente para conocimiento documental. Los scripts administrativos PostgreSQL anteriores son históricos y no deben ejecutarse.
 - La tabla `fragmentos_documentos` acepta únicamente embeddings de `gemini-embedding-001` con 768 dimensiones. Cambiar modelo o dimensión exige una migración y re-embebido completo.
 - El JWT pertenece a la API Express; cada petición autenticada consulta el estado y rol actual del usuario. El frontend no consulta tablas directamente.
 - El límite de login se guarda en memoria por instancia; para despliegue con varias instancias se requiere un almacén compartido y configuración de proxy revisada.
+- Se creó `backend/.env` con campos vacíos, a petición del usuario; permanece excluido de Git. No se han recibido credenciales.
+- Se definieron 15 modelos Sequelize, migración MySQL, seeder de demostración, repositorios parametrizados y una conexión separada de solo lectura.
+- Se prepararon los cinco scripts de Supabase, RPC de búsqueda coseno y publicación atómica de versiones completas, y servicios de vectores y embeddings.
 - Markdown es la fuente de verdad para recuperación RAG; los PDF y DOCX son copias de distribución y la matriz XLSX permite importación estructurada en Google Sheets.
 - Las obligaciones legales verificadas se mantienen separadas de las reglas internas ficticias de NexoTico para evitar que el sistema RAG confunda una política corporativa con un derecho legal.
 - El corpus prohíbe incorporar expedientes personales, diagnósticos, denuncias, identificaciones, cuentas bancarias o evaluaciones individuales en RAG sin aprobación del Comité de Gobierno de Información y revisión específica.
@@ -53,12 +55,17 @@
 - Autenticación: 8 pruebas backend pasaron con repositorios aislados, cubriendo bcrypt, JWT vencido o inválido, roles, identidad propia, entradas inválidas, inyección y consultas parametrizadas.
 - Frontend: 3 pruebas de redirección y protección de rutas pasaron; `npm run build` compiló correctamente.
 - Backend y frontend se iniciaron localmente; `/api/health` respondió directamente y mediante el proxy Vite, y Swagger respondió HTTP 200.
+- En esta fase `npm test` del backend pasó 12 pruebas aisladas, incluidas las asociaciones de 15 modelos, preparación de 50 usuarios/colaboradores ficticios, validación vectorial y conservación de controles de autenticación. No se han insertado estos datos en una base real.
+- `npm run db:mysql:verify` y `npm run db:supabase:verify` terminaron con código 1 al no encontrar credenciales; no se intentó una conexión remota.
+- `npm audit --omit=dev` reportó 2 vulnerabilidades moderadas asociadas a `uuid` vía Sequelize 6; no se aplicó la corrección sugerida que implica cambiar a una versión principal antigua e incompatible.
 
 ## Errores e incidencias
 
 - El daemon de Docker no está en ejecución, por lo que no está disponible para contenedores locales actualmente.
 - El entorno aislado no puede leer `C:\Users\HP8D8\.docker\config.json`; no se modificó ese archivo.
-- No hay `DATABASE_URL`, instancia Supabase ni cliente `psql` disponible en el entorno para ejecutar los scripts y verificar integridad en una base real.
+- En la fase anterior no había `DATABASE_URL` ni cliente `psql`; esa configuración ya no es necesaria para los datos administrativos.
+- Para la arquitectura actual faltan los valores de MySQL y Supabase en `backend/.env`; por tanto, migraciones, semillas, índices, RPC, RLS e inserción y recuperación de embeddings aún no están verificados en servicios reales.
+- Si se ejecutaron los scripts PostgreSQL históricos en un proyecto Supabase, su posible contenido administrativo debe revisarse con el usuario. No se eliminaron datos remotos.
 - Las pruebas de login y permisos no se han ejecutado contra PostgreSQL/Supabase real; tampoco se ha validado la migración de RLS en esa instancia.
 - La publicación hacia GitHub no se realizó: el entorno requiere autorización explícita antes de exportar los archivos del proyecto al remoto.
 - El sitio oficial de PRODHAB respondió 403 desde el entorno de investigación. Se dejó constancia de la limitación y se verificó el objetivo de la Ley N.° 8968 mediante SCIJ/PGR; no se inventó contenido de PRODHAB.
@@ -70,8 +77,9 @@
 - Esperar autorización antes de iniciar una nueva fase o modificar el corpus documental.
 - Contrastar las políticas contra el enunciado académico cuando sea suministrado.
 - Revisar la versión vigente de las normas y los trámites de PRODHAB con asesoría legal antes de una publicación o uso real.
-- Configurar `DATABASE_URL` de servidor y ejecutar los scripts en un proyecto Supabase de desarrollo para verificar integridad real.
-- Aplicar y probar `database/auth-permissions.sql`, configurar el usuario dedicado del backend, asignar contraseñas bcrypt y ejecutar pruebas de integración con usuarios y roles reales ficticios.
+- Completar las credenciales MySQL y Supabase en `backend/.env`, ejecutar las migraciones y el seeder en una base de desarrollo, y probar conexión, integridad referencial y búsqueda vectorial real.
+- Revisar el aislamiento, contenido y permisos reales de Supabase y confirmar que no contiene datos personales; una clave privilegiada puede omitir RLS.
+- Configurar las cuentas dedicadas MySQL, asignar contraseñas bcrypt y ejecutar pruebas de integración con usuarios ficticios de ambos roles.
 - Contrastar el esquema con el catálogo de campos académico cuando sea suministrado y crear migraciones no destructivas si hay diferencias.
-- Definir la estructura inicial de frontend, backend y la estrategia de conexión segura con Supabase PostgreSQL cuando sea autorizada.
+- Continuar con la lógica completa de agentes solo después de recibir autorización.
 - Publicar los commits locales en `origin/main` únicamente si se autoriza expresamente.
