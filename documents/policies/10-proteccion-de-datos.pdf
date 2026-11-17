@@ -1,0 +1,130 @@
+%PDF-1.4
+%âãÏÓ
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 3851 >>
+stream
+BT /F1 9 Tf 50 752 Td 12 TL (Política de protección de datos personales) Tj T*
+(POLÍTICA DE PROTECCIÓN DE DATOS PERSONALES) Tj T*
+() Tj T*
+(Código: NT-PC-10) Tj T*
+(Versión: 1.0) Tj T*
+(Vigencia: 17 de noviembre de 2026) Tj T*
+(Responsable: Comité de Gobierno de Información) Tj T*
+(Empresa: NexoTico Servicios Tecnológicos, S.R.L.) Tj T*
+() Tj T*
+(OBJETIVO) Tj T*
+() Tj T*
+(Establecer reglas internas para el tratamiento lícito, proporcional, seguro y trazable de datos personales) Tj T*
+(de personas colaboradoras, candidatas, clientes y proveedores, con especial cuidado de información sensible.) Tj T*
+() Tj T*
+(ALCANCE) Tj T*
+() Tj T*
+(Aplica a toda recolección, consulta, almacenamiento, uso, transferencia, eliminación o acceso a datos) Tj T*
+(personales en soportes digitales o físicos gestionados por NexoTico. Incluye herramientas de Recursos) Tj T*
+(Humanos, correo, dispositivos corporativos y sistemas RAG internos.) Tj T*
+() Tj T*
+(OBLIGACIONES LEGALES VERIFICADAS) Tj T*
+() Tj T*
+(- La Ley N.° 8968 es de orden público y busca proteger la autodeterminación informativa frente al) Tj T*
+(tratamiento automatizado o manual de datos personales. Su aplicación comprende bases de datos de entidades) Tj T*
+(privadas y públicas.) Tj T*
+(- Los datos de salud, denuncias, medidas disciplinarias, identificaciones, cuentas bancarias y contactos de) Tj T*
+(emergencia requieren acceso limitado y una finalidad definida. El manejo de estos datos no se justifica por) Tj T*
+(comodidad operativa.) Tj T*
+(- La Agencia de Protección de Datos de los Habitantes \(PRODHAB\) es la autoridad especializada de referencia.) Tj T*
+(Su sitio oficial fue consultado, pero respondió 403 desde este entorno; el texto de la Ley N.° 8968 se) Tj T*
+(verificó en la fuente oficial de SCIJ/PGR. Cualquier obligación de inscripción, transferencia o atención de) Tj T*
+(reclamo debe verificarse contra la fuente vigente antes de ejecutar el caso.) Tj T*
+() Tj T*
+(POLÍTICA INTERNA FICTICIA) Tj T*
+() Tj T*
+(NexoTico usa datos personales solo para finalidades informadas y necesarias: contratación, nómina,) Tj T*
+(beneficios, seguridad, cumplimiento, servicio a clientes y gestión de la relación laboral. Antes de crear) Tj T*
+(una nueva base o integrar una herramienta, el área solicitante completa una evaluación de finalidad,) Tj T*
+(minimización, acceso, proveedor, conservación y eliminación.) Tj T*
+() Tj T*
+(Los sistemas RAG se alimentan con políticas, procedimientos y contenido anonimizado o sintético. Está) Tj T*
+(prohibido cargar expedientes de salud, denuncias, documentos de identidad, cuentas bancarias o evaluaciones) Tj T*
+(individuales en un corpus RAG sin aprobación escrita del Comité de Gobierno de Información y evaluación) Tj T*
+(legal específica.) Tj T*
+() Tj T*
+(PROCEDIMIENTO) Tj T*
+() Tj T*
+(- La persona responsable registra finalidad, categoría de datos, personas con acceso, fuente, retención y) Tj T*
+(proveedor antes de activar un tratamiento.) Tj T*
+(- Se recolecta la mínima información necesaria y se informa el propósito por un aviso de privacidad claro.) Tj T*
+(- Seguridad de la Información aplica control de acceso por rol, autenticación, registro de eventos, cifrado) Tj T*
+(cuando corresponda y revisión de proveedores.) Tj T*
+(- Las solicitudes de acceso, rectificación, actualización o eliminación se reciben por el Portal Personas o) Tj T*
+(canal de privacidad y se dirigen al Comité de Gobierno de Información.) Tj T*
+(- Al cumplir la finalidad o vencer el período de conservación aprobado, se elimina o anonimiza la) Tj T*
+(información de forma verificable, salvo obligación de conservación vigente.) Tj T*
+(- Un incidente de privacidad se reporta de inmediato al canal de seguridad; el comité evalúa contención,) Tj T*
+(evidencia, notificación y medidas correctivas.) Tj T*
+() Tj T*
+/F1 8 Tf 0 -8 Td (Pagina 1 de 2) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 1587 >>
+stream
+BT /F1 9 Tf 50 752 Td 12 TL (Política de protección de datos personales) Tj T*
+(EXCEPCIONES Y ESCALAMIENTO) Tj T*
+() Tj T*
+(No se comparte información con una persona externa, proveedor o cliente sin base documentada, necesidad y) Tj T*
+(controles apropiados. Solicitudes de autoridades, transferencias internacionales, datos sensibles,) Tj T*
+(biometría, videovigilancia, incidentes y reclamos ante PRODHAB requieren escalamiento a Comité de Gobierno) Tj T*
+(de Información y asesoría legal. El consentimiento no se presume ni se usa para invalidar derechos) Tj T*
+(laborales.) Tj T*
+() Tj T*
+(PREGUNTAS QUE ESTA POLÍTICA RESPONDE) Tj T*
+() Tj T*
+(- ¿Qué datos puede usar NexoTico y para qué?) Tj T*
+(- ¿Puede un asistente RAG leer mi incapacidad o denuncia?) Tj T*
+(- ¿Cómo solicito acceso o corrección de mis datos?) Tj T*
+(- ¿Qué ocurre ante un incidente de privacidad?) Tj T*
+() Tj T*
+(FUENTES VERIFICADAS) Tj T*
+() Tj T*
+(- SCIJ/PGR, *Ley N.° 8968, Protección de la Persona frente al Tratamiento de sus Datos Personales*,) Tj T*
+(consultada el 17 de noviembre de 2026:) Tj T*
+(https://www.pgrweb.go.cr/DOCS/NORMAS/1/VIGENTE/L/2010-2019/2010-2014/2011/1153F/DCEF7.HTML) Tj T*
+(- PRODHAB, sitio institucional consultado el 17 de noviembre de 2026 \(acceso 403 desde el entorno\):) Tj T*
+(https://www.prodhab.go.cr/) Tj T*
+(- Poder Judicial, referencia institucional a competencias de PRODHAB y Ley N.° 8968, consultada el 17 de) Tj T*
+(noviembre de 2026: https://nexuspj.poder-judicial.go.cr/document/sen-1-0007-1242796) Tj T*
+() Tj T*
+() Tj T*
+/F1 8 Tf 0 -8 Td (Pagina 2 de 2) Tj ET
+endstream
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000127 00000 n 
+0000000224 00000 n 
+0000000350 00000 n 
+0000004253 00000 n 
+0000004379 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+6018
+%%EOF

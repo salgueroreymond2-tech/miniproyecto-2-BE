@@ -1,0 +1,363 @@
+%PDF-1.4
+%âãÏÓ
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R] /Count 8 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 2668 >>
+stream
+BT /F1 9 Tf 50 752 Td 12 TL (Informe de investigación documental: Recursos Humanos y RAG) Tj T*
+(INFORME DE INVESTIGACIÓN DOCUMENTAL: RECURSOS HUMANOS Y RAG) Tj T*
+() Tj T*
+(Empresa ficticia: NexoTico Servicios Tecnológicos, S.R.L.) Tj T*
+(Versión: 1.0) Tj T*
+(Fecha de vigencia: 17 de noviembre de 2026) Tj T*
+(Responsable: Gerencia de Personas y Cultura / Comité de Gobierno de Información) Tj T*
+(Extensión prevista de distribución: 8 páginas) Tj T*
+() Tj T*
+(1. PROPÓSITO, MÉTODO Y LÍMITES DE USO) Tj T*
+() Tj T*
+(Este informe documenta la base de conocimiento para una empresa ficticia costarricense de servicios) Tj T*
+(tecnológicos con cincuenta colaboradores. Su fin es apoyar políticas internas, consultas de Recursos Humanos) Tj T*
+(y recuperación de contexto para un sistema RAG. No es un criterio jurídico, una liquidación, una) Tj T*
+(certificación médica ni una decisión disciplinaria.) Tj T*
+() Tj T*
+(La investigación se realizó el 17 de noviembre de 2026 mediante fuentes institucionales: Ministerio de) Tj T*
+(Trabajo y Seguridad Social \(MTSS\), Código de Trabajo y normas disponibles en el Sistema Costarricense de) Tj T*
+(Información Jurídica de la Procuraduría General de la República \(SCIJ/PGR\), Caja Costarricense de Seguro) Tj T*
+(Social \(CCSS\) y la referencia normativa de la Agencia de Protección de Datos de los Habitantes \(PRODHAB\). Se) Tj T*
+(usaron fuentes primarias u oficiales para respaldar afirmaciones legales. Cuando una fuente fue inaccesible) Tj T*
+(desde el entorno, se dejó constancia de ello en vez de completar el vacío con una suposición.) Tj T*
+() Tj T*
+(El material distingue dos capas. La primera es obligación legal verificada: una síntesis trazable de la) Tj T*
+(fuente que debe consultarse de nuevo si el caso individual depende de una versión vigente, una fecha, un) Tj T*
+(cálculo o un hecho controvertido. La segunda es política interna ficticia: reglas de operación de NexoTico) Tj T*
+(que no se presentan como ley y que pueden modificarse por control de versiones. Esta separación es) Tj T*
+(indispensable para un RAG: una respuesta debe identificar qué capa está usando y no elevar un beneficio) Tj T*
+(interno a derecho legal ni rebajar un derecho legal por una regla interna.) Tj T*
+() Tj T*
+(La base no contiene datos reales de personas. Los colaboradores, canales, beneficios, calendarios y) Tj T*
+(responsables son constructos ficticios para el proyecto académico. La fuente de verdad textual son los) Tj T*
+(archivos Markdown; los DOCX y PDF son copias de distribución, y la matriz XLSX facilita importación) Tj T*
+(estructurada a Google Sheets.) Tj T*
+() Tj T*
+/F1 8 Tf 0 -8 Td (Pagina 1 de 8) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 2429 >>
+stream
+BT /F1 9 Tf 50 752 Td 12 TL (Informe de investigación documental: Recursos Humanos y RAG) Tj T*
+() Tj T*
+(2. IDENTIDAD CORPORATIVA Y PERÍMETRO DOCUMENTAL) Tj T*
+() Tj T*
+(La entidad definida es NexoTico Servicios Tecnológicos, S.R.L., también llamada NexoTico. Es una empresa B2B) Tj T*
+(ficticia con sede de referencia en San José, Costa Rica, dedicada al desarrollo de software, integración de) Tj T*
+(sistemas, analítica de datos y soporte tecnológico. El modelo operativo es híbrido y la dotación de) Tj T*
+(referencia es de cincuenta personas colaboradoras ficticias.) Tj T*
+() Tj T*
+(La identidad única evita respuestas contradictorias. Todas las políticas usan versión 1.0, vigencia de 17 de) Tj T*
+(noviembre de 2026 y responsables identificables. La Gerencia de Personas y Cultura custodia contenidos) Tj T*
+(laborales; Finanzas participa donde hay nómina; Seguridad de la Información participa en accesos y activos;) Tj T*
+(el Comité de Gobierno de Información custodia datos personales. Esta distribución no crea cargos reales:) Tj T*
+(establece responsables internos para que el corpus RAG pueda derivar la consulta al equipo correcto.) Tj T*
+() Tj T*
+(Las diez políticas cubren vacaciones y feriados; permisos y licencias; incapacidades; jornada y teletrabajo;) Tj T*
+(remuneración; beneficios; onboarding y salida; desempeño; conducta y denuncias; y protección de datos. Para) Tj T*
+(cada una se incluyeron objetivo, alcance, obligaciones legales verificadas, reglas internas, procedimiento,) Tj T*
+(excepciones, preguntas RAG y fuentes. El patrón disminuye la ambigüedad de recuperación: una pregunta por) Tj T*
+("pago durante incapacidad" puede recuperar la política de incapacidades, pero debe derivar el cálculo a) Tj T*
+(Nómina; una pregunta por "horario remoto" recupera la política de jornada, sin confundirla con un beneficio) Tj T*
+(de vacaciones.) Tj T*
+() Tj T*
+(No se encontró en el repositorio un enunciado académico adicional ni un banco de preguntas específico. Por) Tj T*
+(esa razón no se inventaron preguntas de evaluación. En su lugar, cada política contiene preguntas de) Tj T*
+(recuperación representativas del tema y este informe deja como pendiente comparar el corpus con el enunciado) Tj T*
+(cuando sea entregado. La cobertura se limita a los diez documentos solicitados y no declara completitud) Tj T*
+(frente a requisitos no recibidos.) Tj T*
+() Tj T*
+/F1 8 Tf 0 -8 Td (Pagina 2 de 8) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 2443 >>
+stream
+BT /F1 9 Tf 50 752 Td 12 TL (Informe de investigación documental: Recursos Humanos y RAG) Tj T*
+() Tj T*
+(3. MARCO LABORAL: CÓDIGO DE TRABAJO Y MTSS) Tj T*
+() Tj T*
+(El Código de Trabajo, Ley N.° 2, es la fuente estructural para derechos y obligaciones nacidos de la) Tj T*
+(relación de trabajo. La consulta se realizó en SCIJ/PGR y se complementó con la publicación del Código) Tj T*
+(disponible en el MTSS. Para decisiones concretas se debe abrir la versión vigente de la norma, comprobar) Tj T*
+(reformas, identificar el artículo aplicable y pedir criterio profesional cuando existan hechos en disputa.) Tj T*
+(La política no debe citar artículos, porcentajes o plazos si no se verificaron para el caso y la fecha) Tj T*
+(correspondientes.) Tj T*
+() Tj T*
+(El portal de Asuntos Laborales del MTSS fue particularmente útil para información explicativa sobre) Tj T*
+(vacaciones, feriados, aguinaldo, constancias de finalización y efectos de determinadas ausencias. De esta) Tj T*
+(fuente se incorporaron, de forma explícita, el mínimo de dos semanas de vacaciones por cada cincuenta) Tj T*
+(semanas de trabajo continuo, la necesidad de constancia del otorgamiento, la lista de feriados de pago) Tj T*
+(obligatorio y no obligatorio, y la regla general de disfrute del feriado. Las políticas no transforman esos) Tj T*
+(hechos en cálculos individualizados: un algoritmo no debe decidir pago doble, acumulación o saldo final solo) Tj T*
+(a partir de una pregunta genérica.) Tj T*
+() Tj T*
+(También se documentó que el MTSS publica y actualiza información sobre salario mínimo y aguinaldo. NexoTico) Tj T*
+(no fija valores de salario mínimo en el corpus porque cambian y porque la clasificación del puesto debe) Tj T*
+(revisarse contra el instrumento vigente. En remuneración se establece un calendario interno quincenal, pero) Tj T*
+(se marca de forma expresa que ese calendario no desplaza el salario aplicable, las deducciones permitidas ni) Tj T*
+(el pago legal de aguinaldo.) Tj T*
+() Tj T*
+(La regla de diseño que se deriva de la investigación es conservadora: si una respuesta cambia dinero,) Tj T*
+(continuidad laboral, descanso, seguridad social o una medida disciplinaria, el RAG debe mostrar la política) Tj T*
+(interna pertinente, citar su versión y dirigir la situación a Personas y Cultura. No debe producir asesoría) Tj T*
+(legal individual ni fabricar un resultado de nómina.) Tj T*
+() Tj T*
+/F1 8 Tf 0 -8 Td (Pagina 3 de 8) Tj ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 2166 >>
+stream
+BT /F1 9 Tf 50 752 Td 12 TL (Informe de investigación documental: Recursos Humanos y RAG) Tj T*
+() Tj T*
+(4. DESCANSO, JORNADA Y TELETRABAJO) Tj T*
+() Tj T*
+(La política de vacaciones y feriados mantiene separado el marco legal de las reglas de solicitud. La ley) Tj T*
+(establece un piso de descanso y los feriados oficiales; NexoTico define el uso del Portal Personas, la) Tj T*
+(coordinación de cobertura y la anticipación operativa. Esta diferencia permite contestar "¿cómo solicito mis) Tj T*
+(vacaciones?" con el procedimiento interno y "¿qué feriados se reconocen?" con la fuente del MTSS, sin) Tj T*
+(afirmar que una jefatura pueda suprimir el derecho por carga de trabajo.) Tj T*
+() Tj T*
+(El teletrabajo se investigó a partir de la Ley N.° 9738 y la guía básica del MTSS. Ambas fuentes orientan a) Tj T*
+(tratar el teletrabajo como una modalidad que usa tecnologías de información y que debe documentarse por) Tj T*
+(escrito, sin reducir derechos laborales. La política interna establece una jornada de referencia de lunes a) Tj T*
+(viernes de 08:00 a 17:00, una pausa de alimentación y hasta tres días remotos para puestos elegibles. Estas) Tj T*
+(cifras son decisiones ficticias de NexoTico, no límites legales ni derecho automático de toda persona.) Tj T*
+() Tj T*
+(La política prohíbe asumir que conectarse desde casa equivale a disponibilidad permanente. Incluye una regla) Tj T*
+(interna de desconexión fuera de la jornada, guardias solo pactadas y autorización previa para horas) Tj T*
+(adicionales. También impide el teletrabajo desde otro país sin una revisión escrita legal, fiscal,) Tj T*
+(migratoria, de seguros y de datos. Esta precaución no afirma que el teletrabajo internacional sea ilegal;) Tj T*
+(reconoce que el marco consultado no permite inferir una solución uniforme para cada caso.) Tj T*
+() Tj T*
+(Para RAG, las etiquetas recomendadas son: vacaciones, feriados, descanso, horario, teletrabajo,) Tj T*
+(horas-adicionales, desconexion y cobertura. Las respuestas que involucren fechas de feriados deben advertir) Tj T*
+(que se verificará el calendario oficial del año consultado.) Tj T*
+() Tj T*
+/F1 8 Tf 0 -8 Td (Pagina 4 de 8) Tj ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 2324 >>
+stream
+BT /F1 9 Tf 50 752 Td 12 TL (Informe de investigación documental: Recursos Humanos y RAG) Tj T*
+() Tj T*
+(5. INCAPACIDADES, PERMISOS, NÓMINA Y CCSS) Tj T*
+() Tj T*
+(La CCSS fue consultada mediante documentos institucionales sobre incapacidades, su registro y el Reglamento) Tj T*
+(del Seguro de Salud. La fuente distingue incapacidad como período de reposo y subsidio como prestación) Tj T*
+(sujeta a condiciones del aseguramiento. Por esa razón el corpus no fija porcentajes, montos, cantidades de) Tj T*
+(cuotas ni fechas de pago de subsidio. Tales datos pueden variar por regla vigente o situación concreta y no) Tj T*
+(deben ser inventados por un asistente.) Tj T*
+() Tj T*
+(NexoTico adopta medidas internas protectoras: notificación sin diagnóstico, ausencia de exigencia de trabajo) Tj T*
+(durante la incapacidad, acceso restringido a la constancia y comunicación a la jefatura solo de las fechas) Tj T*
+(necesarias para cobertura. El documento separa el registro de la ausencia de la decisión médica y de la) Tj T*
+(determinación de subsidio. Si hay accidente de trabajo, incapacidad prolongada, documento atípico o) Tj T*
+(discusión de pago, el flujo exige escalamiento humano.) Tj T*
+() Tj T*
+(En permisos y licencias se evita declarar que todos los supuestos tienen la misma protección. Las licencias) Tj T*
+(legales se resuelven con norma específica y documentación correspondiente; los permisos por diligencia,) Tj T*
+(duelo o formación descritos en la política son beneficios internos ficticios. De este modo, un permiso) Tj T*
+(interno no se confunde con maternidad, adopción, cuido, una orden judicial u otra situación legalmente) Tj T*
+(protegida. La ausencia de un número en el documento legal no autoriza a descontar un derecho.) Tj T*
+() Tj T*
+(Para remuneración, la política interna define pago el día 15 y el último día hábil. El MTSS confirma la) Tj T*
+(relevancia del salario mínimo vigente y del aguinaldo en el sector privado, incluido el límite de pago del) Tj T*
+(aguinaldo. La matriz RAG debe excluir cálculos personalizados y dirigir preguntas de neto, embargos,) Tj T*
+(incapacidad, liquidación o ajuste retroactivo a Nómina. Etiquetas sugeridas: incapacidad, CCSS, permiso,) Tj T*
+(licencia, pago, aguinaldo, comprobante y salario-minimo.) Tj T*
+() Tj T*
+/F1 8 Tf 0 -8 Td (Pagina 5 de 8) Tj ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 15 0 R >>
+endobj
+15 0 obj
+<< /Length 2285 >>
+stream
+BT /F1 9 Tf 50 752 Td 12 TL (Informe de investigación documental: Recursos Humanos y RAG) Tj T*
+() Tj T*
+(6. CONDUCTA, DENUNCIAS, DESEMPEÑO Y SALIDA) Tj T*
+() Tj T*
+(La Ley N.° 7476 y el protocolo de recepción de denuncias del MTSS fueron usados como base para separar) Tj T*
+(principios legales de diseño interno. El material del MTSS trata el hostigamiento o acoso sexual como) Tj T*
+(conducta indeseada con efectos perjudiciales y resalta la confidencialidad del trámite. NexoTico no replica) Tj T*
+(el procedimiento administrativo de una institución pública. En cambio, implementa un canal interno ficticio,) Tj T*
+(confirmación de recepción, evaluación de conflicto de interés, medidas de protección, investigación) Tj T*
+(imparcial y seguimiento de represalias.) Tj T*
+() Tj T*
+(La confidencialidad no es una promesa de secreto absoluto. La política explica que puede haber deberes de) Tj T*
+(debido proceso, preservación de evidencia o requerimientos de autoridad. Tampoco convierte una denuncia en) Tj T*
+(prueba concluyente ni permite que una jefatura investigue unilateralmente. Casos de riesgo, violencia,) Tj T*
+(posible delito, hostigamiento sexual o alta gerencia se escalan a las instancias humanas y externas que) Tj T*
+(correspondan. El sistema RAG debe evitar dar instrucciones de confrontación o prometer un resultado) Tj T*
+(disciplinario.) Tj T*
+() Tj T*
+(La evaluación del desempeño es exclusivamente una política interna. Sus ciclos, criterios, escala) Tj T*
+(descriptiva, posibilidad de observación y planes de desarrollo no sustituyen procedimientos legales. El) Tj T*
+(documento prohíbe rankings forzados y el uso de métricas aisladas como única base de decisión. También) Tj T*
+(contempla ajustes en casos de ausencia protegida, conflictos o alegaciones de discriminación.) Tj T*
+() Tj T*
+(Onboarding y salida integran contrato, accesos, activos, formación e información de negocio. La fuente MTSS) Tj T*
+(consultada reconoce el derecho a solicitar una constancia de conclusión de contrato; el resto de pagos y) Tj T*
+(documentación se somete a revisión del caso. Las etiquetas recomendadas son: denuncia, represalia,) Tj T*
+(hostigamiento, conducta, desempeno, onboarding, salida, accesos y constancia.) Tj T*
+() Tj T*
+/F1 8 Tf 0 -8 Td (Pagina 6 de 8) Tj ET
+endstream
+endobj
+16 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 17 0 R >>
+endobj
+17 0 obj
+<< /Length 2287 >>
+stream
+BT /F1 9 Tf 50 752 Td 12 TL (Informe de investigación documental: Recursos Humanos y RAG) Tj T*
+() Tj T*
+(7. PROTECCIÓN DE DATOS Y CONTROLES PARA RAG) Tj T*
+() Tj T*
+(La Ley N.° 8968 consultada en SCIJ/PGR establece como objetivo la protección de la autodeterminación) Tj T*
+(informativa frente al tratamiento automatizado o manual de datos personales. Por esta razón, la política de) Tj T*
+(NexoTico no trata los datos de Recursos Humanos como material libre para entrenamiento, prueba o) Tj T*
+(recuperación semántica. La finalidad, minimización, acceso por rol, conservación y eliminación son controles) Tj T*
+(previos a cualquier incorporación de información en un sistema.) Tj T*
+() Tj T*
+(El sitio oficial de PRODHAB fue consultado directamente, pero devolvió un error 403 desde el entorno de) Tj T*
+(investigación. Esta limitación se documentó en vez de presentar el contenido del sitio como verificado. La) Tj T*
+(referencia a la Ley N.° 8968 se contrastó en SCIJ/PGR y la política ordena verificar la fuente vigente de) Tj T*
+(PRODHAB para obligaciones de inscripción, transferencias, reclamos o notificaciones antes de actuar.) Tj T*
+() Tj T*
+(La decisión de arquitectura documental es especialmente importante: el RAG se alimentará inicialmente de) Tj T*
+(políticas aprobadas, procedimientos y contenido sintético o anonimizado. Se prohíbe incorporar diagnósticos,) Tj T*
+(incapacidades, denuncias, identificaciones, cuentas bancarias, evaluaciones individuales o expedientes) Tj T*
+(personales sin aprobación escrita del Comité de Gobierno de Información y revisión legal específica. Esta es) Tj T*
+(una barrera interna de seguridad, no una afirmación de que toda incorporación de un dato sea jurídicamente) Tj T*
+(imposible.) Tj T*
+() Tj T*
+(Las respuestas RAG deben mostrar versión, documento y sección. Si la consulta contiene datos sensibles o) Tj T*
+(solicita una decisión personalizada -por ejemplo, "¿puedo ver la denuncia de mi compañero?"- el sistema debe) Tj T*
+(responder con el límite de acceso y ofrecer derivación al canal de privacidad, no recuperar documentos) Tj T*
+(privados. Etiquetas sugeridas: datos-personales, datos-sensibles, privacidad, RAG, acceso, rectificacion,) Tj T*
+(retencion e incidente.) Tj T*
+() Tj T*
+/F1 8 Tf 0 -8 Td (Pagina 7 de 8) Tj ET
+endstream
+endobj
+18 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 19 0 R >>
+endobj
+19 0 obj
+<< /Length 3697 >>
+stream
+BT /F1 9 Tf 50 752 Td 12 TL (Informe de investigación documental: Recursos Humanos y RAG) Tj T*
+() Tj T*
+(8. MATRIZ DE FUENTES, CONSISTENCIA Y PENDIENTES) Tj T*
+() Tj T*
+(Fuente oficial consultada | Uso documental | Estado de verificación) Tj T*
+(--- | --- | ---) Tj T*
+(MTSS, Asuntos Laborales | vacaciones, feriados, aguinaldo, constancias | verificada el 17/11/2026) Tj T*
+(MTSS, guía de teletrabajo | adenda, derechos y horario en teletrabajo | verificada el 17/11/2026) Tj T*
+(MTSS, protocolo de denuncias | confidencialidad y recepción de denuncias | verificada el 17/11/2026) Tj T*
+(SCIJ/PGR, Código de Trabajo Ley N.° 2 | marco general laboral | fuente oficial; confirmar versión vigente) Tj T*
+(por caso) Tj T*
+(SCIJ/PGR, Ley N.° 9738 | marco de teletrabajo | verificada el 17/11/2026) Tj T*
+(CCSS, reglamento y guías de incapacidad | reposo, constancia y proceso institucional | verificada el) Tj T*
+(17/11/2026) Tj T*
+(SCIJ/PGR, Ley N.° 8968 | propósito de protección de datos | verificada el 17/11/2026) Tj T*
+(PRODHAB | autoridad y actualización sectorial | consultada; acceso 403 desde el entorno) Tj T*
+() Tj T*
+(La revisión de coherencia confirma que los diez documentos usan la misma entidad, vigencia, versión y) Tj T*
+(responsables, y que ninguno otorga datos de personas reales. Beneficios, horario, permisos, calendario y) Tj T*
+(canal interno son señalados como reglas ficticias de NexoTico. Los documentos legales no asignan valores de) Tj T*
+(salarios, porcentajes de subsidio, cálculos de liquidación, plazos de sanción ni diagnósticos médicos sin) Tj T*
+(verificación individual.) Tj T*
+() Tj T*
+(Pendientes antes de una puesta en producción: validar la versión vigente de cada norma al momento de) Tj T*
+(publicar; obtener acceso navegable a la guía y trámites de PRODHAB; revisar con asesoría legal los anexos de) Tj T*
+(teletrabajo, la clasificación de beneficios y la retención documental; y contrastar el corpus contra el) Tj T*
+(enunciado académico cuando sea suministrado. La matriz XLSX y los archivos de distribución deben pasar la) Tj T*
+(misma revisión de control de versiones que los Markdown antes de cargarse a un repositorio RAG.) Tj T*
+() Tj T*
+(FUENTES COMPLETAS) Tj T*
+() Tj T*
+(- MTSS, Asuntos laborales: https://www.mtss.go.cr/temas-laborales/) Tj T*
+(- MTSS, Código de Trabajo: https://www.mtss.go.cr/elministerio/marco-legal/documentos/codigo_trabajo_cr.pdf) Tj T*
+(- SCIJ/PGR, Código de Trabajo, Ley N.° 2:) Tj T*
+(https://pgrweb.go.cr/scij/Busqueda/Normativa/Normas/nrm_texto_completo.aspx?nValor1=1&nValor2=8045&nValor3=129508&param1=NRTC&strTipM=TC) Tj T*
+(- CCSS, Reglamento para el Otorgamiento de Incapacidades:) Tj T*
+(https://aissfa.ccss.sa.cr/arc/publicaciones/21/a9c01.pdf) Tj T*
+(- CCSS, guía de constancia de incapacidad o licencia: https://aissfa.ccss.sa.cr/arc/medicina/33/24b15.pdf) Tj T*
+(- SCIJ/PGR, Ley N.° 9738:) Tj T*
+(https://www.pgrweb.go.cr/DOCS/NORMAS/1/VIGENTE/L/2010-2019/2015-2019/2019/15E99/1308C9.HTML) Tj T*
+(- MTSS, guía básica de teletrabajo:) Tj T*
+(https://www.mtss.go.cr/perfiles/lineamientos_circulares_directrices_politicas_internas/lineamientos-circulares-directrices-politicas%20internas/Guia_basica_Teletrabajo.pdf) Tj T*
+(- SCIJ/PGR, Ley N.° 8968:) Tj T*
+(https://www.pgrweb.go.cr/DOCS/NORMAS/1/VIGENTE/L/2010-2019/2010-2014/2011/1153F/DCEF7.HTML) Tj T*
+(- PRODHAB: https://www.prodhab.go.cr/) Tj T*
+(- MTSS, protocolo de denuncia de hostigamiento sexual:) Tj T*
+(https://www.mtss.go.cr/perfiles/lineamientos_circulares_directrices_politicas_internas/lineamientos-circulares-directrices-politicas%20internas/protocolo_denuncia_acoso_sexual.pdf) Tj T*
+() Tj T*
+() Tj T*
+/F1 8 Tf 0 -8 Td (Pagina 8 de 8) Tj ET
+endstream
+endobj
+xref
+0 20
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000168 00000 n 
+0000000265 00000 n 
+0000000391 00000 n 
+0000003111 00000 n 
+0000003237 00000 n 
+0000005718 00000 n 
+0000005844 00000 n 
+0000008339 00000 n 
+0000008467 00000 n 
+0000010686 00000 n 
+0000010814 00000 n 
+0000013191 00000 n 
+0000013319 00000 n 
+0000015657 00000 n 
+0000015785 00000 n 
+0000018125 00000 n 
+0000018253 00000 n 
+trailer
+<< /Size 20 /Root 1 0 R >>
+startxref
+22003
+%%EOF
