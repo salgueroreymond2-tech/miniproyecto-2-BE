@@ -58,6 +58,7 @@
 - En esta fase `npm test` del backend pasó 12 pruebas aisladas, incluidas las asociaciones de 15 modelos, preparación de 50 usuarios/colaboradores ficticios, validación vectorial y conservación de controles de autenticación. No se han insertado estos datos en una base real.
 - `npm run db:mysql:verify` y `npm run db:supabase:verify` terminaron con código 1 al no encontrar credenciales; no se intentó una conexión remota.
 - `npm audit --omit=dev` reportó 2 vulnerabilidades moderadas asociadas a `uuid` vía Sequelize 6; no se aplicó la corrección sugerida que implica cambiar a una versión principal antigua e incompatible.
+- Se comprobó la configuración local de MySQL Workbench y se completó el usuario de conexión en `backend/.env`; host y puerto locales ya figuraban en el archivo. El usuario confirmó que la base se llama `portal_rrhh`, coincidiendo con la configuración. `npm run db:mysql:verify` informó que faltan credenciales, por lo que no se ha verificado la conexión.
 
 ## Errores e incidencias
 
