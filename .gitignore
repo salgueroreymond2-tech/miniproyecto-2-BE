@@ -1,6 +1,7 @@
 # Dependencias y cobertura
 node_modules/
 coverage/
+.cache/
 dist/
 
 # Secretos y configuración local

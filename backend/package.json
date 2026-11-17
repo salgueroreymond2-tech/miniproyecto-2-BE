@@ -15,10 +15,12 @@
     "db:mysql:verify": "node src/database/verifyConnection.js",
     "db:migrate": "sequelize-cli db:migrate",
     "db:seed": "sequelize-cli db:seed:all",
+    "ai:verify-embeddings": "node src/database/verifyEmbeddings.js",
+    "ai:verify-deepseek": "node src/database/verifyDeepSeek.js",
     "test": "node --test"
   },
   "dependencies": {
-    "@google/genai": "^3.4.0",
+    "@huggingface/transformers": "^4.3.2",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^16.6.1",

@@ -14,8 +14,8 @@ test('MySQL conserva versiones y recupera por similitud sin guardar datos de pru
   const outer = await originalTransaction();
   const models = initModels(connection);
   const documentId = randomUUID();
-  const embedding = Array(768).fill(0); embedding[0] = 1;
-  const second = Array(768).fill(0); second[1] = 1;
+  const embedding = Array(store.DIMENSIONS).fill(0); embedding[0] = 1;
+  const second = Array(store.DIMENSIONS).fill(0); second[1] = 1;
   const chunk = (index, values) => ({ document_id: documentId, drive_file_id: 'ficticio-integracion', title: 'Política ficticia de prueba', content: `Fragmento ficticio ${index}`, section: 'Pruebas', chunk_index: index, version: '1.0', category: 'POLITICA', content_hash: createHash('sha256').update(`contenido ${index}`).digest('hex'), embedding_model: store.MODEL, embedding: values, metadata: {} });
   try {
     await models.Documento.create({ id: documentId, drive_file_id: `test-${documentId}`, titulo: 'Documento ficticio de integración', version: '1.0', estado: 'VALIDADO' }, { transaction: outer });

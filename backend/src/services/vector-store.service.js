@@ -6,8 +6,8 @@ const { z } = require('zod');
 const { getConnection } = require('../config/database');
 const { initModels } = require('../models');
 
-const MODEL = 'gemini-embedding-001';
-const DIMENSIONS = 768;
+const MODEL = 'Xenova/multilingual-e5-small';
+const DIMENSIONS = 384;
 const categories = ['POLITICA', 'PROCEDIMIENTO', 'DOCUMENTO_PUBLICO'];
 const vector = z.array(z.number().finite()).length(DIMENSIONS).refine((values) => {
   const magnitude = Math.hypot(...values);
