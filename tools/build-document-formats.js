@@ -12,7 +12,8 @@ const zlib = require('zlib');
 const rootDir = path.resolve(__dirname, '..');
 const policiesDir = path.join(rootDir, 'documents', 'policies');
 const researchDir = path.join(rootDir, 'documents', 'research');
-const fixedDate = new Date('2026-11-17T12:00:00Z');
+const reportsDir = path.join(rootDir, 'documents', 'reports');
+const fixedDate = new Date('2026-11-18T12:00:00Z');
 
 function ensureDir(directory) {
   fs.mkdirSync(directory, { recursive: true });
@@ -153,7 +154,7 @@ function createDocx(outputPath, markdown, title) {
     { name: 'word/document.xml', data: documentXml },
     { name: 'word/styles.xml', data: stylesXml },
     { name: 'word/_rels/document.xml.rels', data: '<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>' },
-    { name: 'docProps/core.xml', data: `<?xml version="1.0" encoding="UTF-8"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>${xml(title)}</dc:title><dc:creator>NexoTico Servicios Tecnológicos, S.R.L.</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">2026-11-17T12:00:00Z</dcterms:created></cp:coreProperties>` },
+    { name: 'docProps/core.xml', data: `<?xml version="1.0" encoding="UTF-8"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>${xml(title)}</dc:title><dc:creator>NexoTico Servicios Tecnológicos, S.R.L.</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">${fixedDate.toISOString()}</dcterms:created></cp:coreProperties>` },
     { name: 'docProps/app.xml', data: '<?xml version="1.0" encoding="UTF-8"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Application>NexoTico Document Builder</Application></Properties>' }
   ];
   fs.writeFileSync(outputPath, zip(entries));
@@ -341,6 +342,8 @@ function build() {
 
   const reportPath = path.join(researchDir, 'informe-investigacion-rrhh-costa-rica.md');
   const report = fs.readFileSync(reportPath, 'utf8');
+  const technicalReportPath = path.join(reportsDir, 'informe-tecnico-portal-rrhh.md');
+  const technicalReport = fs.readFileSync(technicalReportPath, 'utf8');
   let generated = 0;
   policySources.forEach((source) => {
     const title = (source.markdown.match(/^#\s+(.+)$/m) || ['', source.basename])[1];
@@ -350,8 +353,10 @@ function build() {
   });
   createDocx(path.join(researchDir, 'informe-investigacion-rrhh-costa-rica.docx'), report, 'Informe de investigación documental: Recursos Humanos y RAG');
   const reportPages = createPdf(path.join(researchDir, 'informe-investigacion-rrhh-costa-rica.pdf'), report, 'Informe de investigación documental: Recursos Humanos y RAG');
+  createDocx(path.join(reportsDir, 'informe-tecnico-portal-rrhh.docx'), technicalReport, 'Informe técnico del Portal de Recursos Humanos NexoTico');
+  const technicalReportPages = createPdf(path.join(reportsDir, 'informe-tecnico-portal-rrhh.pdf'), technicalReport, 'Informe técnico del Portal de Recursos Humanos NexoTico');
   createXlsx(path.join(policiesDir, 'matriz-conocimiento-politicas.xlsx'), policySources);
-  console.log(JSON.stringify({ policyMarkdown: policySources.length, generatedDistributionFiles: generated + 3, reportPdfPages: reportPages, xlsxSheets: policySources.length + 1 }, null, 2));
+  console.log(JSON.stringify({ policyMarkdown: policySources.length, generatedDistributionFiles: generated + 5, researchReportPdfPages: reportPages, technicalReportPdfPages: technicalReportPages, xlsxSheets: policySources.length + 1 }, null, 2));
 }
 
 build();
