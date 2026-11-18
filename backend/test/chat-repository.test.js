@@ -100,6 +100,22 @@ test('idempotencia reserva una consulta una sola vez y permite repetirla sin otr
   await assert.rejects(repository.reserveMessage({ ...input, question: 'otra pregunta' }), (error) => error.status === 409);
 });
 
+test('un reintento de una consulta fallida reutiliza el mismo registro idempotente', async () => {
+  const { repository, conversations, messages } = createMemoryRepository();
+  const input = { userId: USER_ONE, requestId: REQUEST_KEY, question: 'Consulta temporalmente fallida' };
+  const firstAttempt = await repository.reserveMessage(input);
+  await repository.failMessage({ userId: USER_ONE, messageId: firstAttempt.messageId, latencyMs: 5 });
+
+  const retry = await repository.reserveMessage(input);
+  assert.equal(retry.status, 'RESERVED');
+  assert.equal(retry.retry, true);
+  assert.equal(retry.messageId, firstAttempt.messageId);
+  assert.equal(messages.length, 1);
+  assert.equal(conversations.length, 1);
+  assert.equal(messages[0].respuesta, null);
+  assert.equal(messages[0].resolucion, null);
+});
+
 test('historial y conversaciones filtran por usuario autenticado y no admiten lectura cruzada', async () => {
   const { repository } = createMemoryRepository();
   const first = await repository.reserveMessage({ userId: USER_ONE, requestId: REQUEST_KEY, question: 'Consulta uno' });

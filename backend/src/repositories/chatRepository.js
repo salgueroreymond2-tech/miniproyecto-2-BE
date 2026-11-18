@@ -103,7 +103,29 @@ function createChatRepository({
           transaction,
           ...(transaction.LOCK ? { lock: transaction.LOCK.UPDATE } : {})
         });
-        if (existing) return existingResult(asPlain(existing), { userId, requestId, conversationId, question });
+        if (existing) {
+          const record = asPlain(existing);
+          if (record.pregunta !== question || (conversationId && record.conversacion_id !== conversationId)) {
+            throw new HttpError(409, 'El identificador de solicitud ya se usó con otra consulta.');
+          }
+          if (record.resolucion === 'ERROR') {
+            await models.ConsultaChat.update({
+              respuesta: null,
+              intencion: null,
+              tema: null,
+              agentes_utilizados: [],
+              citas_documentales: [],
+              fragmentos_utilizados: [],
+              documentos_citados: [],
+              resolucion: null,
+              latencia_ms: null,
+              escalamiento_realizado: false,
+              escalamiento_sugerido: false
+            }, { where: { id: record.id, usuario_id: userId }, transaction });
+            return { status: 'RESERVED', messageId: record.id, conversationId: record.conversacion_id, retry: true };
+          }
+          return existingResult(record, { userId, requestId, conversationId, question });
+        }
 
         let conversation;
         if (conversationId) {
