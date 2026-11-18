@@ -1,8 +1,38 @@
 # Progreso del proyecto
 
 **Última actualización:** 18 de noviembre de 2026<br>
-**Fase actual:** Agente de datos personales del colaborador.<br>
-**Estado:** Implementados el agente, sus seis herramientas de lectura, el prompt independiente y el endpoint autenticado. Las pruebas aisladas pasan. La comparación de integración con MySQL y una llamada real a DeepSeek siguen pendientes por limitaciones de credenciales de solo lectura y red del entorno.
+**Fase actual:** Orquestador de chat y memoria conversacional.<br>
+**Estado:** Implementados el clasificador, el enrutamiento seguro a los agentes existentes, el historial persistente MySQL y las cuatro rutas autenticadas. La migración se aplicó en MySQL; las pruebas automatizadas pasaron. El usuario de lectura dedicado sigue pendiente para las consultas de memoria y personales.
+
+## Fase: Orquestador de chat (18 de noviembre de 2026)
+
+### Tareas completadas
+
+- Se implementó `backend/src/services/orchestrator.agent.js` con clasificación estructurada de DeepSeek y validación Zod para las seis intenciones, temas permitidos, nivel de confianza y solicitud de aclaración.
+- Se enrutan preguntas de políticas al agente RAG, preguntas personales al agente de datos, y las consultas mixtas ejecutan ambos agentes en paralelo. Se preservan directamente los números, fragmentos y citas de sus fuentes.
+- Se aplican las restricciones de datos personales y reportes en el backend; no se aceptan decisiones de autorización del modelo. Se rechazan preguntas sobre vacaciones de terceros y salarios individuales. Reportes de RRHH quedan preparados para la fase futura del analista, sin implementarlo.
+- Se añadió el prompt versionado `backend/src/prompts/orchestrator.prompt.v1.md`. El contexto de clasificación se limita a los últimos tres temas e intenciones de la conversación autenticada.
+- Se creó la entidad Sequelize `Conversacion` y una migración no destructiva. Se añadieron a `consultas_chat` la intención, tema, agentes utilizados, fragmentos, documentos, citas, estado de escalamiento, colaborador e identificador de idempotencia.
+- Se implementó persistencia idempotente y aislamiento de historial por `usuario_id` validado desde JWT. Los reintentos con el mismo identificador devuelven la respuesta guardada sin volver a llamar a DeepSeek ni a los agentes.
+- Se consolidó el endpoint anterior `/api/chat/employee-data` en el punto central `/api/chat`; se retiraron su ruta y controlador para no duplicar endpoints. Las rutas de historial, lista de conversaciones y detalle también usan JWT y validan propiedad en MySQL.
+- Se documentaron los contratos en Swagger y se actualizaron el ERD y los permisos MySQL de los roles de API y solo lectura.
+
+### Pruebas y verificaciones
+
+- `npm test`: 65 pruebas pasaron y 3 integraciones condicionadas por entorno quedaron omitidas; no hubo fallos.
+- Los casos obligatorios verifican la denegación de datos del compañero Juan y del salario del gerente, la consulta mixta en paralelo, la ausencia de invención para un beneficio inexistente y el rechazo de una pregunta fuera de alcance.
+- También se probaron reportes con los roles COLABORADOR y RRHH, baja confianza, validación Zod, JWT, rutas, propiedad de conversaciones, aislamiento entre dos usuarios e idempotencia.
+- `npm run db:migrate` aplicó correctamente `20261118000100-add-orchestrator-conversations` en MySQL. `npx sequelize-cli db:migrate:status` confirmó las ocho migraciones aplicadas.
+
+### Pendientes y límites conocidos
+
+- Configurar `DB_READ_USER` y `DB_READ_PASSWORD` para probar en vivo el historial y los agentes personales con permisos mínimos; esta fase no sustituyó las credenciales de solo lectura con las de escritura.
+- La clasificación del modelo se validó con pruebas del servicio estructurado usando un transporte simulado; no se registró una llamada real a DeepSeek durante esta fase.
+- El endpoint anterior de datos personales deja de estar disponible; el contrato consolidado es `POST /api/chat`.
+
+---
+
+## Historial de fases anteriores
 
 ## Fase: Agente de datos personales del colaborador (18 de noviembre de 2026)
 
