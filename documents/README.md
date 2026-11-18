@@ -24,9 +24,11 @@ Las respuestas automatizadas deben citar el documento, versión y sección aplic
 
 ## Control documental
 
-- Vigencia inicial: 17 de noviembre de 2026.
-- Versión inicial: 1.0.
+- Las versiones iniciales de los documentos individuales son 1.0, con vigencia desde el 17 de noviembre de 2026.
+- NT-PC-03 (Incapacidades) y NT-PC-04 (Jornada y teletrabajo) se actualizaron a versión 1.1, con vigencia del 18 de noviembre de 2026.
 - Responsable de contenido: Gerencia de Personas y Cultura.
 - Custodia documental: Comité de Gobierno de Información.
 - Revisión ordinaria: anual y antes si cambia una fuente legal aplicable.
+
+El informe de investigación independiente y la versión técnica de la entrega se mantienen en `documents/research/` y `documents/reports/`, respectivamente. La guía académica original no se encuentra en los archivos inspeccionados; consulte `docs/academic-compliance-matrix.md` para conocer qué requisitos siguen sin evidencia.
 
