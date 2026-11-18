@@ -160,6 +160,18 @@ test('marca como error y audita fallos de generación', async () => {
   assert.equal(harness.saved.logs[0].estado, 'ERROR');
 });
 
+test('permite que el orquestador desactive la auditoría duplicada y recibe los fragmentos recuperados', async () => {
+  const harness = createHarness();
+  const result = await harness.agent.answer({
+    question: 'Pregunta delegada al orquestador',
+    userId: USER_ID,
+    persistAudit: false
+  });
+  assert.equal(harness.saved.consultations.length, 0);
+  assert.equal(harness.saved.logs.length, 0);
+  assert.deepEqual(result.retrievedFragments, [{ id: CHUNK_ID, similarity: 0.88, cited: true }]);
+});
+
 test('valida la configuración del umbral y la forma de respuesta', () => {
   assert.throws(() => createPoliciesAgent({ similarityThreshold: '1.1' }), { code: 'RAG_THRESHOLD_INVALID' });
   assert.equal(responseSchema.safeParse({ sufficientEvidence: true, claims: [] }).success, true);

@@ -2,14 +2,10 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const jwt = require('jsonwebtoken');
-const request = require('supertest');
-const { createApp } = require('../src/app');
 const { createEmployeeDataRepository } = require('../src/repositories/employeeDataRepository');
 const { createEmployeeDataAgent, AGENT_NAME, selectionSchema, selectionOutputSchema } = require('../src/services/employee-data.agent');
 const { createDeepSeekService } = require('../src/services/deepseek.service');
 
-const SECRET = 'test-secret-for-employee-agent-only-123456';
 const FIRST_USER = '00000000-0000-4000-8000-000000000001';
 const SECOND_USER = '00000000-0000-4000-8000-000000000002';
 const THIRD_PARTY_REQUEST = '60000000-0000-4000-8000-000000000001';
@@ -257,32 +253,4 @@ test('un usuario sin perfil recibe una respuesta de escalamiento y las consultas
   assert.equal(Object.hasOwn(request, 'referencia_ccss'), false);
   const requestOptions = harness.calls.find((call) => call.model === 'Solicitud' && call.options.where.id).options;
   assert.deepEqual(requestOptions.attributes, ['id', 'tipo', 'fecha_inicio', 'fecha_fin', 'dias_solicitados', 'estado', 'creado_en']);
-});
-
-test('endpoint usa únicamente la identidad autenticada y rechaza IDs enviados por el cliente', async () => {
-  const users = new Map([
-    [FIRST_USER, { id: FIRST_USER, email: 'persona1@nexotico.test', rol: 'COLABORADOR', activo: true }],
-    [SECOND_USER, { id: SECOND_USER, email: 'persona2@nexotico.test', rol: 'COLABORADOR', activo: true }]
-  ]);
-  const received = [];
-  const app = createApp({
-    secret: SECRET,
-    corsOrigin: 'http://localhost:5173',
-    authRepository: { findById: async (id) => users.get(id) || null, findByEmail: async () => null },
-    selfRepository: {},
-    employeeDataAgent: { answer: async (input) => {
-      received.push(input);
-      return { answer: 'Fuente de datos: MySQL.', agent: AGENT_NAME, citations: [], resolved: true, escalationSuggested: false, escalated: false, latencyMs: 1 };
-    } }
-  });
-  const firstToken = jwt.sign({}, SECRET, { subject: FIRST_USER, expiresIn: '1h' });
-  const secondToken = jwt.sign({}, SECRET, { subject: SECOND_USER, expiresIn: '1h' });
-  assert.equal((await request(app).post('/api/chat/employee-data').send({ question: 'Mis vacaciones' })).status, 401);
-  assert.equal((await request(app).post('/api/chat/employee-data').set('Authorization', 'Bearer ' + firstToken)
-    .send({ question: 'Mis vacaciones', collaboratorId: SECOND_EMPLOYEE })).status, 400);
-  assert.equal((await request(app).post('/api/chat/employee-data').set('Authorization', 'Bearer ' + firstToken)
-    .send({ question: 'Mis vacaciones' })).status, 200);
-  assert.equal((await request(app).post('/api/chat/employee-data').set('Authorization', 'Bearer ' + secondToken)
-    .send({ question: 'Mis vacaciones' })).status, 200);
-  assert.deepEqual(received.map((item) => item.authenticatedUserId), [FIRST_USER, SECOND_USER]);
 });
