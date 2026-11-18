@@ -46,3 +46,15 @@ Ver el detalle y los límites de cada control en [`security-audit.md`](security-
 4. **Bloqueado por red/proveedor:** la verificación DeepSeek devolvió `DEEPSEEK_NETWORK_ERROR` sin respuesta HTTP en esta sesión; repetir cuando el endpoint sea accesible.
 5. **Bloqueado por red/proveedor:** la consulta metadata-only de Drive terminó en `EACCES`; reintentar con conectividad disponible. No repetir una sincronización como sustituto.
 6. **Pendiente:** ejecutar el banco independiente, validar citas reales y respuestas mixtas/conversacionales, medir al menos 90 % de latencias por debajo de ocho segundos, generar/recuperar reportes y hacer recorrido autenticado del dashboard con cuentas ficticias de ambos roles.
+
+## Reejecución para la entrega documental — 18 de noviembre de 2026
+
+| Comprobación | Resultado observado en esta tarea | Alcance |
+|---|---|---|
+| `backend`: `npm test` | **83 aprobadas, 0 fallidas, 4 omitidas** (87 casos, 7.82 s) | Se repitieron suites unitarias; cuatro integraciones continúan omitidas por configuración/servicios. |
+| `frontend`: `npm test` | **14 aprobadas, 0 fallidas** (24.51 s) | Suites Vitest de frontend; no recorren la app con MySQL vivo. |
+| `frontend`: `npm run build` | **Aprobado:** 520 módulos; Vite reportó 1.40 s | Build de producción, no verificación visual ni E2E. |
+| `node tools/build-document-formats.js` | **Aprobado:** 10 políticas, 25 artefactos generados, informe de investigación 8 páginas, informe técnico 9 páginas, matriz de políticas 11 hojas | Verifica el generador documental; conteos tomados de su salida, no del render manual en Word. |
+| `node --check tools/build-document-formats.js` | **Aprobado** | Sintaxis del generador de formatos. |
+
+Los bloqueos externos y las conclusiones de la auditoría de seguridad permanecen como se documentan arriba: esta reejecución no consultó MySQL, Drive ni DeepSeek en vivo y no convierte los tests unitarios en evaluación integral del sistema.

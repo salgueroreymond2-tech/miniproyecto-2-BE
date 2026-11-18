@@ -35,7 +35,7 @@
 | 36/45 respuestas correctas totales | **BLOQUEADO** | Las preguntas originales faltan y 16 preguntas propias no se ejecutaron contra fuentes vivas. No se publica una puntuación. |
 | Citas en respuestas de política y 0 fugas E2E | **BLOQUEADO** | Corpus vacío/no verificable en esta corrida; pruebas simuladas no satisfacen la aceptación de extremo a extremo. |
 | 90 % de respuestas en menos de 8 s | **BLOQUEADO** | No hay latencias de consultas reales del banco. La latencia del endpoint `/models` y la similitud de embedding no son métricas de respuesta de chat. |
-| Build final del frontend | **VERIFICADO** | `npm run build`: 520 módulos, Vite finalizó correctamente en 4.47 s. |
+| Build final del frontend | **VERIFICADO** | Reejecución del 18/11/2026: `npm run build` compiló 520 módulos; Vite reportó 1.40 s. |
 
 ## Decisión de aceptación
 

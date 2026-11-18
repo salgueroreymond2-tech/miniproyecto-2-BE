@@ -301,3 +301,25 @@
 - Configurar una cuenta MySQL dedicada con permiso mínimo `SELECT`; ejecutar integraciones de reportes/personas, comprobar 50 colaboradores ficticios y tres meses de movimientos y recorrer el dashboard con ambos roles.
 - Restablecer conectividad de Node hacia DeepSeek y Drive; volver a verificar los servicios sin exponer claves. Subir a Drive los documentos legales/políticas revisados, hacer la revisión humana de privacidad y normativa, probar piloto y luego sincronización.
 - Ejecutar el banco completo con RAG y datos MySQL activos; medir relevancia, citas, resultados correctos y latencia real. No se declara aprobada la aceptación global hasta que exista esta evidencia.
+
+## Preparación de entrega final — 2026-11-18
+
+### Completado
+
+- Se profesionalizó `README.md` con objetivo, arquitectura, carpetas existentes, instrucciones reales de instalación/ejecución, MySQL, migraciones/seed, DeepSeek, E5, Drive, variables, tests, limitaciones y enlaces a la documentación académica. Se ajustó el árbol para reflejar la ubicación real de los agentes en `backend/src/services/` y del seeder en `backend/seeders/`.
+- Se completó `backend/.env.example` con el umbral de confianza del orquestador y los tres interruptores opcionales de pruebas de integración. Una búsqueda de `process.env.*` en runtime y tests quedó cubierta por la plantilla. `backend/.env` y credenciales de servicio están ignorados por Git y no aparecen versionados.
+- Se actualizó el informe de investigación independiente a versión 1.1, con ocho páginas verificadas y diez dominios explícitos. Se registraron fuentes oficiales, fecha de consulta (18/11/2026), distinción ley/política ficticia, el artículo 41 aplicable a aviso de incapacidad, el alcance específico de medicina de empresa y la reforma de teletrabajo Ley N.° 10673. Se dejó constancia de las páginas de CCSS/PRODHAB inaccesibles desde el entorno.
+- Se preparó `documents/reports/informe-tecnico-portal-rrhh.md` y se amplió el generador documental para producir su DOCX/PDF. El informe técnico tiene nueve páginas verificadas y explica el almacenamiento JSON de E5 en MySQL, coseno en Node.js, ventajas y límites para pequeña escala.
+- Se creó `docs/diagrams.md` con siete diagramas Mermaid: arquitectura, ER MySQL, autenticación, multiagente, RAG, Drive y reportes cron.
+- Se prepararon `docs/presentation-script.md` (15 minutos y respaldo de cinco minutos), `docs/defense-questions.md` (25 preguntas con respuestas técnicas) y `docs/academic-compliance-matrix.md` con evidencia y estado por requisito.
+- La matriz de evaluación conserva 45 filas: 25 IDs académicos bloqueados sin enunciados inventados y 20 preguntas propias; estado documentado: 4 `PASS_UNIT`, 1 `PARTIAL_UNIT`, 40 `BLOCKED`. No se calcula puntuación global.
+- `node tools/build-document-formats.js` generó correctamente diez políticas, 25 archivos de distribución, investigación PDF de 8 páginas, informe técnico PDF de 9 páginas y XLSX de 11 hojas. Se comprobaron encabezados/fin de PDF, páginas, estructura ZIP de DOCX/XLSX y `node --check` del generador.
+- Se reejecutaron pruebas: backend **83 aprobadas, 0 fallidas y 4 omitidas** (87 casos, 7.82 s); frontend **14 aprobadas, 0 fallidas** (24.51 s); `npm run build` generó 520 módulos (Vite reportó 1.40 s). `docs/test-results.md` registra esta corrida.
+- `docs/PROGRESS.md`, `docs/test-results.md`, la matriz y el informe técnico reflejan los resultados de esta tarea. `git diff --check` no encontró errores de whitespace; Git solo advirtió que normalizará LF a CRLF en algunos archivos de texto.
+
+### Límites y pendientes
+
+- No se encontró la guía académica original. Por eso siguen pendientes las preguntas literales ACA-01…ACA-25, la identificación académica de Q21/Q22 y el cálculo de aceptación 20/25 o 36/45.
+- Los cinco agentes existen como módulos independientes, pero el versionado homogéneo de sus instrucciones no está completo: cuatro agentes usan prompts LLM separados y el de ingesta es determinista, sin prompt; el estado queda parcial y no se añadió un prompt sin consumidor.
+- MySQL de solo lectura continúa sin configurar, DeepSeek real falló con `DEEPSEEK_NETWORK_ERROR`, y la lectura de metadatos Drive quedó bloqueada por `EACCES`. No hay evidencia actual de conteos, reportes leídos, corpus aprobado/indexado, citas de respuesta real, sincronización real, fuga cero E2E ni latencias del banco.
+- Los informes de investigación y las políticas son material documental investigado; no reemplazan aprobación humana ni dictamen jurídico. La evaluación integral del portal se mantiene pendiente de las dependencias anteriores.
