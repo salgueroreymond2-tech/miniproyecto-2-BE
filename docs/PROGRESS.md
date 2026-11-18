@@ -1,10 +1,40 @@
 # Progreso del proyecto
 
 **Última actualización:** 18 de noviembre de 2026<br>
-**Fase actual:** Orquestador de chat y memoria conversacional.<br>
-**Estado:** Implementados el clasificador, el enrutamiento seguro a los agentes existentes, el historial persistente MySQL y las cuatro rutas autenticadas. La migración se aplicó en MySQL; las pruebas automatizadas pasaron. El usuario de lectura dedicado sigue pendiente para las consultas de memoria y personales.
+**Fase actual:** Portal frontend de Recursos Humanos.<br>
+**Estado:** Implementados los portales autenticados por rol, vistas de colaborador, directorio RRHH y asistente conversacional integrado con la API. Build y pruebas frontend pasaron. Las pruebas end-to-end contra MySQL y DeepSeek quedan limitadas por la configuración de lectura y la disponibilidad del proveedor.
 
-## Fase: Orquestador de chat (18 de noviembre de 2026)
+## Fase: Portal frontend de Recursos Humanos (18 de noviembre de 2026)
+
+### Tareas completadas
+
+- Se inspeccionaron frontend, contratos del backend, `AGENTS.md`, README y progreso. Se conservó la identidad existente de NexoTico Servicios Tecnológicos, S.R.L.
+- Se implementó un sistema visual responsive con tokens centralizados de color y tipografía, Manrope e Inter, Google Material Symbols, foco visible, estados reducidos de animación y breakpoints para escritorio, tablet y móvil.
+- Se construyeron sidebar colapsable, barra superior, footer, botones, cards, inputs, selector, tabla, badges, modal accesible, tooltips, notificaciones, skeletons, estados vacíos y errores reutilizables.
+- Se perfeccionó el login con validación de correo, estados de carga y error, mostrar/ocultar contraseña y navegación según el rol. La autenticación continúa a través de Express/JWT.
+- Se conserva el JWT en `sessionStorage`, con restauración mediante `/api/auth/me` tras recargar la pestaña y limpieza al cerrar sesión o recibir un 401.
+- Se implementaron Inicio, Perfil, Vacaciones, Solicitudes, Pagos y Asistente del colaborador, además del directorio de colaboradores para RRHH. Los datos se obtienen exclusivamente mediante el cliente Axios y los endpoints existentes.
+- El asistente restaura conversaciones desde MySQL, crea conversaciones, presenta sugerencias, envía consultas sin simular streaming, muestra fuente y citas, abre únicamente enlaces Google Drive/Docs seguros y renderiza Markdown sin insertar HTML. Tiene copia, manejo de errores y reintentos con la misma clave idempotente.
+- Se ajustó el repositorio backend para que un reintento de una consulta que terminó con error reutilice su fila idempotente en MySQL en vez de duplicar el registro.
+
+### Pruebas y verificaciones
+
+- `frontend/npm test`: 13 de 13 pruebas pasaron. Cubren login/redirección por rol, sesión restaurada y vencida, navegación protegida, llamadas personales, historial, chat, citas, sanitización de Markdown, consulta personal y reintento.
+- `frontend/npm run build`: Vite compiló correctamente; 112 módulos transformados.
+- `backend/npm test`: 66 pruebas pasaron; 3 integraciones condicionadas por entorno quedaron omitidas; no hubo fallos. Incluye prueba de reintento idempotente sin crear otra fila.
+- `git diff --check` terminó sin errores de whitespace.
+
+### Límites de verificación
+
+- Los flujos de API del frontend se probaron con respuestas HTTP aisladas; no se ejecutó login/chat real contra DeepSeek o perfil real con la cuenta del navegador.
+- La cuenta MySQL de solo lectura (`DB_READ_USER`/`DB_READ_PASSWORD`) sigue pendiente, por lo que no se pudo comprobar historial, directorio y consultas personales de extremo a extremo en la base real.
+- El entorno no ofrece un navegador automatizado para capturas de escritorio/tablet/móvil; se verificó el build y se aplicaron breakpoints CSS, sin afirmar una inspección visual en dispositivo.
+
+---
+
+## Historial de fases anteriores
+
+## Fase anterior: Orquestador de chat (18 de noviembre de 2026)
 
 ### Tareas completadas
 
