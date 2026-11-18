@@ -1,8 +1,8 @@
 # Progreso del proyecto
 
-**Última actualización:** 17 de noviembre de 2026<br>
-**Fase actual:** Servicios DeepSeek y embeddings locales.<br>
-**Estado:** Servicios implementados y comprobados con DeepSeek y MySQL reales; pendiente cargar el corpus documental.
+**Última actualización:** 18 de noviembre de 2026<br>
+**Fase actual:** Agente de políticas RAG.<br>
+**Estado:** La ingesta Drive y el agente de políticas están implementados y revisados. `npm test` pasa; las dos integraciones MySQL pasan por separado. Drive autentica con alcance `drive.readonly`, pero la carpeta no contiene candidatos; no se aprobó ni indexó ningún documento real.
 
 ## Tareas completadas
 
@@ -33,14 +33,22 @@
 - El JWT pertenece a la API Express; cada petición autenticada consulta el estado y rol actual del usuario. El frontend no consulta tablas directamente.
 - El límite de login se guarda en memoria por instancia; para despliegue con varias instancias se requiere un almacén compartido y configuración de proxy revisada.
 - Se creó `backend/.env` a petición del usuario; permanece excluido de Git. La conexión MySQL local está configurada sin registrar ni mostrar su contraseña.
+- Se configuró `GOOGLE_DRIVE_FOLDER_ID` con el identificador de la carpeta proporcionada y `GOOGLE_APPLICATION_CREDENTIALS` con una ruta local fuera del repositorio. La cuenta de servicio usa exclusivamente el alcance `drive.readonly`; la autenticación y el acceso de lectura a la carpeta se verificaron sin mostrar ni almacenar la clave en el repositorio.
 - Se definieron 15 modelos Sequelize, migración MySQL, seeder de demostración, repositorios parametrizados y una conexión separada de solo lectura.
 - Se prepararon los cinco scripts de Supabase, RPC de búsqueda coseno y publicación atómica de versiones completas, y servicios de vectores y embeddings.
 - Se sustituyó el almacén vectorial externo por `document_chunks` en MySQL, con clave foránea hacia `documentos`, publicación transaccional y consultas que excluyen contenido pendiente o inactivo. Los scripts de Supabase preparados anteriormente quedaron obsoletos y se retiraron.
 - Se implementaron `deepseek.service.js` y el servicio local `embedding.service.js`, se retiró el SDK anterior de Gemini y se instaló `@huggingface/transformers`. La configuración de `backend/.env` se agrupó y se retiraron campos anteriores vacíos sin mostrar ni alterar la clave proporcionada.
+- Se implementó `ingestion.agent.js` para PDF, DOCX, XLSX, TXT, Google Docs y Google Sheets, con extracción local, secciones, chunks por tokenización E5, prefijo `passage:` y control del límite de 512 tokens incluyendo tokens especiales.
+- Se implementó `policies.agent.js` y su prompt independiente: embedding E5 local, recuperación de los cinco fragmentos activos con similitud coseno en Node.js, umbral configurable, generación estructurada con DeepSeek, validación de IDs citados y citas construidas desde metadatos de MySQL.
+- El agente de políticas solo consulta fragmentos/documentos validados y activos; escribe pregunta, respuesta, resolución, latencia, IDs de fragmentos utilizados y documentos citados en `consultas_chat`, más el resultado en `logs_agentes`. No consulta tablas de colaboradores, usuarios, salarios ni incapacidades.
+- La ingesta solo indexa documentos cuyo hash exacto fue aprobado por RRHH, con fuentes oficiales de Costa Rica y atestación de revisión sin datos personales. La detección automática de PII es una barrera adicional, no una garantía; el contenido de documentos no aprobados no se guarda en fragmentos.
+- Se añadieron `changes.list`, control de nuevas modificaciones y eliminaciones, persistencia de sincronizaciones, escrituras transaccionales MySQL y revisión de caché vectorial mediante `vector_cache_state.revision`.
+- Se agregaron endpoints RRHH para candidatos, aprobaciones, piloto de un documento, sincronización incremental y estado, más Swagger y una migración no destructiva para datos de revisión normativa.
 - Se aplicó la migración `20261117000400-create-e5-document-chunks` en MySQL sin eliminar o modificar la tabla anterior de vectores.
+- La migración `20261117000700-add-policy-agent-audit` añade los campos de resolución, latencia, fragmentos usados y documentos citados al historial de chat; es compatible con instalaciones existentes y con el esquema inicial actualizado. Se aplicó correctamente en MySQL.
 - Markdown es la fuente de verdad para recuperación RAG; los PDF y DOCX son copias de distribución y la matriz XLSX permite importación estructurada en Google Sheets.
 - Las obligaciones legales verificadas se mantienen separadas de las reglas internas ficticias de NexoTico para evitar que el sistema RAG confunda una política corporativa con un derecho legal.
-- El corpus prohíbe incorporar expedientes personales, diagnósticos, denuncias, identificaciones, cuentas bancarias o evaluaciones individuales en RAG sin aprobación del Comité de Gobierno de Información y revisión específica.
+- El pipeline de Drive excluye documentos con posibles datos personales, incluso si fueron aprobados normativamente; RRHH debe revisar el archivo y atestar que no contiene datos personales antes de aprobar su hash.
 
 ## Pruebas y verificaciones realizadas
 
@@ -75,6 +83,23 @@
 - La prueba `mysql-e5-real.integration.test.js` generó embeddings E5 reales, almacenó un fragmento ficticio, publicó la versión y lo recuperó mediante búsqueda MySQL; revirtió todos los datos de prueba. También pasó la prueba MySQL de versiones y filtrado.
 - `npm test` del backend pasó 16 pruebas y omitió las 2 integraciones de MySQL por defecto; ambas integraciones se ejecutaron por separado y pasaron.
 - Después de las pruebas se confirmó que permanecen 50 colaboradores y 50 usuarios y que ambas tablas de fragmentos contienen cero filas; el contenido ficticio se revirtió y el corpus real aún no se ha ingerido.
+- La verificación real con `listCandidates()` autenticó contra Drive con el alcance `drive.readonly` y recorrió la carpeta y sus subcarpetas; encontró cero archivos. No se descargó ni se ingirió contenido.
+- La creación del cliente JWT de Drive usa el JSON validado en memoria y evita la opción de credenciales deprecada; la comprobación real terminó sin advertencias de deprecación.
+- `node --test test/ingestion-agent.test.js` pasó 5 de 5 pruebas después del ajuste de autenticación.
+- Las pruebas del agente cubren vacaciones, aguinaldo, permisos, incapacidades, teletrabajo, política inexistente, prompt injection, validación de citas, umbral, límite de cinco fragmentos y auditoría de errores.
+- `npm test` del backend pasó 22 pruebas y omitió las 2 integraciones MySQL condicionadas por entorno; incluyó pruebas de extracción de formatos, chunking, aprobaciones, exclusión, detección incremental y autorización RRHH.
+- Se validó la extracción local de PDF, DOCX y XLSX con el corpus ficticio y se comprobó que el tokenizador E5 en caché carga sin acceso remoto.
+- Las dos integraciones MySQL ejecutadas por separado pasaron: vectorización E5 real y publicación/búsqueda transaccional. `db:migrate:status` confirmó todas las migraciones aplicadas; las tablas de documentos, fragmentos E5, estado Drive y aprobaciones quedaron en cero registros tras las pruebas.
+- Se tokenizaron localmente los diez PDF ficticios: nueve cumplen 350–450 tokens en todos sus fragmentos; una política requiere un fragmento final de 90 tokens porque su longitud no permite cubrirla íntegra con fragmentos de 350–450 y solapamiento de 50–80. En todos los casos el máximo prefijado fue 454 tokens y el detector no encontró patrones de PII.
+- La migración del historial de políticas quedó aplicada y `db:migrate:status` la confirmó. La última ejecución de `npm test` pasó 36 pruebas y omitió las 2 integraciones MySQL condicionadas por entorno; incluyó las cinco consultas temáticas, la política inexistente, el umbral, las cinco citas máximas, la validación anti-injection, la auditoría simulada y la compatibilidad de la migración.
+- En la revisión del agente visual se corrigió el flujo de aprobación: ahora exige atestación separada de revisión normativa y de ausencia de datos personales, y se aplica mediante la migración `20261117000800-require-normative-review` en MySQL.
+- `POST /api/admin/ingestion/pilot` exige el ID de un documento elegido y procesa solo ese archivo; no consume el cursor de cambios. Después de revisarlo, la sincronización completa recorre los restantes, consume `changes.list` e inspecciona el árbol para detectar documentos bajo carpetas movidas o eliminadas. Antes de insertar fragmentos se vuelve a comprobar la versión de Drive.
+- La extracción PDF conserva el número de página para las citas. DOCX conserva sus encabezados como Markdown y DOCX/XLSX se inspeccionan como ZIP antes de extraerse, con límites de tamaño expandido, entradas y razón de compresión.
+- El embedding E5 comprueba el tokenizador real contando el prefijo y tokens especiales; rechaza entradas de más de 512 tokens sin truncarlas. La búsqueda coseno de MySQL usa una caché acotada por revisión persistida; publicaciones e ingestas incrementan esa revisión dentro de sus transacciones y limpian la caché local al confirmar.
+- El agente de políticas publica únicamente citas textuales que aparecen de forma literal en cada fragmento citado. Si DeepSeek devuelve una paráfrasis o una cita no verificable, responde que no hay evidencia suficiente.
+- `npm test` pasó 40 pruebas y omitió 2 integraciones condicionadas por entorno. Por separado pasaron `test/mysql-vector.integration.test.js` y `test/mysql-e5-real.integration.test.js`, esta última con embeddings E5 reales y verificación del límite de 512 tokens.
+- Se aplicó en MySQL la migración `20261117000800-require-normative-review`; la integración vectorial comprobó la caché por revisión y revirtió sus datos de prueba.
+- Se verificó de nuevo la cuenta local de Drive: el correo coincide con `policybot-drive-reader@acme-509515.iam.gserviceaccount.com`, el alcance usado es `drive.readonly` y el listado recursivo devolvió cero archivos. No se descargó contenido, no se registraron aprobaciones ni se ejecutó el piloto.
 
 ## Errores e incidencias
 
@@ -82,6 +107,9 @@
 - El entorno aislado no puede leer `C:\Users\HP8D8\.docker\config.json`; no se modificó ese archivo.
 - En la fase anterior no había `DATABASE_URL` ni cliente `psql`; esa configuración ya no es necesaria para los datos administrativos.
 - El corpus de políticas aún no se ha ingerido en `document_chunks_e5`; las pruebas reales utilizaron contenido ficticio transitorio. La similitud mínima de RAG debe calibrarse con preguntas evaluadas.
+- La carpeta de Drive y sus subcarpetas no devolvieron archivos; no se pudo ejecutar el piloto ni validar documentos. No se descargó ni cargó contenido.
+- Las pruebas de políticas usaron fragmentos ficticios aislados y DeepSeek simulado; no se verificó la corrección legal contra documentos aprobados ni se hizo una llamada real al proveedor, porque el corpus de Drive está vacío.
+- La auditoría `npm audit --omit=dev` no pudo consultar el endpoint de npm desde este entorno; no se obtuvo un informe actual de vulnerabilidades de dependencias.
 - Si se ejecutaron los scripts PostgreSQL históricos en un proyecto Supabase, su posible contenido administrativo debe revisarse con el usuario. No se eliminaron datos remotos.
 - Las pruebas de login y permisos todavía no se han ejecutado de extremo a extremo contra cuentas MySQL reales.
 - La publicación hacia GitHub no se realizó: el entorno requiere autorización explícita antes de exportar los archivos del proyecto al remoto.
@@ -91,11 +119,12 @@
 
 ## Pendientes
 
-- Esperar autorización antes de iniciar una nueva fase o modificar el corpus documental.
+- Colocar los documentos que se desean evaluar en la carpeta de Drive o en sus subcarpetas. La clave local ya está configurada y la cuenta de servicio tiene acceso de lectura.
+- Cuando haya candidatos, RRHH debe revisar por hash cada documento, confirmar la revisión normativa con fuentes oficiales y atestar que no contiene datos personales; ejecutar `/api/admin/ingestion/pilot`, verificarlo y luego `/api/admin/ingestion/sync` para procesar los restantes.
 - Contrastar las políticas contra el enunciado académico cuando sea suministrado.
 - Revisar la versión vigente de las normas y los trámites de PRODHAB con asesoría legal antes de una publicación o uso real.
 - Revisar el contenido documental antes de una futura ingesta para impedir datos personales y calibrar el umbral de búsqueda con el banco de preguntas.
 - Configurar las cuentas dedicadas MySQL, asignar contraseñas bcrypt y ejecutar pruebas de integración con usuarios ficticios de ambos roles.
 - Contrastar el esquema con el catálogo de campos académico cuando sea suministrado y crear migraciones no destructivas si hay diferencias.
-- Continuar con la lógica completa de agentes solo después de recibir autorización.
+- Implementar los agentes restantes solo después de recibir autorización explícita.
 - Publicar los commits locales en `origin/main` únicamente si se autoriza expresamente.
