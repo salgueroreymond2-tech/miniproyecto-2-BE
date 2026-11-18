@@ -26,6 +26,34 @@ module.exports = {
     '/api/colaboradores/me/solicitudes': protectedGet('Consultar mis solicitudes'),
     '/api/colaboradores/me/proximo-pago': protectedGet('Consultar próximo pago programado'),
     '/api/colaboradores': protectedGet('Listar colaboradores; exclusivo RRHH'),
+    '/api/chat/employee-data': { post: {
+      summary: 'Consultar datos personales propios de Recursos Humanos',
+      security: [{ bearerAuth: [] }],
+      requestBody: { required: true, content: { 'application/json': { schema: {
+        type: 'object', additionalProperties: false, required: ['question'],
+        properties: { question: { type: 'string', minLength: 1, maxLength: 2000 } }
+      } } } },
+      responses: {
+        200: { description: 'Respuesta basada en registros propios de MySQL; citations es una lista vacía', content: { 'application/json': { schema: {
+          type: 'object',
+          required: ['answer', 'agent', 'citations', 'resolved', 'escalationSuggested', 'escalated', 'latencyMs'],
+          properties: {
+            answer: { type: 'string' },
+            agent: { type: 'string', enum: ['DATOS_COLABORADOR'] },
+            citations: { type: 'array', maxItems: 0, items: { type: 'object' } },
+            resolved: { type: 'boolean' },
+            escalationSuggested: { type: 'boolean' },
+            escalated: { type: 'boolean' },
+            latencyMs: { type: 'integer', minimum: 0 }
+          }
+        } } } },
+        400: { description: 'Pregunta inválida, ambigua o con campos no permitidos' },
+        401: { description: 'Sesión inválida o ausente' },
+        429: { description: 'Límite de consultas alcanzado' },
+        503: { description: 'MySQL de solo lectura o DeepSeek no disponible' },
+        ...errorResponses
+      }
+    } },
     '/api/admin/ingestion/status': protectedGet('Consultar estado de la ingesta; exclusivo RRHH'),
     '/api/admin/ingestion/candidates': protectedGet('Listar documentos de Drive pendientes de revisión; exclusivo RRHH'),
     '/api/admin/ingestion/approvals': { post: {

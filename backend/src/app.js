@@ -8,11 +8,13 @@ const { createAuthService } = require('./services/authService');
 const { createAuthRouter } = require('./routes/authRoutes');
 const { createCollaboratorRouter } = require('./routes/collaboratorRoutes');
 const { createIngestionRouter } = require('./routes/ingestionRoutes');
+const { createEmployeeDataRouter } = require('./routes/employeeDataRoutes');
 const ingestionAgentDefault = require('./services/ingestion.agent');
+const employeeDataAgentDefault = require('./services/employee-data.agent');
 const HttpError = require('./utils/httpError');
 const apiSpec = require('./config/openapi');
 
-function createApp({ secret, expiresIn, corsOrigin, authRepository, selfRepository, ingestionAgent = ingestionAgentDefault }) {
+function createApp({ secret, expiresIn, corsOrigin, authRepository, selfRepository, ingestionAgent = ingestionAgentDefault, employeeDataAgent = employeeDataAgentDefault }) {
   const app = express();
   const auth = createAuthService({ repository: authRepository, secret, expiresIn });
   app.disable('x-powered-by');
@@ -25,6 +27,7 @@ function createApp({ secret, expiresIn, corsOrigin, authRepository, selfReposito
   app.use('/api/auth', createAuthRouter(auth));
   app.use('/api/colaboradores', createCollaboratorRouter(auth, selfRepository));
   app.use('/api/admin/ingestion', createIngestionRouter(auth, ingestionAgent));
+  app.use('/api/chat/employee-data', createEmployeeDataRouter(auth, employeeDataAgent));
   app.use((_req, _res, next) => next(new HttpError(404, 'Ruta no encontrada.')));
   app.use((error, _req, res, _next) => {
     if (error.type === 'entity.parse.failed') return res.status(400).json({ error: 'JSON inválido.' });
