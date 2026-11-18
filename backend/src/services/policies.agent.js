@@ -15,7 +15,8 @@ const AGENT_NAME = 'POLITICAS';
 const FALLBACK_ANSWER = 'No encontré evidencia documental suficiente para responder. Contacta a RRHH para confirmar la información.';
 const inputSchema = z.strictObject({
   question: z.string().trim().min(1).max(4000),
-  userId: z.string().uuid()
+  userId: z.string().uuid(),
+  persistAudit: z.boolean().default(true)
 });
 const retrievedChunkSchema = z.object({
   id: z.string().uuid(),
@@ -142,7 +143,7 @@ function createPoliciesAgent({
   }
 
   async function answer(input) {
-    const { question, userId } = inputSchema.parse(input);
+    const { question, userId, persistAudit } = inputSchema.parse(input);
     const consultationId = randomUUID();
     const startedAt = performance.now();
     let chunksUsed = [];
@@ -180,20 +181,27 @@ function createPoliciesAgent({
       }
 
       const latencyMs = Math.round(performance.now() - startedAt);
-      await persistQuery({
-        consultationId, userId, question, answer: outcome.answer, resolution: outcome.resolution,
-        latencyMs, chunksUsed, documentsCited: outcome.documentsCited
-      });
-      return { consultationId, ...outcome, latencyMs };
+      if (persistAudit) {
+        await persistQuery({
+          consultationId, userId, question, answer: outcome.answer, resolution: outcome.resolution,
+          latencyMs, chunksUsed, documentsCited: outcome.documentsCited
+        });
+      }
+      return {
+        consultationId, ...outcome, latencyMs,
+        retrievedFragments: chunksUsed.map(({ id, similarity, cited }) => ({ id, similarity, cited }))
+      };
     } catch (error) {
       const latencyMs = Math.round(performance.now() - startedAt);
-      try {
-        await persistQuery({
-          consultationId, userId, question, answer: null, resolution: 'ERROR',
-          latencyMs, chunksUsed, documentsCited: []
-        });
-      } catch (auditError) {
-        throw new AggregateError([error, auditError], 'La consulta falló y no fue posible registrar el error en MySQL.');
+      if (persistAudit) {
+        try {
+          await persistQuery({
+            consultationId, userId, question, answer: null, resolution: 'ERROR',
+            latencyMs, chunksUsed, documentsCited: []
+          });
+        } catch (auditError) {
+          throw new AggregateError([error, auditError], 'La consulta falló y no fue posible registrar el error en MySQL.');
+        }
       }
       throw error;
     }

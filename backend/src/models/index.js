@@ -20,10 +20,17 @@ function initModels(sequelize = getConnection()) {
   const MovimientoPersonal = define('MovimientoPersonal', 'movimientos_personal', { colaborador_id: uuid(), tipo: enums('INGRESO', 'SALIDA', 'ASCENSO', 'CAMBIO_PUESTO', 'CAMBIO_DEPARTAMENTO'), fecha_efectiva: date(), detalle: D.JSON });
   const CalendarioPago = define('CalendarioPago', 'calendario_pagos', { fecha_pago: date(), fecha_corte_inicio: date(), fecha_corte_fin: date(), tipo: enums('QUINCENA_1', 'QUINCENA_2', 'AGUINALDO', 'EXTRAORDINARIO'), estado: enums('PROGRAMADO', 'PROCESADO', 'CANCELADO') });
   const EvaluacionDesempeno = define('EvaluacionDesempeno', 'evaluaciones_desempeno', { colaborador_id: uuid(), evaluador_id: D.CHAR(36), periodo_inicio: date(), periodo_fin: date(), estado: enums('BORRADOR', 'PENDIENTE', 'COMPLETADA'), resultado: D.STRING(80), resumen: D.TEXT });
+  const Conversacion = define('Conversacion', 'conversaciones', {
+    usuario_id: uuid(), titulo: text(160), tema: D.STRING(80), creado_en: D.DATE, actualizado_en: D.DATE
+  });
   const ConsultaChat = define('ConsultaChat', 'consultas_chat', {
     usuario_id: uuid(), pregunta: D.TEXT, respuesta: D.TEXT, agente: D.STRING(80), creado_en: D.DATE,
     resolucion: D.ENUM('RESPONDIDA', 'SIN_EVIDENCIA', 'ERROR'), latencia_ms: D.INTEGER.UNSIGNED,
-    fragmentos_utilizados: D.JSON, documentos_citados: D.JSON
+    fragmentos_utilizados: D.JSON, documentos_citados: D.JSON,
+    conversacion_id: D.CHAR(36), colaborador_id: D.CHAR(36), solicitud_idempotencia: D.CHAR(36),
+    intencion: D.ENUM('POLITICA', 'DATO_PERSONAL', 'MIXTA', 'REPORTE', 'RESTRINGIDA', 'FUERA_DE_ALCANCE'),
+    agentes_utilizados: D.JSON, citas_documentales: D.JSON, tema: D.STRING(80),
+    escalamiento_realizado: D.BOOLEAN, escalamiento_sugerido: D.BOOLEAN
   });
   const ReporteDiario = define('ReporteDiario', 'reportes_diarios', { fecha: date(), metricas: D.JSON, creado_en: D.DATE });
   const Documento = define('Documento', 'documentos', { drive_file_id: text(255), titulo: text(250), version: text(32), estado: enums('PENDIENTE', 'VALIDADO', 'ELIMINADO'), content_hash: D.CHAR(64), actualizado_en: D.DATE });
@@ -48,6 +55,9 @@ function initModels(sequelize = getConnection()) {
   Colaborador.hasMany(EvaluacionDesempeno, { foreignKey: 'evaluador_id', as: 'EvaluacionesRealizadas' });
   EvaluacionDesempeno.belongsTo(Colaborador, { foreignKey: 'evaluador_id', as: 'Evaluador' });
   Usuario.hasMany(ConsultaChat, { foreignKey: 'usuario_id' }); ConsultaChat.belongsTo(Usuario, { foreignKey: 'usuario_id' });
+  Usuario.hasMany(Conversacion, { foreignKey: 'usuario_id' }); Conversacion.belongsTo(Usuario, { foreignKey: 'usuario_id' });
+  Conversacion.hasMany(ConsultaChat, { foreignKey: 'conversacion_id' }); ConsultaChat.belongsTo(Conversacion, { foreignKey: 'conversacion_id' });
+  Colaborador.hasMany(ConsultaChat, { foreignKey: 'colaborador_id' }); ConsultaChat.belongsTo(Colaborador, { foreignKey: 'colaborador_id' });
   ConsultaChat.hasMany(LogAgente, { foreignKey: 'consulta_chat_id' }); LogAgente.belongsTo(ConsultaChat, { foreignKey: 'consulta_chat_id' });
   Documento.hasMany(DocumentChunk, { foreignKey: 'document_id' }); DocumentChunk.belongsTo(Documento, { foreignKey: 'document_id' });
   Usuario.hasMany(IngestionApproval, { foreignKey: 'approved_by' }); IngestionApproval.belongsTo(Usuario, { foreignKey: 'approved_by' });
