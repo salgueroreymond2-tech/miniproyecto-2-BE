@@ -7,6 +7,10 @@ const authRepository = require('./repositories/authRepository');
 const selfRepository = require('./repositories/selfRepository');
 const { closePool } = require('./config/database');
 const { warmUpEmbeddings } = require('./services/embedding.service');
+const ingestionAgent = require('./services/ingestion.agent');
+const analystAgent = require('./services/analyst.agent');
+const { createDefaultScheduler } = require('./jobs/scheduler');
+const { createReportRepository } = require('./repositories/reportRepository');
 
 const config = z.object({
   PORT: z.coerce.number().int().min(1).max(65535).default(3000),
@@ -15,11 +19,13 @@ const config = z.object({
   JWT_EXPIRES_IN: z.string().regex(/^[1-9][0-9]*[smhd]$/).default('1h')
 }).parse(process.env);
 
+const scheduler = createDefaultScheduler({ ingestionAgent, analystAgent, repository: createReportRepository() });
 const app = createApp({ secret: config.JWT_SECRET, expiresIn: config.JWT_EXPIRES_IN,
-  corsOrigin: config.CORS_ORIGIN, authRepository, selfRepository });
+  corsOrigin: config.CORS_ORIGIN, authRepository, selfRepository, ingestionAgent, analystAgent, reportJobs: scheduler });
 const server = app.listen(config.PORT, () => console.log(`API disponible en el puerto ${config.PORT}`));
+scheduler.start().catch((error) => console.error('No se pudieron recuperar tareas programadas:', error.code || error.name));
 // El calentamiento se inicia una sola vez sin bloquear las rutas que no dependen del modelo.
 warmUpEmbeddings().then(() => console.info('Modelo local de embeddings preparado.')).catch(() => console.error('No se pudo cargar el modelo local de embeddings; revise la caché y la conexión inicial.'));
 for (const signal of ['SIGINT', 'SIGTERM']) {
-  process.on(signal, () => server.close(() => { closePool().catch(() => { process.exitCode = 1; }); }));
+  process.on(signal, () => { scheduler.stop(); server.close(() => { closePool().catch(() => { process.exitCode = 1; }); }); });
 }

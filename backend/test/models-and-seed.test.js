@@ -5,11 +5,12 @@ const { Sequelize } = require('sequelize');
 const { initModels } = require('../src/models');
 const seed = require('../seeders/20261117000200-demo-data');
 
-test('se registran los 20 modelos y relaciones solicitadas sin conexión', async () => {
+test('se registran los modelos y relaciones solicitadas sin conexión', async () => {
   const sequelize = new Sequelize('demo', 'demo', 'demo', { dialect: 'mysql', logging: false });
   try {
     const m = initModels(sequelize);
-    assert.equal(Object.keys(m).length, 20);
+    assert.equal(Object.keys(m).length, 21);
+    assert.equal(m.TrabajoProgramado.tableName, 'trabajos_programados');
     assert.equal(m.Usuario.associations.Colaborador.associationType, 'HasOne');
     assert.equal(m.Colaborador.associations.Solicituds.associationType, 'HasMany');
     assert.equal(m.Solicitud.associations.Colaborador.associationType, 'BelongsTo');
