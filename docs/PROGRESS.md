@@ -246,3 +246,26 @@
 
 - Configurar `DB_READ_USER` y `DB_READ_PASSWORD` con permisos `SELECT` y ejecutar `node --test test/analyst.mysql.integration.test.js` para contrastar los indicadores contra el contenido real de MySQL.
 - Hacer una generación manual en un entorno con la cuenta de solo lectura configurada y validar el resumen real, los datos almacenados y la respuesta de los endpoints.
+
+## Panel administrativo de RRHH — 2026-11-18
+
+### Completado
+
+- Se amplió el layout existente con ocho vistas administrativas protegidas en React Router: dashboard general, colaboradores, departamentos, solicitudes, documentos indexados, sincronizaciones, actividad del chatbot e historial de reportes.
+- El dashboard consulta `/api/reports/latest`, `/api/reports/history` y `/api/reports/:date`. Las ocho tarjetas KPI, los cuatro gráficos Recharts, el resumen ejecutivo, la fecha/origen del reporte y las preguntas RAG sin evidencia se presentan desde snapshots persistidos en MySQL; el cliente no recalcula métricas ni llama a DeepSeek.
+- Se incorporó un componente común de tabla para búsqueda, filtros, ordenamiento, paginación y estados vacíos. Las solicitudes pendientes de más de tres días se resaltan; el historial permite abrir reportes y consultar la lista de solicitudes pendientes guardada con cada snapshot.
+- Se añadió la consulta documental de RRHH con título, categoría, versión, indexación, cantidad de fragmentos, estado y enlace seguro a Google Drive. La sincronización usa el endpoint existente protegido, confirma la acción y no elimina originales.
+- Se añadieron rutas de solo lectura `/api/admin/departments`, `/api/admin/requests`, `/api/admin/documents` y `/api/admin/synchronizations`. Usan la conexión MySQL de lectura, parámetros y filtros de orden permitidos, validación Zod y autorización `RRHH`; Swagger documenta los contratos.
+- Se conservaron los tokens y componentes existentes, se añadieron estilos responsive para el dashboard, gráficos, tablas y estados administrativos, y se cargan las páginas bajo demanda para separar Recharts del paquete inicial.
+- Las pruebas frontend recorren la autenticación por rol, las vistas administrativas, el selector de fechas, el resaltado de solicitudes vencidas y la confirmación de sincronización. Las rutas backend comprueban JWT, exclusividad RRHH, validación de filtros y consultas parametrizadas.
+- `npm test` del frontend pasó 14 pruebas. `npm run build` compiló correctamente; Vite generó un paquete inicial de 373.82 kB y un módulo de gráficos de 478.07 kB, sin advertencia de chunk grande.
+- `npm test` del backend pasó 83 pruebas y omitió 4 integraciones condicionadas por la cuenta/servicios del entorno. Las pruebas nuevas de consultas administrativas pasaron 3 de 3.
+
+### Incidencias y límites de verificación
+
+- La comparación de indicadores con MySQL real continúa omitida porque no está configurada la cuenta `DB_READ_USER`/`DB_READ_PASSWORD`. Por ello no se afirma que las vistas se hayan probado contra datos reales en esta ejecución; en producción, las rutas mostrarán el error del servicio en vez de sustituirlo por datos de ejemplo.
+- No se ejecutó una sincronización real de Google Drive. La acción se probó mediante el endpoint simulado por el test frontend y el endpoint conserva la protección existente del agente de ingesta.
+
+### Pendiente
+
+- Configurar la cuenta MySQL de solo lectura y verificar visualmente las ocho vistas con los registros reales del entorno.

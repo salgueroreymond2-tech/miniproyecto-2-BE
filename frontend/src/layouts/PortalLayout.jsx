@@ -14,11 +14,24 @@ const employeeLinks = [
   { to: '/mi-portal/pagos', label: 'Próximos pagos', icon: 'payments' },
   { to: '/mi-portal/asistente', label: 'Asistente inteligente', icon: 'forum' }
 ];
-const hrLinks = [{ to: '/rrhh', label: 'Colaboradores', icon: 'groups', end: true }];
+const hrLinks = [
+  { to: '/rrhh', label: 'Dashboard general', icon: 'space_dashboard', end: true },
+  { to: '/rrhh/colaboradores', label: 'Colaboradores', icon: 'groups' },
+  { to: '/rrhh/departamentos', label: 'Departamentos', icon: 'domain' },
+  { to: '/rrhh/solicitudes', label: 'Solicitudes', icon: 'assignment' },
+  { to: '/rrhh/documentos', label: 'Documentos indexados', icon: 'library_books' },
+  { to: '/rrhh/sincronizaciones', label: 'Sincronizaciones', icon: 'sync' },
+  { to: '/rrhh/chatbot', label: 'Actividad del chatbot', icon: 'forum' },
+  { to: '/rrhh/reportes', label: 'Historial de reportes', icon: 'analytics' }
+];
 const pageTitles = {
   '/mi-portal': 'Inicio', '/mi-portal/perfil': 'Mi perfil', '/mi-portal/vacaciones': 'Mis vacaciones',
   '/mi-portal/solicitudes': 'Mis solicitudes', '/mi-portal/pagos': 'Próximos pagos',
-  '/mi-portal/asistente': 'Asistente inteligente', '/rrhh': 'Directorio de colaboradores'
+  '/mi-portal/asistente': 'Asistente inteligente', '/rrhh': 'Dashboard general',
+  '/rrhh/colaboradores': 'Colaboradores', '/rrhh/departamentos': 'Departamentos',
+  '/rrhh/solicitudes': 'Solicitudes', '/rrhh/documentos': 'Documentos indexados',
+  '/rrhh/sincronizaciones': 'Sincronizaciones', '/rrhh/chatbot': 'Actividad del chatbot',
+  '/rrhh/reportes': 'Historial de reportes'
 };
 
 export function PortalLayout() {
@@ -30,7 +43,7 @@ export function PortalLayout() {
   const navigate = useNavigate();
   const isHr = user?.rol === 'RRHH';
   const links = isHr ? hrLinks : employeeLinks;
-  const title = pageTitles[location.pathname] || (isHr ? 'Directorio de colaboradores' : 'Mi portal');
+  const title = pageTitles[location.pathname] || (isHr ? 'Dashboard general' : 'Mi portal');
 
   useEffect(() => {
     const syncSidebar = () => setCollapsed(window.innerWidth <= 1160);

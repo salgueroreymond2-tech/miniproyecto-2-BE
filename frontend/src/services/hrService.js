@@ -16,6 +16,22 @@ export const hrService = {
   hr: {
     employees: () => payload(api.get('/colaboradores'), 'colaboradores')
   },
+  admin: {
+    departments: () => payload(api.get('/admin/departments'), 'departments'),
+    requests: (params = {}) => api.get('/admin/requests', { params }).then(({ data }) => data),
+    documents: (params = {}) => api.get('/admin/documents', { params }).then(({ data }) => data),
+    synchronizations: (params = {}) => api.get('/admin/synchronizations', { params }).then(({ data }) => data)
+  },
+  reports: {
+    latest: () => payload(api.get('/reports/latest'), 'report'),
+    history: (params = {}) => payload(api.get('/reports/history', { params }), 'reports'),
+    byDate: (date) => payload(api.get(`/reports/${encodeURIComponent(date)}`), 'report')
+  },
+  ingestion: {
+    status: () => api.get('/admin/ingestion/status').then(({ data }) => data),
+    candidates: () => payload(api.get('/admin/ingestion/candidates'), 'candidates'),
+    sync: () => api.post('/admin/ingestion/sync', {}).then(({ data }) => data)
+  },
   chat: {
     history: (params = {}) => payload(api.get('/chat/history', { params }), 'messages'),
     conversations: () => payload(api.get('/chat/conversations'), 'conversations'),
