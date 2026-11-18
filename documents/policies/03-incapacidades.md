@@ -1,8 +1,8 @@
 # Política de incapacidades
 
 **Código:** NT-PC-03  
-**Versión:** 1.0  
-**Vigencia:** 17 de noviembre de 2026  
+**Versión:** 1.1
+**Vigencia:** 18 de noviembre de 2026
 **Responsable:** Gerencia de Personas y Cultura  
 **Empresa:** NexoTico Servicios Tecnológicos, S.R.L.
 
@@ -17,7 +17,7 @@ Aplica a todas las personas colaboradoras ficticias de NexoTico. Incluye incapac
 ## Obligaciones legales verificadas
 
 - La CCSS describe la incapacidad como un período de reposo y regula su registro y pago dentro de su normativa de Seguro de Salud; el derecho a subsidio depende de reglas de aseguramiento y del caso, por lo que esta política no fija porcentajes ni montos.
-- Documentación institucional de la CCSS indica que la constancia de incapacidad o licencia debe tramitarse según el proceso oficial; el documento fuente consultado refiere un plazo de cinco días hábiles para su entrega en el registro correspondiente. Personas y Cultura confirmará el canal vigente antes de orientar un caso.
+- El reglamento de la CCSS distingue entre el aviso de la persona trabajadora y trámites institucionales específicos. Su artículo 41 recoge un plazo de 48 horas para justificar formalmente la ausencia mediante el “Aviso al Patrono”, conforme al artículo 81, inciso g), del Código de Trabajo. El plazo de cinco días hábiles que aparece en otra disposición corresponde a la remisión al centro de adscripción de constancias emitidas por médicos de empresa; no se generaliza a todas las incapacidades ni sustituye el aviso. Personas y Cultura debe revisar la disposición y las excepciones aplicables al caso antes de orientar una situación concreta.
 - El estado de salud es información sensible. La empresa no requiere diagnósticos, tratamientos ni fotografías clínicas para justificar la ausencia, salvo que una obligación legal específica y revisada exija documentación distinta.
 
 ## Política interna ficticia
@@ -47,8 +47,8 @@ Hospitalización, accidente de trabajo, incapacidad prolongada, documentos emiti
 
 ## Fuentes verificadas
 
-1. CCSS, *Reglamento para el Otorgamiento de Incapacidades a los Beneficiarios del Seguro de Salud*, consultado el 17 de noviembre de 2026: https://aissfa.ccss.sa.cr/arc/publicaciones/21/a9c01.pdf
-2. CCSS, guía institucional de constancia de incapacidad o licencia, consultada el 17 de noviembre de 2026: https://aissfa.ccss.sa.cr/arc/medicina/33/24b15.pdf
-3. CCSS, información sobre incapacidad y subsidio en el Seguro de Salud, consultada el 17 de noviembre de 2026: https://aissfa.ccss.sa.cr/arc/auditoria/informes/AD-ASALUD-0108-2024.pdf
-4. Ley N.° 8968 en SCIJ/PGR, consultada el 17 de noviembre de 2026: https://www.pgrweb.go.cr/DOCS/NORMAS/1/VIGENTE/L/2010-2019/2010-2014/2011/1153F/DCEF7.HTML
+1. SCIJ/PGR, *Reglamento para el Otorgamiento de Licencias e Incapacidades a los Beneficiarios del Seguro de Salud*, artículo 41, consultado el 18 de noviembre de 2026: https://pgrweb.go.cr/DOCS/NORMAS/1/VIGENTE/R/2010-2019/2010-2014/2014/12E60/FABA2.HTML
+2. SCIJ/PGR, *Reglamento para el Otorgamiento de Licencias e Incapacidades a los Beneficiarios del Seguro de Salud*, disposición sobre constancias emitidas por médicos de empresa, consultado el 18 de noviembre de 2026: https://www.pgrweb.go.cr/DOCS/NORMAS/1/VIGENTE/R/2010-2019/2010-2014/2014/12DD3/FA20E.HTML
+3. CCSS, *Reglamento para el Otorgamiento de Incapacidades y Licencias a los Beneficiarios del Seguro de Salud*, copia institucional enlazada por la CCSS; la descarga directa respondió 403 durante esta auditoría: https://aissfa.ccss.sa.cr/arc/publicaciones/21/a9c01.pdf
+4. SCIJ/PGR, *Ley N.° 8968, Protección de la Persona frente al Tratamiento de sus Datos Personales*, artículo 9, consultada el 18 de noviembre de 2026: https://www.pgrweb.go.cr/DOCS/NORMAS/1/VIGENTE/L/2010-2019/2010-2014/2011/1153F/DCEF7.HTML
 
