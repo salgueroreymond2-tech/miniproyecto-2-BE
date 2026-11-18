@@ -1,6 +1,6 @@
 'use strict';
 
-const { randomUUID } = require('node:crypto');
+const { randomUUID, createHash } = require('node:crypto');
 const { Op, Transaction } = require('sequelize');
 const { z } = require('zod');
 const { getConnection } = require('../config/database');
@@ -9,6 +9,26 @@ const { initModels } = require('../models');
 const MODEL = 'Xenova/multilingual-e5-small';
 const DIMENSIONS = 384;
 const categories = ['POLITICA', 'PROCEDIMIENTO', 'DOCUMENTO_PUBLICO'];
+const SEARCH_CACHE_LIMIT = 100;
+const searchCache = new Map();
+
+function clearSearchCache() {
+  searchCache.clear();
+}
+
+function cachedResults(key) {
+  if (!searchCache.has(key)) return null;
+  const value = searchCache.get(key);
+  searchCache.delete(key);
+  searchCache.set(key, value);
+  return structuredClone(value);
+}
+
+function cacheResults(key, value) {
+  searchCache.delete(key);
+  searchCache.set(key, structuredClone(value));
+  while (searchCache.size > SEARCH_CACHE_LIMIT) searchCache.delete(searchCache.keys().next().value);
+}
 const vector = z.array(z.number().finite()).length(DIMENSIONS).refine((values) => {
   const magnitude = Math.hypot(...values);
   return magnitude > 0 && Number.isFinite(magnitude);
@@ -21,7 +41,10 @@ const chunkSchema = z.strictObject({
   source_url: z.string().url().nullable().optional(), category: z.enum(categories),
   effective_date: z.iso.date().nullable().optional(), content_hash: z.string().regex(/^[a-f0-9]{64}$/),
   embedding_model: z.literal(MODEL), embedding: vector,
-  metadata: z.strictObject({ source_type: z.enum(categories).optional() }).default({})
+  metadata: z.strictObject({
+    source_type: z.enum(categories).optional(),
+    legal_sources: z.array(z.string().url()).max(10).optional()
+  }).default({})
 });
 
 async function lockDocument(documentId, transaction) {
@@ -92,6 +115,8 @@ async function publishVersion(documentId, version, expectedCount) {
     if (chunks.length !== expectedCount || chunks.some((chunk, i) => chunk.chunk_index !== i)) throw new Error('La versión está incompleta.');
     await models.DocumentChunk.update({ is_active: false }, { where: { document_id: documentId, is_active: true }, transaction });
     await models.DocumentChunk.update({ is_active: true, validation_status: 'VALIDADO' }, { where: { document_id: documentId, version, validation_status: { [Op.ne]: 'ELIMINADO' } }, transaction });
+    await models.VectorCacheState.increment('revision', { by: 1, where: { id: 1 }, transaction });
+    transaction.afterCommit?.(clearSearchCache);
     return chunks.length;
   });
 }
@@ -112,10 +137,16 @@ async function searchDocuments(embedding, threshold = Number(process.env.RAG_SIM
   const top = [];
   // Escaneo exacto por lotes bajo una instantánea estable; no depende de extensiones vectoriales.
   return getConnection().transaction({ isolationLevel: Transaction.ISOLATION_LEVELS.REPEATABLE_READ }, async (transaction) => {
+    const cacheState = await models.VectorCacheState.findByPk(1, { attributes: ['revision'], transaction });
+    const revision = String(cacheState?.revision ?? '0');
+    const embeddingHash = createHash('sha256').update(JSON.stringify(embedding)).digest('hex');
+    const key = `${revision}:${threshold}:${count}:${embeddingHash}`;
+    const cached = cachedResults(key);
+    if (cached) return cached;
     let lastId = '';
     for (;;) {
       const chunks = await models.DocumentChunk.findAll({
-        attributes: ['id', 'content', 'title', 'section', 'version', 'source_url', 'embedding'],
+        attributes: ['id', 'document_id', 'drive_file_id', 'content', 'title', 'section', 'page_number', 'version', 'source_url', 'metadata', 'embedding'],
         where: { id: { [Op.gt]: lastId }, is_active: true, validation_status: 'VALIDADO', embedding_model: MODEL },
         include: [{ model: models.Documento, attributes: [], required: true, where: { estado: 'VALIDADO' } }],
         order: [['id', 'ASC']], limit: 100, raw: true, transaction
@@ -133,6 +164,7 @@ async function searchDocuments(embedding, threshold = Number(process.env.RAG_SIM
       }
       lastId = chunks[chunks.length - 1].id;
     }
+    cacheResults(key, top);
     return top;
   });
 }
@@ -143,4 +175,4 @@ async function filterDocuments(category) {
   return models.DocumentChunk.findAll({ attributes: ['id', 'document_id', 'title', 'section', 'version', 'source_url'], where: { category, validation_status: 'VALIDADO', is_active: true }, include: [{ model: models.Documento, attributes: [], required: true, where: { estado: 'VALIDADO' } }], raw: true });
 }
 
-module.exports = { MODEL, DIMENSIONS, vector, chunkSchema, similarity, checkConnection, insertChunk, updateChunk, deleteChunk, searchDocuments, filterDocuments, publishVersion };
+module.exports = { MODEL, DIMENSIONS, vector, chunkSchema, similarity, checkConnection, insertChunk, updateChunk, deleteChunk, searchDocuments, filterDocuments, publishVersion, clearSearchCache };

@@ -13,6 +13,10 @@ test('embeddings E5 reales se almacenan y recuperan desde MySQL', { skip: proces
   const query = '¿Cómo solicito vacaciones?';
   const passageVector = await embeddings.createEmbedding(passage, 'RETRIEVAL_DOCUMENT');
   const queryVector = await embeddings.createEmbedding(query, 'RETRIEVAL_QUERY');
+  await assert.rejects(
+    embeddings.createEmbedding(Array(511).fill('token').join(' '), 'RETRIEVAL_QUERY'),
+    { code: 'EMBEDDING_TOKEN_LIMIT' }
+  );
   const connection = db.getConnection();
   const originalTransaction = connection.transaction.bind(connection);
   const outer = await originalTransaction();

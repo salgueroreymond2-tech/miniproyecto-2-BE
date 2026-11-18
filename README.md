@@ -18,6 +18,18 @@ MySQL 8 almacena los datos administrativos y los fragmentos documentales del RAG
 
 Los roles y privilegios de ejemplo están en `database/mysql/roles.sql`. Ejecuta migraciones y seed con una cuenta de instalación y usa cuentas separadas de mínimo privilegio para la API y las consultas de solo lectura. Para cambiar una contraseña existente, `npm run user:set-password` solicita la nueva contraseña en una terminal sin eco y requiere temporalmente permiso de actualización del hash.
 
+## Ingesta documental desde Google Drive
+
+1. Habilita Google Drive API y crea una clave JSON de cuenta de servicio con acceso de solo lectura. Guarda el archivo fuera del repositorio y comparte la carpeta documental con el correo de esa cuenta, con permiso **Lector**.
+2. Completa `GOOGLE_APPLICATION_CREDENTIALS` en `backend/.env` con la ruta local del JSON y confirma `GOOGLE_DRIVE_FOLDER_ID`. No copies el JSON, su clave privada ni sus valores al repositorio.
+3. Desde `backend/`, ejecuta `npm run db:migrate` para agregar los datos de aprobación documental. La ingesta utiliza únicamente MySQL/Sequelize y el embedding local E5.
+4. Con un JWT de RRHH, consulta `GET /api/admin/ingestion/candidates`. Revisa cada documento directamente en Drive y aprueba el hash exacto mediante `POST /api/admin/ingestion/approvals`, aportando categoría, URLs oficiales y las atestaciones `reviewedNormativeContent: true` y `reviewedNoPersonalData: true`. Los hashes modificados pierden la aprobación.
+5. Ejecuta `POST /api/admin/ingestion/pilot` con `{"driveFileId":"<ID elegido>"}` para procesar únicamente el documento aprobado seleccionado. Verifica el resultado y luego usa `POST /api/admin/ingestion/sync` para el resto. La sincronización consume `changes.list` y reconcilia el árbol de carpetas para detectar movimientos y eliminaciones; `GET /api/admin/ingestion/status` informa su estado.
+
+Se admiten PDF, DOCX, XLSX, TXT, Google Docs y Google Sheets. La detección automática de datos personales es una barrera adicional, no una garantía; el control depende también de la revisión humana antes de aprobar. Los documentos no aprobados no generan fragmentos ni embeddings.
+
+Los fragmentos objetivo son de 350–450 tokens, con solapamiento de 50–80 tokens y un máximo efectivo de 512 tokens para E5 contando el prefijo y tokens especiales. Si el documento es muy corto o su longitud hace matemáticamente imposible cubrir todo el texto dentro de ambos rangos, se conserva íntegro el fragmento final aunque sea menor de 350 tokens; no se trunca contenido.
+
 ## Seguridad y pruebas
 
 `npm test` en `backend/` y `frontend/` ejecuta las pruebas automatizadas aisladas. Para ejecutar la integración MySQL real desde PowerShell en `backend/`, usa `$env:MYSQL_INTEGRATION='1'; node --test test/mysql-vector.integration.test.js`. La prueba usa una transacción que se revierte. La sesión del frontend vive en memoria; cerrar sesión elimina el token local, pero no lo revoca antes de su vencimiento. El límite de login se almacena en memoria por instancia: en despliegues con varias instancias se necesita un almacén compartido y configuración de proxy revisada.

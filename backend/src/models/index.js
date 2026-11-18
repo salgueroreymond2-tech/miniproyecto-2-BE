@@ -20,12 +20,23 @@ function initModels(sequelize = getConnection()) {
   const MovimientoPersonal = define('MovimientoPersonal', 'movimientos_personal', { colaborador_id: uuid(), tipo: enums('INGRESO', 'SALIDA', 'ASCENSO', 'CAMBIO_PUESTO', 'CAMBIO_DEPARTAMENTO'), fecha_efectiva: date(), detalle: D.JSON });
   const CalendarioPago = define('CalendarioPago', 'calendario_pagos', { fecha_pago: date(), fecha_corte_inicio: date(), fecha_corte_fin: date(), tipo: enums('QUINCENA_1', 'QUINCENA_2', 'AGUINALDO', 'EXTRAORDINARIO'), estado: enums('PROGRAMADO', 'PROCESADO', 'CANCELADO') });
   const EvaluacionDesempeno = define('EvaluacionDesempeno', 'evaluaciones_desempeno', { colaborador_id: uuid(), evaluador_id: D.CHAR(36), periodo_inicio: date(), periodo_fin: date(), estado: enums('BORRADOR', 'PENDIENTE', 'COMPLETADA'), resultado: D.STRING(80), resumen: D.TEXT });
-  const ConsultaChat = define('ConsultaChat', 'consultas_chat', { usuario_id: uuid(), pregunta: D.TEXT, respuesta: D.TEXT, agente: D.STRING(80), creado_en: D.DATE });
+  const ConsultaChat = define('ConsultaChat', 'consultas_chat', {
+    usuario_id: uuid(), pregunta: D.TEXT, respuesta: D.TEXT, agente: D.STRING(80), creado_en: D.DATE,
+    resolucion: D.ENUM('RESPONDIDA', 'SIN_EVIDENCIA', 'ERROR'), latencia_ms: D.INTEGER.UNSIGNED,
+    fragmentos_utilizados: D.JSON, documentos_citados: D.JSON
+  });
   const ReporteDiario = define('ReporteDiario', 'reportes_diarios', { fecha: date(), metricas: D.JSON, creado_en: D.DATE });
   const Documento = define('Documento', 'documentos', { drive_file_id: text(255), titulo: text(250), version: text(32), estado: enums('PENDIENTE', 'VALIDADO', 'ELIMINADO'), content_hash: D.CHAR(64), actualizado_en: D.DATE });
   const DocumentChunk = define('DocumentChunk', 'document_chunks_e5', { document_id: uuid(), drive_file_id: text(255), title: text(250), content: D.TEXT, section: D.STRING(250), page_number: D.INTEGER, chunk_index: D.INTEGER, version: text(32), source_url: D.TEXT, category: enums('POLITICA', 'PROCEDIMIENTO', 'DOCUMENTO_PUBLICO'), effective_date: D.DATEONLY, content_hash: D.CHAR(64), embedding_model: text(80), embedding: D.JSON, metadata: D.JSON, validation_status: enums('PENDIENTE', 'VALIDADO', 'ELIMINADO'), is_active: D.BOOLEAN, created_at: D.DATE, updated_at: D.DATE });
   const Sincronizacion = define('Sincronizacion', 'sincronizaciones', { origen: text(80), estado: enums('PENDIENTE', 'EN_PROCESO', 'COMPLETADA', 'FALLIDA'), inicio_en: D.DATE, finalizo_en: D.DATE, documentos_leidos: D.INTEGER, documentos_actualizados: D.INTEGER });
   const LogAgente = define('LogAgente', 'logs_agentes', { consulta_chat_id: D.CHAR(36), agente: text(80), operacion: text(120), estado: enums('INICIADO', 'COMPLETADO', 'ERROR'), creado_en: D.DATE });
+  const IngestionApproval = define('IngestionApproval', 'ingestion_approvals', {
+    drive_file_id: text(255), content_hash: text(64), approved_by: uuid(), approved_at: D.DATE,
+    category: D.ENUM('POLITICA', 'PROCEDIMIENTO', 'DOCUMENTO_PUBLICO'), effective_date: D.DATEONLY,
+    legal_sources: D.JSON, data_reviewed: D.BOOLEAN, normative_reviewed: D.BOOLEAN
+  });
+  const DriveIngestionState = sequelize.define('DriveIngestionState', { folder_id: { type: D.STRING(255), primaryKey: true }, bootstrap_token: D.TEXT, cursor_token: D.TEXT, pilot_done: D.BOOLEAN, initial_sync_done: D.BOOLEAN, updated_at: D.DATE }, { tableName: 'drive_ingestion_state', timestamps: false, freezeTableName: true });
+  const VectorCacheState = sequelize.define('VectorCacheState', { id: { type: D.TINYINT, primaryKey: true }, revision: D.BIGINT.UNSIGNED }, { tableName: 'vector_cache_state', timestamps: false, freezeTableName: true });
 
   Usuario.hasOne(Colaborador, { foreignKey: 'usuario_id' }); Colaborador.belongsTo(Usuario, { foreignKey: 'usuario_id' });
   Departamento.hasMany(Puesto, { foreignKey: 'departamento_id' }); Puesto.belongsTo(Departamento, { foreignKey: 'departamento_id' });
@@ -39,6 +50,7 @@ function initModels(sequelize = getConnection()) {
   Usuario.hasMany(ConsultaChat, { foreignKey: 'usuario_id' }); ConsultaChat.belongsTo(Usuario, { foreignKey: 'usuario_id' });
   ConsultaChat.hasMany(LogAgente, { foreignKey: 'consulta_chat_id' }); LogAgente.belongsTo(ConsultaChat, { foreignKey: 'consulta_chat_id' });
   Documento.hasMany(DocumentChunk, { foreignKey: 'document_id' }); DocumentChunk.belongsTo(Documento, { foreignKey: 'document_id' });
+  Usuario.hasMany(IngestionApproval, { foreignKey: 'approved_by' }); IngestionApproval.belongsTo(Usuario, { foreignKey: 'approved_by' });
   return sequelize.models;
 }
 module.exports = { initModels };

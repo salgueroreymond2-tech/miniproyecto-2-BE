@@ -4,6 +4,8 @@ const path = require('node:path');
 const { z } = require('zod');
 const { vector, MODEL, DIMENSIONS } = require('./vector-store.service');
 
+const MAX_EMBEDDING_TOKENS = 512;
+
 async function defaultLoader() {
   const { pipeline, env } = await import('@huggingface/transformers');
   // La caché del modelo permanece local y fuera de Git; la inferencia no usa ninguna API de embeddings.
@@ -34,11 +36,21 @@ function createEmbeddingService({ loadPipeline = defaultLoader } = {}) {
     z.enum(['RETRIEVAL_DOCUMENT', 'RETRIEVAL_QUERY']).parse(purpose);
     const prefix = purpose === 'RETRIEVAL_QUERY' ? 'query: ' : 'passage: ';
     const extractor = await warmUpEmbeddings();
-    const output = await extractor(prefix + input, { pooling: 'mean', normalize: true, truncation: true });
+    if (!extractor.tokenizer || typeof extractor.tokenizer.encode !== 'function') {
+      throw new Error('El modelo E5 no expone su tokenizador local para validar el límite de entrada.');
+    }
+    const modelInput = prefix + input;
+    const tokenCount = extractor.tokenizer.encode(modelInput, { add_special_tokens: true }).length;
+    if (tokenCount > MAX_EMBEDDING_TOKENS) {
+      const error = new RangeError(`La entrada E5 ocupa ${tokenCount} tokens y supera el límite de ${MAX_EMBEDDING_TOKENS}.`);
+      error.code = 'EMBEDDING_TOKEN_LIMIT';
+      throw error;
+    }
+    const output = await extractor(modelInput, { pooling: 'mean', normalize: true });
     return vector.parse(Array.from(output.data));
   }
   return { warmUpEmbeddings, createEmbedding };
 }
 
 const service = createEmbeddingService();
-module.exports = { ...service, createEmbeddingService };
+module.exports = { ...service, createEmbeddingService, MAX_EMBEDDING_TOKENS };

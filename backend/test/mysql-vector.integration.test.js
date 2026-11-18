@@ -32,8 +32,10 @@ test('MySQL conserva versiones y recupera por similitud sin guardar datos de pru
     assert.equal(await store.publishVersion(documentId, '1.0', 2), 2);
     const results = await store.searchDocuments(embedding, 0.9, 5);
     assert.equal(results.some((item) => item.id === first.id && item.similarity > 0.999), true);
+    assert.deepEqual(await store.searchDocuments(embedding, 0.9, 5), results);
     assert.equal(results.some((item) => item.content === 'Fragmento ficticio 1'), false);
     await models.Documento.update({ estado: 'ELIMINADO' }, { where: { id: documentId }, transaction: outer });
+    await models.VectorCacheState.increment('revision', { by: 1, where: { id: 1 }, transaction: outer });
     assert.equal((await store.searchDocuments(embedding, 0.9, 5)).some((item) => item.id === first.id), false);
     await assert.rejects(store.deleteChunk(first.id), /activo/);
   } finally {
