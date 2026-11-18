@@ -1,8 +1,40 @@
 # Progreso del proyecto
 
 **Última actualización:** 18 de noviembre de 2026<br>
-**Fase actual:** Agente de políticas RAG.<br>
-**Estado:** La ingesta Drive y el agente de políticas están implementados y revisados. `npm test` pasa; las dos integraciones MySQL pasan por separado. Drive autentica con alcance `drive.readonly`, pero la carpeta no contiene candidatos; no se aprobó ni indexó ningún documento real.
+**Fase actual:** Agente de datos personales del colaborador.<br>
+**Estado:** Implementados el agente, sus seis herramientas de lectura, el prompt independiente y el endpoint autenticado. Las pruebas aisladas pasan. La comparación de integración con MySQL y una llamada real a DeepSeek siguen pendientes por limitaciones de credenciales de solo lectura y red del entorno.
+
+## Fase: Agente de datos personales del colaborador (18 de noviembre de 2026)
+
+### Tareas completadas
+
+- Se creó backend/src/services/employee-data.agent.js con selección estructurada de herramientas mediante el servicio oficial existente de DeepSeek. DeepSeek recibe la pregunta y el menú permitido, nunca filas ni expedientes personales de MySQL.
+- Se creó backend/src/repositories/employeeDataRepository.js con seis consultas Sequelize independientes. Todas resuelven el colaborador mediante el usuario autenticado y usan exclusivamente getReadConnection() (DB_READ_USER/DB_READ_PASSWORD).
+- Las consultas limitan atributos sensibles; no consultan ni devuelven salario, contraseña, hash, referencia de incapacidad ni expediente completo. El estado de una solicitud siempre filtra simultáneamente por su ID y el colaborador propio.
+- Se añadió POST /api/chat/employee-data, protegido por JWT, límite de consultas, esquema Zod estricto y documentación Swagger. El cuerpo acepta únicamente question; los IDs enviados por el cliente se rechazan.
+- Se creó backend/src/prompts/employee-data.prompt.md. Las respuestas numéricas y fechas se componen en el backend desde resultados de MySQL, llevan Fuente de datos: MySQL. y no fabrican citas documentales (citations: []).
+- Para evaluaciones, el modelo existente no tiene una fecha de programación separada: se usa el inicio del período futuro pendiente más cercano como referencia, sin crear campos ni modificar tablas.
+- Se agregó una integración MySQL de solo lectura que compara resultados con consultas Sequelize directas y prueba el aislamiento de dos colaboradores.
+
+### Decisiones técnicas
+
+- Se reutilizan los modelos actuales y la conexión getReadConnection(); no se crearon tablas, modelos duplicados ni acceso SQL generado por IA.
+- Los UUID de solicitudes se aceptan para getRequestStatus únicamente si están explícitos en la pregunta; la consulta vuelve a filtrar por el colaborador autenticado. Si el ID falta o el estado singular es ambiguo, se pide aclaración.
+- En ausencias se incluyen incapacidades propias y permisos/licencias/vacaciones aprobados; se excluyen las referencias CCSS. No se transmite ningún resultado del repositorio a DeepSeek.
+
+### Pruebas y verificaciones
+
+- node --test test/employee-data-agent.test.js test/employee-data.mysql.integration.test.js: 11 pruebas aisladas pasaron y 1 integración MySQL quedó omitida por falta de credenciales de solo lectura.
+- npm test: 51 pruebas pasaron, 3 integraciones condicionadas por entorno quedaron omitidas y no hubo fallos.
+- node --check pasó para los archivos nuevos de agente, repositorio, rutas, controlador y pruebas.
+- git diff --check no encontró errores de whitespace; Git reportó avisos de conversión LF/CRLF que no afectaron las pruebas.
+- Se intentó una llamada de humo a DeepSeek con una pregunta sintética no personal; el entorno devolvió DEEPSEEK_NETWORK_ERROR (sin respuesta HTTP). Las pruebas locales validan la selección con un proveedor simulado.
+- No se compararon resultados contra MySQL en vivo: backend/.env no tiene DB_READ_USER ni DB_READ_PASSWORD. No se usó la cuenta de escritura como sustituto.
+
+### Pendientes
+
+- Configurar una cuenta MySQL dedicada con privilegios SELECT en DB_READ_USER y DB_READ_PASSWORD, y ejecutar MYSQL_EMPLOYEE_INTEGRATION=1 node --test test/employee-data.mysql.integration.test.js.
+- Repetir la prueba real de selección estructurada cuando el entorno permita llegar al endpoint oficial de DeepSeek.
 
 ## Tareas completadas
 
