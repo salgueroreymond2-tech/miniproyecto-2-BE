@@ -269,3 +269,35 @@
 ### Pendiente
 
 - Configurar la cuenta MySQL de solo lectura y verificar visualmente las ocho vistas con los registros reales del entorno.
+
+## Auditoría QA, seguridad y evaluación — 2026-11-18
+
+### Completado
+
+- Se leyó `AGENTS.md`, este archivo, `README.md` y se inspeccionaron los agentes, rutas, repositorios, configuración, pruebas y políticas. Se buscaron la guía académica y el banco en el repositorio y los adjuntos disponibles; no se encontraron. `documents/research/informe-investigacion-rrhh-costa-rica` es un informe de fuentes, no el enunciado académico.
+- Se comprobó la estructura de cinco agentes independientes: orquestador, políticas RAG, datos personales, analista e ingesta/sincronización. Los cuatro agentes generativos tienen instrucciones separadas; ingesta es determinista y contiene sus reglas en el módulo y esquemas. No se añadió un prompt sin consumidor.
+- La revisión del runtime confirma Sequelize/mysql2 y tablas MySQL como almacenamiento persistente activo. Las búsquedas de PostgreSQL/Supabase/pgvector no encontraron driver activo; las referencias antiguas encontradas son históricas/documentales.
+- La suite backend terminó con **83 aprobadas, 0 fallidas y 4 omitidas** (87 casos; 27,236 ms). Una ejecución del frontend en paralelo con otras tareas tuvo un timeout en la prueba de redirección RRHH; al repetir la prueba afectada aislada y la suite completa aislada, ambas pasaron (**14 aprobadas, 0 fallidas**). No se modificó código por un fallo no reproducible. El build Vite compiló 520 módulos correctamente (build final: 3.92 s).
+- `npm run db:mysql:verify` autenticó la cuenta de aplicación. La cuenta separada `DB_READ_USER`/`DB_READ_PASSWORD` continúa ausente; no se consultaron datos personales, agregados, filas ni reportes con la cuenta de escritura.
+- `npm run ai:verify-embeddings` cargó el modelo local E5 y generó un vector normalizado de 384 dimensiones. La similitud del texto técnico de demostración fue 0.8778786413679619; esto no mide calidad de recuperación documental.
+- `npm run ai:verify-deepseek` terminó con `DEEPSEEK_NETWORK_ERROR`, sin estado HTTP (713 ms para la comprobación de disponibilidad). La clave no se clasificó como inválida ni se imprimió. La verificación unitaria del cliente sigue usando respuesta simulada.
+- La consulta metadata-only de Drive quedó bloqueada por `EACCES`; no se descargaron documentos ni se ejecutó sincronización. La última ejecución recursiva exitosa documentada, del 17 de noviembre, autenticó con alcance `drive.readonly` y encontró cero archivos.
+- Se consultaron fuentes oficiales de teletrabajo y normas de incapacidades. Se corrigió NT-PC-03 v1.1 para distinguir el aviso formal y el trámite específico de cinco días para constancias de médicos de empresa. Se corrigió NT-PC-04 v1.1 para incluir la reforma de teletrabajo en el extranjero (Ley N.° 10673) y separar la condición interna ficticia de una prohibición legal general. Los PDF/DOCX de estas políticas y la matriz XLSX se regeneraron; RRHH debe revisar/atestiguar las versiones antes de ingerirlas.
+- Se crearon `docs/evaluation.csv` con 25 IDs originales reservados sin texto inventado y 20 preguntas propias con expectativas fijadas; `docs/test-results.md`; `docs/security-audit.md`; y `docs/requirements-checklist.md`. Cuatro controles propios muestran aprobación unitaria; uno es parcial. Los demás quedan explícitamente bloqueados por ausencia de corpus/conexión o guía.
+
+### Errores, incidencias y límites
+
+- No se pudo extraer/calificar las 25 preguntas originales ni identificar literalmente Q21/Q22 sin la guía académica. Las consultas de compañero Juan y salario del gerente pasaron sus pruebas unitarias como casos propios, no como preguntas académicas confirmadas.
+- El conteo actual de colaboradores, cobertura de tres meses, calidad de reportes y aislamiento de datos contra MySQL no se verificaron; falta la cuenta de lectura. El historial contiene ejecuciones previas de datos semilla, que no reemplazan este conteo actual.
+- La carpeta de Drive estaba vacía en el último listado exitoso; la comprobación actual de conectividad metadata-only terminó con `EACCES`. No se verificaron cambios reales, formatos alojados en Drive ni citas activas.
+- No se obtuvo una respuesta real de DeepSeek en esta ejecución. La exactitud RAG, calibración de umbral, citas documentales vivas, mezcla de agentes, seguimiento E2E y objetivo de latencia no tienen medición real.
+- La descarga directa de la normativa CCSS devolvió 403. Se documentó esa limitación en NT-PC-03 y se recurrió a texto oficial SCIJ/PGR disponible; toda excepción/caso individual requiere revisión normativa de RRHH.
+- La suite omitió cuatro integraciones condicionadas por configuración y dependencias del entorno. El resultado unitario no se presenta como prueba integral, y no hay base para afirmar cero fugas E2E ni cumplir los objetivos de puntuación académica.
+- La ejecución frontend en paralelo presentó un timeout aislado de cinco segundos. La prueba y suite completa pasaron al repetirse aisladas; queda anotado como intermitencia de carga, sin atribuir una causa definitiva.
+
+### Pendientes
+
+- Incorporar la guía académica original para sustituir los IDs ACA-01…ACA-25 por preguntas literales, fijar respuestas esperadas y confirmar Q21/Q22.
+- Configurar una cuenta MySQL dedicada con permiso mínimo `SELECT`; ejecutar integraciones de reportes/personas, comprobar 50 colaboradores ficticios y tres meses de movimientos y recorrer el dashboard con ambos roles.
+- Restablecer conectividad de Node hacia DeepSeek y Drive; volver a verificar los servicios sin exponer claves. Subir a Drive los documentos legales/políticas revisados, hacer la revisión humana de privacidad y normativa, probar piloto y luego sincronización.
+- Ejecutar el banco completo con RAG y datos MySQL activos; medir relevancia, citas, resultados correctos y latencia real. No se declara aprobada la aceptación global hasta que exista esta evidencia.
