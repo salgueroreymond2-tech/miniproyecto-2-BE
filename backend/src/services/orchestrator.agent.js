@@ -7,6 +7,7 @@ const { z } = require('zod');
 const { createDeepSeekService } = require('./deepseek.service');
 const policiesAgent = require('./policies.agent');
 const employeeDataAgent = require('./employee-data.agent');
+const analystAgentDefault = require('./analyst.agent');
 const chatRepository = require('../repositories/chatRepository');
 const HttpError = require('../utils/httpError');
 
@@ -117,6 +118,7 @@ function createOrchestratorAgent({
   repository = chatRepository,
   policyAgent = policiesAgent,
   personalDataAgent = employeeDataAgent,
+  analystAgent = analystAgentDefault,
   deepSeekService = createDeepSeekService(),
   systemPrompt = readPrompt(),
   minConfidence = process.env.ORCHESTRATOR_CONFIDENCE_THRESHOLD ?? DEFAULT_CONFIDENCE_THRESHOLD
@@ -190,16 +192,18 @@ function createOrchestratorAgent({
       if (role !== 'RRHH') {
         return { ...restrictedOutcome(), answer: 'No tienes autorización para consultar reportes de Recursos Humanos.', escalationSuggested: true };
       }
+      const result = await analystAgent.answerQuestion({ question, role });
       return {
-        answer: 'La consulta de reportes está reservada para RRHH. La integración con el agente analista se habilitará en una fase posterior.',
-        resolved: false,
-        escalationSuggested: true,
-        escalated: false,
-        citations: [],
+        answer: result.answer,
+        resolved: result.resolved,
+        escalationSuggested: result.escalationSuggested,
+        escalated: result.escalated,
+        citations: result.citations || [],
         fragmentsUsed: [],
         documentsCited: [],
-        agentsUsed: [],
-        resolution: 'SIN_EVIDENCIA'
+        agentsUsed: result.agentsUsed || ['ANALISTA'],
+        source: result.source || 'MySQL: reportes_diarios',
+        resolution: result.resolved ? 'RESPONDIDA' : 'SIN_EVIDENCIA'
       };
     }
 
@@ -266,6 +270,7 @@ function createOrchestratorAgent({
         intent,
         topic: classification.topic,
         agentsUsed: outcome.agentsUsed,
+        source: outcome.source || null,
         fragmentsUsed: outcome.fragmentsUsed,
         documentsCited: outcome.documentsCited,
         citations: outcome.citations,

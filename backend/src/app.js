@@ -9,12 +9,14 @@ const { createAuthRouter } = require('./routes/authRoutes');
 const { createCollaboratorRouter } = require('./routes/collaboratorRoutes');
 const { createIngestionRouter } = require('./routes/ingestionRoutes');
 const { createChatRouter } = require('./routes/chatRoutes');
+const { createReportRouter } = require('./routes/reportRoutes');
 const ingestionAgentDefault = require('./services/ingestion.agent');
 const orchestratorAgentDefault = require('./services/orchestrator.agent');
+const analystAgentDefault = require('./services/analyst.agent');
 const HttpError = require('./utils/httpError');
 const apiSpec = require('./config/openapi');
 
-function createApp({ secret, expiresIn, corsOrigin, authRepository, selfRepository, ingestionAgent = ingestionAgentDefault, orchestratorAgent = orchestratorAgentDefault }) {
+function createApp({ secret, expiresIn, corsOrigin, authRepository, selfRepository, ingestionAgent = ingestionAgentDefault, orchestratorAgent = orchestratorAgentDefault, analystAgent = analystAgentDefault, reportJobs }) {
   const app = express();
   const auth = createAuthService({ repository: authRepository, secret, expiresIn });
   app.disable('x-powered-by');
@@ -28,6 +30,7 @@ function createApp({ secret, expiresIn, corsOrigin, authRepository, selfReposito
   app.use('/api/colaboradores', createCollaboratorRouter(auth, selfRepository));
   app.use('/api/admin/ingestion', createIngestionRouter(auth, ingestionAgent));
   app.use('/api/chat', createChatRouter(auth, orchestratorAgent));
+  app.use('/api/reports', createReportRouter(auth, analystAgent, reportJobs));
   app.use((_req, _res, next) => next(new HttpError(404, 'Ruta no encontrada.')));
   app.use((error, _req, res, _next) => {
     if (error.type === 'entity.parse.failed') return res.status(400).json({ error: 'JSON inválido.' });

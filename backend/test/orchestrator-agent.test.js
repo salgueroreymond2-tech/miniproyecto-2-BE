@@ -20,8 +20,8 @@ function classification(intent, overrides = {}) {
   return { intent, topic: 'VACACIONES', confidence: 0.98, needsClarification: false, ...overrides };
 }
 
-function createHarness({ result = classification('FUERA_DE_ALCANCE'), context = [] } = {}) {
-  const calls = { classify: [], policies: [], personal: [], complete: [], failed: [] };
+function createHarness({ result = classification('FUERA_DE_ALCANCE'), context = [], analystAgent } = {}) {
+  const calls = { classify: [], policies: [], personal: [], analyst: [], complete: [], failed: [] };
   const repository = {
     reserveMessage: async () => ({ status: 'RESERVED', messageId: MESSAGE_ID, conversationId: CONVERSATION_ID }),
     getConversationContext: async (...args) => { calls.contextArgs = args; return context; },
@@ -61,9 +61,20 @@ function createHarness({ result = classification('FUERA_DE_ALCANCE'), context = 
       return { data: result };
     }
   };
-  const agent = createOrchestratorAgent({ repository, policyAgent, personalDataAgent, deepSeekService, systemPrompt: 'Prompt de prueba.' });
+  const reportAgent = analystAgent || { answerQuestion: async (input) => { calls.analyst.push(input); return { answer: 'Reporte de MySQL.', resolved: true, escalationSuggested: false, escalated: false, citations: [], agentsUsed: ['ANALISTA'], source: 'MySQL: reportes_diarios' }; } };
+  const agent = createOrchestratorAgent({ repository, policyAgent, personalDataAgent, analystAgent: reportAgent, deepSeekService, systemPrompt: 'Prompt de prueba.' });
   return { agent, calls, repository };
 }
+
+test('las consultas estadísticas autorizadas se enrutan al analista y guardan MySQL como fuente', async () => {
+  const { agent, calls } = createHarness({ result: classification('REPORTE') });
+  const response = await agent.answer({ question: 'Resume los indicadores del reporte diario', userId: RRHH_ID, role: 'RRHH', requestId: REQUEST_ID });
+  assert.equal(response.intent, 'REPORTE');
+  assert.equal(response.answer, 'Reporte de MySQL.');
+  assert.equal(response.source, 'MySQL: reportes_diarios');
+  assert.deepEqual(response.agentsUsed, ['ANALISTA']);
+  assert.deepEqual(calls.analyst, [{ question: 'Resume los indicadores del reporte diario', role: 'RRHH' }]);
+});
 
 test('el clasificador valida la intención y el tema enumerado con Zod', () => {
   assert.equal(classificationSchema.safeParse(classification('MIXTA')).success, true);
@@ -173,7 +184,7 @@ test('orienta preguntas fuera de alcance sin delegar a otros agentes', async () 
   assert.equal(calls.personal.length, 0);
 });
 
-test('valida el rol RRHH en backend para reportes y no llama al analista ausente', async () => {
+test('valida el rol RRHH en backend antes de delegar los reportes al analista', async () => {
   const collaborator = createHarness({ result: classification('REPORTE', { topic: 'REPORTES' }) });
   const denied = await collaborator.agent.answer({
     question: 'Genera el reporte diario de RRHH',
@@ -188,9 +199,12 @@ test('valida el rol RRHH en backend para reportes y no llama al analista ausente
     userId: '00000000-0000-4000-8000-000000000002', role: 'RRHH', requestId: REQUEST_ID
   });
   assert.equal(prepared.intent, 'REPORTE');
-  assert.equal(prepared.resolved, false);
-  assert.match(prepared.answer, /fase posterior/);
-  assert.deepEqual(prepared.agentsUsed, []);
+  assert.equal(prepared.resolved, true);
+  assert.match(prepared.answer, /Reporte de MySQL/);
+  assert.deepEqual(prepared.agentsUsed, ['ANALISTA']);
+  assert.equal(prepared.source, 'MySQL: reportes_diarios');
+  assert.equal(hr.calls.analyst.length, 1);
+  assert.equal(collaborator.calls.analyst.length, 0);
 });
 
 test('solicita aclaración con confianza baja y limita contexto a temas del mismo usuario', async () => {

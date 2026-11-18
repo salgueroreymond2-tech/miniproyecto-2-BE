@@ -30,6 +30,10 @@ Se admiten PDF, DOCX, XLSX, TXT, Google Docs y Google Sheets. La detección auto
 
 Los fragmentos objetivo son de 350–450 tokens, con solapamiento de 50–80 tokens y un máximo efectivo de 512 tokens para E5 contando el prefijo y tokens especiales. Si el documento es muy corto o su longitud hace matemáticamente imposible cubrir todo el texto dentro de ambos rangos, se conserva íntegro el fragmento final aunque sea menor de 350 tokens; no se trunca contenido.
 
+## Reportes diarios de RRHH
+
+Las definiciones y fórmulas de indicadores están en [`docs/reports.md`](docs/reports.md). La migración `npm run db:migrate` crea el registro idempotente de trabajos y sus índices; las lecturas requieren `DB_READ_USER` y `DB_READ_PASSWORD` con privilegio `SELECT`. El servidor debe permanecer activo para que `node-cron` sincronice Drive a las 06:00 y genere el reporte a las 07:00 en `America/Costa_Rica`. Los endpoints `/api/reports/*` requieren un JWT con rol `RRHH` y consultan los reportes ya almacenados.
+
 ## Seguridad y pruebas
 
 `npm test` en `backend/` y `frontend/` ejecuta las pruebas automatizadas aisladas. Para ejecutar la integración MySQL real desde PowerShell en `backend/`, usa `$env:MYSQL_INTEGRATION='1'; node --test test/mysql-vector.integration.test.js`. La prueba usa una transacción que se revierte. La sesión autenticada del frontend se conserva en `sessionStorage` para restaurarse al recargar la pestaña y se elimina al cerrar sesión; el servidor no revoca el token antes de su vencimiento. El límite de login se almacena en memoria por instancia: en despliegues con varias instancias se necesita un almacén compartido y configuración de proxy revisada.

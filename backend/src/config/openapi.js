@@ -118,6 +118,10 @@ module.exports = {
       } } } },
       responses: { 200: { description: 'Resultado del piloto' }, ...errorResponses }
     } },
-    '/api/admin/ingestion/sync': { post: { summary: 'Sincronizar cambios de Drive; exclusivo RRHH', security: [{ bearerAuth: [] }], responses: { 200: { description: 'Resultado de sincronización' }, ...errorResponses } } }
+    '/api/admin/ingestion/sync': { post: { summary: 'Sincronizar cambios de Drive; exclusivo RRHH', security: [{ bearerAuth: [] }], responses: { 200: { description: 'Resultado de sincronización' }, ...errorResponses } } },
+    '/api/reports/latest': { get: { summary: 'Consultar el último reporte diario almacenado; exclusivo RRHH', security: [{ bearerAuth: [] }], responses: { 200: { description: 'Reporte diario desde MySQL' }, 403: { description: 'Rol sin autorización' }, ...errorResponses } } },
+    '/api/reports/history': { get: { summary: 'Consultar el historial de reportes almacenados; exclusivo RRHH', security: [{ bearerAuth: [] }], parameters: [{ name: 'limit', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 365, default: 30 } }], responses: { 200: { description: 'Historial de reportes' }, 403: { description: 'Rol sin autorización' }, ...errorResponses } } },
+    '/api/reports/{date}': { get: { summary: 'Consultar el reporte almacenado para una fecha; exclusivo RRHH', security: [{ bearerAuth: [] }], parameters: [{ name: 'date', in: 'path', required: true, schema: { type: 'string', format: 'date' } }], responses: { 200: { description: 'Reporte solicitado' }, 404: { description: 'No existe reporte para la fecha' }, 403: { description: 'Rol sin autorización' }, ...errorResponses } } },
+    '/api/reports/generate': { post: { summary: 'Generar o recuperar el reporte del día actual; exclusivo RRHH', security: [{ bearerAuth: [] }], responses: { 200: { description: 'Reporte almacenado; la fecha es idempotente' }, 403: { description: 'Rol sin autorización' }, ...errorResponses } } }
   }
 };

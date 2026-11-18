@@ -220,3 +220,29 @@
 - Contrastar el esquema con el catálogo de campos académico cuando sea suministrado y crear migraciones no destructivas si hay diferencias.
 - Implementar los agentes restantes solo después de recibir autorización explícita.
 - Publicar los commits locales en `origin/main` únicamente si se autoriza expresamente.
+
+## Fase analista de reportes — 2026-11-18
+
+### Completado
+
+- Se implementó `backend/src/services/analyst.agent.js` con agregaciones parametrizadas vía Sequelize/MySQL para dotación, ausencias, solicitudes, incapacidades, movimientos, rotación, vacaciones y uso del chatbot. Las ausencias y la tendencia cuentan personas distintas por día para evitar duplicados.
+- El contrato JSON del reporte se valida con Zod e incluye los indicadores, las filas pendientes para la tabla histórica, distribuciones y series para gráficos. Los límites del chatbot corresponden al día local anterior de `America/Costa_Rica`; períodos vacíos producen ceros o latencia `null`, según corresponde.
+- La tasa acumulada anual se documentó como salidas distintas acumuladas divididas entre la dotación promedio entre inicio de año y fecha de reporte. El resto de definiciones, períodos y decisiones de conteo está en `docs/reports.md`.
+- DeepSeek recibe datos agregados y elige entre identificadores permitidos de frases construidas en backend con valores de SQL. Por eso no puede cambiar ni inventar cifras. Si la respuesta estructurada es inválida o el proveedor falla, el agente guarda un resumen determinista marcado `SQL_FALLBACK`.
+- Los reportes se almacenan por fecha en `reportes_diarios`; lecturas de último, historial y fecha específica usan únicamente lo almacenado. El `POST` manual devuelve el reporte ya existente de ese día si se llama otra vez.
+- Se añadieron `node-cron`, las tareas de sincronización de Drive a las 06:00 y reporte a las 07:00, recuperación de ejecuciones faltantes al arrancar y registro idempotente de resultados y errores en `trabajos_programados`.
+- Se protegieron todos los endpoints `/api/reports/*` con JWT y rol `RRHH`, se documentaron en Swagger y se integró `REPORTE` del orquestador para contestar indicadores desde el JSON persistido o pedir precisión si la métrica no se reconoce.
+- Se alineó el SQL base con las columnas de memoria conversacional usadas por el agente y se añadieron índices para las agregaciones diarias.
+- La migración `20261118000200-create-scheduled-job-runs` y los índices se aplicaron a MySQL. `db:migrate:status` confirmó todas las migraciones aplicadas.
+- `npm test -- --test-reporter=dot` terminó correctamente, con cero fallidas y cuatro omitidas por dependencias de integración del entorno. Las pruebas nuevas cubren fórmulas, ceros, fallback, autorización RRHH, persistencia por fecha simulada, consultas al JSON guardado, migración idempotente, recuperación y registro cron.
+
+### Incidencias y límites de verificación
+
+- La cuenta dedicada `DB_READ_USER`/`DB_READ_PASSWORD` no está configurada. Se mantuvo el requisito de solo lectura y no se usaron credenciales de escritura para validar indicadores. La prueba de comparación contra SQL independiente quedó preparada y se omitió con una razón explícita; no se afirma una validación de cifras reales.
+- La integración real que combina MySQL de solo lectura con el resumen de DeepSeek no se pudo ejecutar por esa cuenta ausente. La ruta del resumen y la respuesta de respaldo se verificaron con dobles controlados; el proveedor no recibió una llamada para generar un reporte real en esta fase.
+- npm reportó ocho vulnerabilidades moderadas durante la instalación de `node-cron`; no se ejecutó una actualización general de dependencias.
+
+### Pendiente
+
+- Configurar `DB_READ_USER` y `DB_READ_PASSWORD` con permisos `SELECT` y ejecutar `node --test test/analyst.mysql.integration.test.js` para contrastar los indicadores contra el contenido real de MySQL.
+- Hacer una generación manual en un entorno con la cuenta de solo lectura configurada y validar el resumen real, los datos almacenados y la respuesta de los endpoints.
