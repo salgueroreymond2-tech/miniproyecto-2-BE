@@ -10,13 +10,15 @@ const { createCollaboratorRouter } = require('./routes/collaboratorRoutes');
 const { createIngestionRouter } = require('./routes/ingestionRoutes');
 const { createChatRouter } = require('./routes/chatRoutes');
 const { createReportRouter } = require('./routes/reportRoutes');
+const { createAdminReadRouter } = require('./routes/adminReadRoutes');
 const ingestionAgentDefault = require('./services/ingestion.agent');
 const orchestratorAgentDefault = require('./services/orchestrator.agent');
 const analystAgentDefault = require('./services/analyst.agent');
+const { createAdminReadRepository } = require('./repositories/adminReadRepository');
 const HttpError = require('./utils/httpError');
 const apiSpec = require('./config/openapi');
 
-function createApp({ secret, expiresIn, corsOrigin, authRepository, selfRepository, ingestionAgent = ingestionAgentDefault, orchestratorAgent = orchestratorAgentDefault, analystAgent = analystAgentDefault, reportJobs }) {
+function createApp({ secret, expiresIn, corsOrigin, authRepository, selfRepository, ingestionAgent = ingestionAgentDefault, orchestratorAgent = orchestratorAgentDefault, analystAgent = analystAgentDefault, reportJobs, adminReadRepository = createAdminReadRepository() }) {
   const app = express();
   const auth = createAuthService({ repository: authRepository, secret, expiresIn });
   app.disable('x-powered-by');
@@ -28,6 +30,7 @@ function createApp({ secret, expiresIn, corsOrigin, authRepository, selfReposito
   app.use('/api/docs', swagger.serve, swagger.setup(apiSpec));
   app.use('/api/auth', createAuthRouter(auth));
   app.use('/api/colaboradores', createCollaboratorRouter(auth, selfRepository));
+  app.use('/api/admin', createAdminReadRouter(auth, adminReadRepository));
   app.use('/api/admin/ingestion', createIngestionRouter(auth, ingestionAgent));
   app.use('/api/chat', createChatRouter(auth, orchestratorAgent));
   app.use('/api/reports', createReportRouter(auth, analystAgent, reportJobs));
