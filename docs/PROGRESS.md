@@ -9,6 +9,8 @@
 - Pruebas: backend npm test, 90 aprobadas, 0 fallidas, 3 omitidas; frontend npm test, 16 aprobadas; frontend npm run build, 521 módulos compilados.
 
 
+- Seguimiento del modal: la consulta real de candidatos respondió 200 en 5.4 segundos con 10 archivos; se agregó texto de carga y se quitó el toast rojo de prerrequisito para no confundirlo con otro error. Frontend: 16 pruebas aprobadas y build de 521 módulos.
+
 ## Historial de reportes diarios (19 de noviembre de 2026)
 
 - Se generó un historial diario para el período 2026-08-19 a 2026-11-19: 93 fechas consecutivas, con 93 registros únicos persistidos en MySQL.
