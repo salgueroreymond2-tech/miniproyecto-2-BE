@@ -66,12 +66,14 @@ test('compara cada indicador del reporte con agregaciones SQL independientes de 
       SELECT c.id FROM colaboradores c JOIN saldos_vacaciones v ON v.colaborador_id=c.id WHERE c.estado='ACTIVO'
       GROUP BY c.id HAVING SUM(v.dias_disponibles)>20
     ) balances`);
+    const dayStartSql = readDb.escape(periods.dayStartUtc);
+    const dayEndSql = readDb.escape(periods.dayEndUtc);
     const chat = await independent(`SELECT COUNT(*) AS total,SUM(resolucion='RESPONDIDA' AND COALESCE(escalamiento_realizado,0)=0) AS resolved,AVG(latencia_ms) AS latency
-      FROM consultas_chat WHERE creado_en>=:dayStartUtc AND creado_en<:dayEndUtc`, periods);
+      FROM consultas_chat WHERE creado_en>=${dayStartSql} AND creado_en<${dayEndSql}`);
     const topics = await readDb.query(`SELECT COALESCE(NULLIF(tema,''),'SIN_CLASIFICAR') AS tema,COUNT(*) AS total FROM consultas_chat
-      WHERE creado_en>=:dayStartUtc AND creado_en<:dayEndUtc GROUP BY tema ORDER BY total DESC,tema ASC LIMIT 5`, { replacements: periods, type: QueryTypes.SELECT });
-    const unanswered = await independent(`SELECT COUNT(*) AS total FROM consultas_chat WHERE creado_en>=:dayStartUtc AND creado_en<:dayEndUtc
-      AND resolucion='SIN_EVIDENCIA' AND intencion IN ('POLITICA','MIXTA')`, periods);
+      WHERE creado_en>=${dayStartSql} AND creado_en<${dayEndSql} GROUP BY tema ORDER BY total DESC,tema ASC LIMIT 5`, { type: QueryTypes.SELECT });
+    const unanswered = await independent(`SELECT COUNT(*) AS total FROM consultas_chat WHERE creado_en>=${dayStartSql} AND creado_en<${dayEndSql}
+      AND resolucion='SIN_EVIDENCIA' AND intencion IN ('POLITICA','MIXTA')`);
     const statuses = await readDb.query('SELECT estado,COUNT(*) AS total FROM solicitudes GROUP BY estado ORDER BY estado', { type: QueryTypes.SELECT });
     const trend = await readDb.query(`WITH RECURSIVE dates(d) AS (
       SELECT DATE_SUB(CAST(:reportDate AS DATE),INTERVAL 29 DAY) UNION ALL SELECT DATE_ADD(d,INTERVAL 1 DAY) FROM dates WHERE d<CAST(:reportDate AS DATE)

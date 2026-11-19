@@ -45,7 +45,7 @@ test('calcula métricas desde modelos Sequelize y mantiene la forma consumida po
   assert.equal(result.unanswered[0].pregunta, '¿Mascotas?');
   assert.equal(result.trend.length, 30);
   assert.deepEqual(result.trend.find((row) => row.fecha === '2026-11-19'), { fecha: '2026-11-19', colaboradores: 1 });
-  assert.deepEqual(result.statuses, [{ estado: 'APROBADA', total: 1 }, { estado: 'PENDIENTE', total: 1 }]);
+  assert.deepEqual(result.statuses, [{ estado: 'PENDIENTE', total: 1 }, { estado: 'APROBADA', total: 1 }]);
   assert.equal(calls.length, 6);
   assert.ok(calls.every((call) => typeof call.options === 'object' && !('query' in call.options)));
   const incapacityWhere = calls.find((call) => call.model === 'Incapacidad').options.where;

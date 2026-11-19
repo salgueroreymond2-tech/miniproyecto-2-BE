@@ -104,7 +104,9 @@ function createReportRepository({ readConnectionFactory = getReadConnection, wri
     }
     const trendByDay = new Map(utcDaysBetween(trendDate.toISOString().slice(0, 10), reportDate).map((day) => [day, 0]));
     for (const key of trendCounts.keys()) { const day = key.split('\u0000')[1]; trendByDay.set(day, (trendByDay.get(day) || 0) + 1); }
-    const statuses = [...groupBy(requests, (row) => row.estado).entries()].map(([estado, rows]) => ({ estado, total: rows.length })).sort((a, b) => a.estado.localeCompare(b.estado));
+    const requestStatusOrder = ['PENDIENTE', 'APROBADA', 'RECHAZADA', 'CANCELADA'];
+    const statuses = [...groupBy(requests, (row) => row.estado).entries()].map(([estado, rows]) => ({ estado, total: rows.length }))
+      .sort((a, b) => requestStatusOrder.indexOf(a.estado) - requestStatusOrder.indexOf(b.estado));
 
     return {
       active: [{ total: active.length }], absences: absenceGroups,
