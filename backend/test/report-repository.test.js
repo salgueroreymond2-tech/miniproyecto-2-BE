@@ -22,13 +22,17 @@ test('calcula métricas desde modelos Sequelize y mantiene la forma consumida po
     ],
     SaldoVacaciones: [{ colaborador_id: 'c1', dias_disponibles: 21 }],
     ConsultaChat: [
-      { resolucion: 'RESPONDIDA', escalamiento_realizado: 0, latencia_ms: 100, tema: 'Vacaciones', pregunta: '¿Cuántos días?', intencion: 'POLITICA', creado_en: '2026-11-18 12:00:00' },
-      { resolucion: 'SIN_EVIDENCIA', escalamiento_realizado: 1, latencia_ms: 200, tema: 'Vacaciones', pregunta: '¿Mascotas?', intencion: 'POLITICA', creado_en: '2026-11-18 13:00:00' }
+      { resolucion: 'RESPONDIDA', escalamiento_realizado: 0, latencia_ms: 100, tema: 'VALOR_ANTERIOR_IGNORADO', pregunta: '¿Cuántos días de vacaciones tengo?', intencion: 'POLITICA', creado_en: '2026-11-18 12:00:00' },
+      { resolucion: 'SIN_EVIDENCIA', escalamiento_realizado: 1, latencia_ms: 200, tema: 'VALOR_ANTERIOR_IGNORADO', pregunta: '¿Cuál es el proceso de incapacidad?', intencion: 'POLITICA', creado_en: '2026-11-18 13:00:00' }
     ]
   };
   const models = Object.fromEntries(Object.entries(records).map(([name, rows]) => [name, { findAll: async (options) => { calls.push({ model: name, options }); return rows; } }]));
   const repository = createReportRepository({ readConnectionFactory: () => ({}), modelsFactory: () => models });
-  const result = await repository.collectMetrics({ reportDate: '2026-11-19', monthStart: '2026-11-01', yearStart: '2026-01-01', dayStartUtc: '2026-11-18 06:00:00', dayEndUtc: '2026-11-19 06:00:00' });
+  const dashboardKeywords = [
+    { id: 1, palabra: 'vacaciones', tema_asociado: 'Vacaciones y Feriados' },
+    { id: 2, palabra: 'incapacidad', tema_asociado: 'Incapacidades' }
+  ];
+  const result = await repository.collectMetrics({ reportDate: '2026-11-19', monthStart: '2026-11-01', yearStart: '2026-01-01', dayStartUtc: '2026-11-18 06:00:00', dayEndUtc: '2026-11-19 06:00:00' }, { dashboardKeywords });
 
   assert.equal(result.active[0].total, 2);
   assert.deepEqual(result.absences, [{ tipo: 'INCAPACIDAD', departamento: 'Tecnologia', colaboradores: 1 }]);
@@ -41,8 +45,8 @@ test('calcula métricas desde modelos Sequelize y mantiene la forma consumida po
   assert.deepEqual(result.turnover, [{ dotacionInicial: 2, dotacionActual: 2, salidasAcumuladas: 1 }]);
   assert.equal(result.vacations[0].dias_disponibles, 21);
   assert.deepEqual(result.chat, [{ total: 2, resueltasSinEscalamiento: 1, latenciaPromedio: 150 }]);
-  assert.deepEqual(result.topics, [{ tema: 'Vacaciones', total: 2 }]);
-  assert.equal(result.unanswered[0].pregunta, '¿Mascotas?');
+  assert.deepEqual(result.topics, [{ tema: 'Incapacidades', total: 1 }, { tema: 'Vacaciones y Feriados', total: 1 }]);
+  assert.equal(result.unanswered[0].pregunta, '¿Cuál es el proceso de incapacidad?');
   assert.equal(result.trend.length, 30);
   assert.deepEqual(result.trend.find((row) => row.fecha === '2026-11-19'), { fecha: '2026-11-19', colaboradores: 1 });
   assert.deepEqual(result.statuses, [{ estado: 'PENDIENTE', total: 1 }, { estado: 'APROBADA', total: 1 }]);

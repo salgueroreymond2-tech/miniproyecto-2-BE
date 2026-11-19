@@ -5,11 +5,33 @@ const path = require('node:path');
 const { z } = require('zod');
 const { createDeepSeekService } = require('./deepseek.service');
 const { createReportRepository } = require('../repositories/reportRepository');
+const { initModels } = require('../models');
+const { matchingKeyword } = require('../utils/keywordMatcher');
 const HttpError = require('../utils/httpError');
 
 const TIME_ZONE = 'America/Costa_Rica';
 const AGENT_NAME = 'ANALISTA';
 const reportDateSchema = z.iso.date();
+const REPORT_METRIC_IDS = [
+  'summary', 'activeCollaborators', 'absences', 'absenceTrend', 'requestStatuses', 'turnover',
+  'incapacities', 'vacations', 'ragUnanswered', 'chatbot', 'movements', 'pendingRequests', 'unknown'
+];
+const reportMetricSchema = z.strictObject({ metric: z.enum(REPORT_METRIC_IDS), confidence: z.number().min(0).max(1) });
+const REPORT_METRIC_OPTIONS = [
+  { id: 'summary', description: 'Executive summary stored in the daily report.' },
+  { id: 'activeCollaborators', description: 'Active collaborator headcount.' },
+  { id: 'absences', description: 'People absent on the report date, by type and department.' },
+  { id: 'absenceTrend', description: 'Absence trend across the 30-day chart.' },
+  { id: 'requestStatuses', description: 'Requests grouped by approval status.' },
+  { id: 'turnover', description: 'Year-to-date turnover rate.' },
+  { id: 'incapacities', description: 'Active incapacity cases and accumulated days.' },
+  { id: 'vacations', description: 'Collaborators with more than 20 available vacation days.' },
+  { id: 'ragUnanswered', description: 'Policy questions the RAG system could not answer.' },
+  { id: 'chatbot', description: 'Previous-day chat volume, resolution, latency and top themes.' },
+  { id: 'movements', description: 'Current-month hires and exits.' },
+  { id: 'pendingRequests', description: 'Requests awaiting approval, including those overdue.' },
+  { id: 'unknown', description: 'No report indicator matches the question clearly.' }
+];
 const reportSchema = z.object({
   reportDate: reportDateSchema,
   indicators: z.object({ activeCollaborators: z.number().int().nonnegative(), absentCollaboratorsToday: z.number().int().nonnegative(), pendingRequests: z.number().int().nonnegative(), activeIncapacities: z.number().int().nonnegative(), vacationBalancesOver20: z.number().int().nonnegative() }),
@@ -67,24 +89,6 @@ function dateTimeString(value) {
 }
 function percentage(numerator, denominator) { return denominator === 0 ? 0 : Number((numerator * 100 / denominator).toFixed(2)); }
 
-function reportQuestionMetric(question) {
-  const normalized = question.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  if (/\b(tendencia|ultimos 30 dias|ultimos treinta dias)\b/.test(normalized) && /ausenc/.test(normalized)) return 'absenceTrend';
-  if (/\b(solicitudes?|aprobaciones?)\b/.test(normalized) && /\b(estado|distribucion|estatus)\b/.test(normalized)) return 'requestStatuses';
-  if (/\b(rag|sin evidencia|no pudo responder|preguntas sin respuesta)\b/.test(normalized)) return 'ragUnanswered';
-  if (/\b(rotacion)\b/.test(normalized)) return 'turnover';
-  if (/\b(incapacidades?|incapacitados?)\b/.test(normalized)) return 'incapacities';
-  if (/\b(vacaciones?|saldo vacacional)\b/.test(normalized)) return 'vacations';
-  if (/\b(chatbot|consultas|temas consultados|rag)\b/.test(normalized)) return 'chatbot';
-  if (/\b(ingresos?|salidas?|contrataciones|desvinculaciones)\b/.test(normalized)) return 'movements';
-  if (/\b(ausencias?|ausentes?)\b/.test(normalized)) return 'absences';
-  if (/\b(colaboradores activos|dotacion|personal activo)\b/.test(normalized)) return 'activeCollaborators';
-  if (/\b(solicitudes pendientes|pendientes de aprobacion)\b/.test(normalized)) return 'pendingRequests';
-  if (/\b(solicitudes?|aprobaciones?)\b/.test(normalized) && /\b(pendiente|sin respuesta|mas de tres dias)\b/.test(normalized)) return 'pendingRequests';
-  if (/\b(resumen|indicadores|reporte diario|informe diario)\b/.test(normalized)) return 'summary';
-  return null;
-}
-
 function fallbackSummary(metrics) {
   const t = metrics.turnover.yearToDate;
   const sentences = [
@@ -97,7 +101,34 @@ function fallbackSummary(metrics) {
   return { text: sentences.join(' '), sentences, origin: 'SQL_FALLBACK' };
 }
 
-function createAnalystAgent({ repository = createReportRepository(), deepSeekService = createDeepSeekService(), prompt = fs.readFileSync(path.join(__dirname, '../prompts/analyst.prompt.md'), 'utf8'), now = () => new Date(), logger = console } = {}) {
+function createAnalystAgent({ repository = createReportRepository(), deepSeekService = createDeepSeekService(), keywordModel, prompt = fs.readFileSync(path.join(__dirname, '../prompts/analyst.prompt.md'), 'utf8'), queryPrompt = fs.readFileSync(path.join(__dirname, '../prompts/analyst-query-classifier.prompt.md'), 'utf8'), now = () => new Date(), logger = console } = {}) {
+  function getKeywordModel() {
+    if (keywordModel && typeof keywordModel.findAll === 'function') return keywordModel;
+    if (typeof keywordModel === 'function') return keywordModel();
+    return keywordModel || initModels().PalabraClave;
+  }
+
+  async function getDashboardKeywords() {
+    return getKeywordModel().findAll({
+      where: { categoria: 'tema_dashboard', activa: true },
+      attributes: ['id', 'palabra', 'tema_asociado'],
+      order: [['id', 'ASC']],
+      raw: true
+    });
+  }
+
+  async function classifyReportMetric(question) {
+    const response = await deepSeekService.generateStructured({
+      messages: [
+        { role: 'system', content: queryPrompt },
+        { role: 'user', content: JSON.stringify({ question, allowedMetrics: REPORT_METRIC_OPTIONS }) }
+      ],
+      maxTokens: 60
+    }, reportMetricSchema);
+    const parsed = reportMetricSchema.parse(response.data);
+    return parsed.confidence >= 0.65 && parsed.metric !== 'unknown' ? parsed.metric : null;
+  }
+
   function validateDate(input) {
     const candidate = input || localDate(now());
     const parsed = reportDateSchema.safeParse(candidate);
@@ -184,7 +215,8 @@ function createAnalystAgent({ repository = createReportRepository(), deepSeekSer
     const stored = await repository.byDate(reportDate);
     if (stored) return { report: stored, created: false, reused: true };
     const params = dateParameters(reportDate);
-    const raw = await repository.collectMetrics(params);
+    const dashboardKeywords = await getDashboardKeywords();
+    const raw = await repository.collectMetrics(params, { dashboardKeywords });
     let report = buildReport(raw, reportDate, params.previousDay);
     try {
       report.executiveSummary = await createSummary(report);
@@ -202,7 +234,9 @@ function createAnalystAgent({ repository = createReportRepository(), deepSeekSer
     if (typeof question !== 'string' || !question.trim()) throw new HttpError(400, 'La pregunta de reporte no es válida.');
     const report = await repository.latest();
     if (!report) return { answer: 'Todavía no hay un reporte diario almacenado. Puede generarse desde la sección administrativa de reportes.', resolved: false, escalationSuggested: false, escalated: false, citations: [], agentsUsed: [AGENT_NAME] };
-    const metric = reportQuestionMetric(question);
+    let metric = null;
+    try { metric = await classifyReportMetric(question); }
+    catch (error) { logger.warn?.({ agent: AGENT_NAME, operation: 'question-classification', code: error.code || error.name }); }
     let answer;
     if (metric === 'summary') answer = report.executiveSummary.text;
     else if (metric === 'activeCollaborators') answer = `Colaboradores activos al ${report.reportDate}: ${report.indicators.activeCollaborators}.`;
@@ -216,7 +250,7 @@ function createAnalystAgent({ repository = createReportRepository(), deepSeekSer
     else if (metric === 'chatbot') answer = `Consultas al chatbot el ${report.chatbot.previousDay}: ${report.chatbot.totalQueries}; resueltas sin escalamiento: ${report.chatbot.percentResolvedWithoutEscalation}%; latencia promedio: ${report.chatbot.averageLatencyMs ?? 'sin mediciones'} ms. Temas principales: ${report.chatbot.topTopics.map((item) => `${item.topic} (${item.count})`).join(', ') || 'sin consultas'}.`;
     else if (metric === 'movements') answer = `Movimientos del mes hasta ${report.reportDate}: ${report.turnover.month.hires} ingresos y ${report.turnover.month.exits} salidas.`;
     else if (metric === 'pendingRequests') answer = `Solicitudes pendientes al ${report.reportDate}: ${report.requests.pendingCount}; con más de tres días calendario sin respuesta: ${report.requests.olderThanThreeDaysCount}.`;
-    else answer = '¿Qué indicador del último reporte quieres consultar: dotación, ausencias, solicitudes, incapacidades, rotación, vacaciones, movimientos o chatbot?';
+    else answer = 'No pude identificar el indicador del reporte con suficiente claridad. ¿Puedes precisar qué dato necesitas consultar?';
     return {
       answer: metric ? `Reporte diario almacenado del ${report.reportDate}. ${answer}` : answer,
       resolved: Boolean(metric), escalationSuggested: false, escalated: false, citations: [], agentsUsed: [AGENT_NAME],
@@ -234,4 +268,4 @@ function createAnalystAgent({ repository = createReportRepository(), deepSeekSer
 }
 
 const defaultAgent = createAnalystAgent();
-module.exports = { TIME_ZONE, AGENT_NAME, reportSchema, localDate, localMidnightUtc, dateParameters, reportQuestionMetric, fallbackSummary, createAnalystAgent, ...defaultAgent };
+module.exports = { TIME_ZONE, AGENT_NAME, REPORT_METRIC_IDS, reportMetricSchema, reportSchema, localDate, localMidnightUtc, dateParameters, fallbackSummary, createAnalystAgent, ...defaultAgent };

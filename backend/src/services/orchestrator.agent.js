@@ -9,6 +9,8 @@ const policiesAgent = require('./policies.agent');
 const employeeDataAgent = require('./employee-data.agent');
 const analystAgentDefault = require('./analyst.agent');
 const chatRepository = require('../repositories/chatRepository');
+const { initModels } = require('../models');
+const { matchingKeyword, matchingKeywordsByCategory } = require('../utils/keywordMatcher');
 const HttpError = require('../utils/httpError');
 
 const AGENT_NAME = 'ORQUESTADOR';
@@ -37,6 +39,7 @@ const contextSchema = z.array(z.strictObject({
 })).max(3);
 const DEFAULT_CONFIDENCE_THRESHOLD = 0.65;
 const MAX_CONTEXT_TURNS = 3;
+const KEYWORD_CACHE_MS = 60_000;
 
 function readPrompt() {
   return readFileSync(join(__dirname, '../prompts/orchestrator.prompt.v1.md'), 'utf8');
@@ -46,26 +49,6 @@ function confidenceThreshold(value = process.env.ORCHESTRATOR_CONFIDENCE_THRESHO
   const result = z.coerce.number().finite().min(0).max(1).safeParse(value);
   if (!result.success) throw new Error('ORCHESTRATOR_CONFIDENCE_THRESHOLD debe estar entre 0 y 1.');
   return result.data;
-}
-
-function normalizedQuestion(question) {
-  return question.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
-}
-
-function restrictedQuestion(question) {
-  const normalized = normalizedQuestion(question);
-  const asksSalary = /\b(salario|sueldo|remuneracion|planilla|compensacion individual)\b/.test(normalized);
-  const asksPersonalRecords = /\b(vacaciones?|saldo|incapacidades?|permisos?|ausencias?|evaluacion|desempeno|pago individual)\b/.test(normalized);
-  const targetsAnotherPerson = /\b(companer[oa]s?|colegas?|gerente|jefe|supervisor|otra persona|alguien mas|de juan)\b/.test(normalized) ||
-    (asksPersonalRecords && /\b(tiene|le quedan|le corresponde|su expediente)\b/.test(normalized) && !/\b(mi|mis|me|mio|mia|propio|propia)\b/.test(normalized));
-  return asksSalary || (asksPersonalRecords && targetsAnotherPerson);
-}
-
-function restrictedTopic(question) {
-  const normalized = normalizedQuestion(question);
-  if (/\b(salario|sueldo|remuneracion|planilla|compensacion)\b/.test(normalized)) return 'REMUNERACION';
-  if (/\b(vacaciones?|saldo)\b/.test(normalized)) return 'VACACIONES';
-  return 'DATOS_PERSONALES';
 }
 
 function restrictedOutcome() {
@@ -119,17 +102,44 @@ function createOrchestratorAgent({
   policyAgent = policiesAgent,
   personalDataAgent = employeeDataAgent,
   analystAgent = analystAgentDefault,
+  keywordModel,
   deepSeekService = createDeepSeekService(),
   systemPrompt = readPrompt(),
   minConfidence = process.env.ORCHESTRATOR_CONFIDENCE_THRESHOLD ?? DEFAULT_CONFIDENCE_THRESHOLD
 } = {}) {
   const threshold = confidenceThreshold(minConfidence);
+  let keywordCache = null;
+  let keywordCacheUntil = 0;
+  let keywordLoad = null;
 
-  async function classify(question, context) {
+  function getKeywordModel() {
+    if (keywordModel && typeof keywordModel.findAll === 'function') return keywordModel;
+    if (typeof keywordModel === 'function') return keywordModel();
+    return keywordModel || initModels().PalabraClave;
+  }
+
+  async function activeKeywords() {
+    if (keywordCache && Date.now() < keywordCacheUntil) return keywordCache;
+    if (!keywordLoad) {
+      keywordLoad = getKeywordModel().findAll({
+        where: { activa: true },
+        attributes: ['id', 'palabra', 'categoria', 'tema_asociado'],
+        order: [['id', 'ASC']],
+        raw: true
+      }).then((records) => {
+        keywordCache = records;
+        keywordCacheUntil = Date.now() + KEYWORD_CACHE_MS;
+        return keywordCache;
+      }).finally(() => { keywordLoad = null; });
+    }
+    return keywordLoad;
+  }
+
+  async function classify(question, context, keywordHints) {
     const result = await deepSeekService.generateStructured({
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: JSON.stringify({ pregunta: question, contexto: context }) }
+        { role: 'user', content: JSON.stringify({ pregunta: question, contexto: context, indiciosDeBase: keywordHints }) }
       ],
       maxTokens: 160
     }, classificationSchema);
@@ -237,16 +247,27 @@ function createOrchestratorAgent({
       const rawContext = await repository.getConversationContext(parsed.userId, reservation.conversationId, MAX_CONTEXT_TURNS);
       const context = contextSchema.parse(rawContext);
       const currentQuestion = contextualQuestion(parsed.question, context);
+      const keywords = await activeKeywords();
+      const restricted = matchingKeyword(parsed.question, keywords.filter((item) => item.categoria === 'restringida'));
+      const outsideScope = matchingKeyword(parsed.question, keywords.filter((item) => item.categoria === 'fuera_alcance'));
+      const currentMatches = matchingKeywordsByCategory(currentQuestion, keywords);
+      const keywordCategories = new Set(currentMatches.map((item) => item.categoria));
+      const keywordHints = {
+        policy: keywordCategories.has('politica'),
+        personalData: keywordCategories.has('dato_personal')
+      };
       let classification;
-      if (restrictedQuestion(parsed.question)) {
+      if (restricted) {
         classification = {
           intent: 'RESTRINGIDA',
-          topic: restrictedTopic(parsed.question),
+          topic: TOPICS.includes(restricted.tema_asociado) ? restricted.tema_asociado : 'DATOS_PERSONALES',
           confidence: 1,
           needsClarification: false
         };
+      } else if (outsideScope) {
+        classification = { intent: 'FUERA_DE_ALCANCE', topic: 'OTRO', confidence: 1, needsClarification: false };
       } else {
-        classification = await classify(parsed.question, context);
+        classification = await classify(parsed.question, context, keywordHints);
       }
 
       const reportDenied = classification.intent === 'REPORTE' && parsed.role !== 'RRHH';
@@ -322,7 +343,6 @@ module.exports = {
   TOPICS,
   classificationSchema,
   inputSchema,
-  restrictedQuestion,
   contextualQuestion,
   createOrchestratorAgent,
   ...defaultAgent

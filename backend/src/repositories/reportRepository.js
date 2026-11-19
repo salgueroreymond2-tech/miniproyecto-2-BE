@@ -4,6 +4,7 @@ const { Op } = require('sequelize');
 const { randomUUID } = require('node:crypto');
 const { getConnection, getReadConnection } = require('../config/database');
 const { initModels } = require('../models');
+const { matchingKeyword } = require('../utils/keywordMatcher');
 
 function plain(record) { return record?.get ? record.get({ plain: true }) : record; }
 function isoDate(value) { return value instanceof Date ? value.toISOString().slice(0, 10) : String(value).slice(0, 10); }
@@ -25,7 +26,7 @@ function groupBy(rows, keyFn) {
 }
 
 function createReportRepository({ readConnectionFactory = getReadConnection, writeConnectionFactory = getConnection, modelsFactory = initModels, now = () => new Date() } = {}) {
-  async function collectMetrics({ reportDate, monthStart, yearStart, dayStartUtc, dayEndUtc }) {
+  async function collectMetrics({ reportDate, monthStart, yearStart, dayStartUtc, dayEndUtc }, { dashboardKeywords = [] } = {}) {
     const sequelize = readConnectionFactory();
     const m = modelsFactory(sequelize);
     const trendDate = new Date(`${reportDate}T00:00:00.000Z`);
@@ -37,7 +38,7 @@ function createReportRepository({ readConnectionFactory = getReadConnection, wri
       m.Incapacidad.findAll({ where: { fecha_inicio: { [Op.lte]: reportDate }, fecha_fin: { [Op.gte]: absenceStart } }, attributes: ['colaborador_id', 'fecha_inicio', 'fecha_fin', 'estado'], raw: true }),
       m.MovimientoPersonal.findAll({ where: { fecha_efectiva: { [Op.between]: [yearStart, reportDate] } }, attributes: ['colaborador_id', 'tipo', 'fecha_efectiva'], raw: true }),
       m.SaldoVacaciones.findAll({ attributes: ['colaborador_id', 'dias_disponibles'], raw: true }),
-      m.ConsultaChat.findAll({ where: { creado_en: { [Op.gte]: dayStartUtc, [Op.lt]: dayEndUtc } }, attributes: ['resolucion', 'escalamiento_realizado', 'latencia_ms', 'tema', 'pregunta', 'intencion', 'creado_en'], raw: true })
+      m.ConsultaChat.findAll({ where: { creado_en: { [Op.gte]: dayStartUtc, [Op.lt]: dayEndUtc } }, attributes: ['resolucion', 'escalamiento_realizado', 'latencia_ms', 'pregunta', 'intencion', 'creado_en'], raw: true })
     ]);
     const collaborators = collaboratorRecords.map(plain);
     const requests = requestRecords.map(plain);
@@ -86,7 +87,11 @@ function createReportRepository({ readConnectionFactory = getReadConnection, wri
     const vacations = active.filter((employee) => (balancesByCollaborator.get(employee.id) || 0) > 20).map((employee) => ({ id: employee.id, codigo: employee.codigo, nombres: employee.nombres, apellidos: employee.apellidos, departamento: employee.Departamento?.nombre || '', dias_disponibles: balancesByCollaborator.get(employee.id) })).sort((a, b) => b.dias_disponibles - a.dias_disponibles || a.codigo.localeCompare(b.codigo));
 
     const topicCounts = new Map();
-    for (const row of chats) { const topic = String(row.tema || '').trim() || 'SIN_CLASIFICAR'; topicCounts.set(topic, (topicCounts.get(topic) || 0) + 1); }
+    for (const row of chats) {
+      const matched = matchingKeyword(row.pregunta, dashboardKeywords);
+      const topic = String(matched?.tema_asociado || '').trim();
+      if (topic) topicCounts.set(topic, (topicCounts.get(topic) || 0) + 1);
+    }
     const latencies = chats.map((row) => row.latencia_ms).filter((value) => value !== null && value !== undefined).map(Number);
     const chatsResolved = chats.filter((row) => row.resolucion === 'RESPONDIDA' && ![true, 1, '1'].includes(row.escalamiento_realizado)).length;
     const unanswered = chats.filter((row) => row.resolucion === 'SIN_EVIDENCIA' && ['POLITICA', 'MIXTA'].includes(row.intencion)).sort((a, b) => dateTime(a.creado_en) - dateTime(b.creado_en)).map((row) => ({ pregunta: row.pregunta, intencion: row.intencion, creado_en: row.creado_en }));

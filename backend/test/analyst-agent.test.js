@@ -2,7 +2,15 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { createAnalystAgent, localDate, reportQuestionMetric } = require('../src/services/analyst.agent');
+const { createAnalystAgent, localDate, reportMetricSchema } = require('../src/services/analyst.agent');
+
+const dashboardKeywords = [
+  { id: 1, palabra: 'vacaciones', tema_asociado: 'Vacaciones y Feriados' },
+  { id: 2, palabra: 'incapacidad', tema_asociado: 'Incapacidades' }
+];
+function createKeywordModel(calls = []) {
+  return { findAll: async (options) => { calls.push(options); return dashboardKeywords; } };
+}
 
 function fixture() {
   return {
@@ -24,7 +32,7 @@ test('construye indicadores desde agregados MySQL, maneja ceros y selecciona hec
   let stored = null;
   const repository = {
     byDate: async () => stored,
-    collectMetrics: async (parameters) => { calls.collect.push(parameters); return fixture(); },
+    collectMetrics: async (parameters, options) => { calls.collect.push({ ...parameters, options }); return fixture(); },
     saveReport: async (report) => { calls.save.push(report); stored = report; return { ...report, updated: false }; },
     latest: async () => stored,
     history: async (limit) => [{ limit }]
@@ -34,7 +42,8 @@ test('construye indicadores desde agregados MySQL, maneja ceros y selecciona hec
     calls.deepseek.push({ input, valid: schema.safeParse(result).success });
     return { data: result };
   } };
-  const agent = createAnalystAgent({ repository, deepSeekService, now: () => new Date('2026-11-19T12:00:00Z'), logger: { warn() {} } });
+  const keywordQueries = [];
+  const agent = createAnalystAgent({ repository, keywordModel: createKeywordModel(keywordQueries), deepSeekService, now: () => new Date('2026-11-19T12:00:00Z'), logger: { warn() {} } });
   const result = await agent.generateDailyReport({ date: '2026-11-18' });
   const { report } = result;
   assert.equal(calls.deepseek[0].valid, true);
@@ -60,6 +69,9 @@ test('construye indicadores desde agregados MySQL, maneja ceros y selecciona hec
   assert.match(report.executiveSummary.text, /8 colaboradores/);
   assert.equal(calls.collect[0].dayStartUtc, '2026-11-17 06:00:00');
   assert.equal(calls.collect[0].dayEndUtc, '2026-11-18 06:00:00');
+  assert.deepEqual(calls.collect[0].options.dashboardKeywords, dashboardKeywords);
+  assert.deepEqual(keywordQueries[0].where, { categoria: 'tema_dashboard', activa: true });
+  assert.equal(keywordQueries[0].raw, true);
   assert.equal(calls.save.length, 1);
   assert.equal((await agent.generateDailyReport({ date: '2026-11-18' })).reused, true);
   assert.equal(calls.collect.length, 1);
@@ -67,7 +79,7 @@ test('construye indicadores desde agregados MySQL, maneja ceros y selecciona hec
 
 test('si DeepSeek falla, conserva cifras SQL y marca el origen determinista', async () => {
   const repository = { byDate: async () => null, collectMetrics: async () => fixture(), saveReport: async (report) => report };
-  const agent = createAnalystAgent({ repository, deepSeekService: { generateStructured: async () => { throw Object.assign(new Error(), { code: 'DEEPSEEK_TIMEOUT' }); } }, now: () => new Date('2026-11-18T12:00:00Z'), logger: { warn() {} } });
+  const agent = createAnalystAgent({ repository, keywordModel: createKeywordModel(), deepSeekService: { generateStructured: async () => { throw Object.assign(new Error(), { code: 'DEEPSEEK_TIMEOUT' }); } }, now: () => new Date('2026-11-18T12:00:00Z'), logger: { warn() {} } });
   const { report } = await agent.generateDailyReport({ date: '2026-11-18' });
   assert.equal(report.executiveSummary.origin, 'SQL_FALLBACK');
   assert.equal(report.executiveSummary.sentences.length, 5);
@@ -77,7 +89,7 @@ test('si DeepSeek falla, conserva cifras SQL y marca el origen determinista', as
 test('fecha inválida se rechaza y el porcentaje de chat de un día sin consultas es cero', async () => {
   const data = fixture();
   data.chat = [{ total: 0, resueltasSinEscalamiento: 0, latenciaPromedio: null }];
-  const agent = createAnalystAgent({ repository: { byDate: async () => null, collectMetrics: async () => data, saveReport: async (report) => report }, deepSeekService: { generateStructured: async () => ({ data: { sentences: ['active', 'absences', 'requests'] } }) }, now: () => new Date('2026-11-18T12:00:00Z') });
+  const agent = createAnalystAgent({ repository: { byDate: async () => null, collectMetrics: async () => data, saveReport: async (report) => report }, keywordModel: createKeywordModel(), deepSeekService: { generateStructured: async () => ({ data: { sentences: ['active', 'absences', 'requests'] } }) }, now: () => new Date('2026-11-18T12:00:00Z') });
   await assert.rejects(agent.generateDailyReport({ date: '2026-02-30' }), { status: 400 });
   const { report } = await agent.generateDailyReport({ date: '2026-11-18' });
   assert.equal(report.chatbot.percentResolvedWithoutEscalation, 0);
@@ -87,7 +99,7 @@ test('fecha inválida se rechaza y el porcentaje de chat de un día sin consulta
 
 test('responde consultas estadísticas únicamente a RRHH usando el último reporte guardado', async () => {
   let latestCalls = 0;
-  const agent = createAnalystAgent({ repository: { latest: async () => { latestCalls += 1; return { reportDate: '2026-11-18', executiveSummary: { text: 'Resumen almacenado.' } }; } } });
+  const agent = createAnalystAgent({ repository: { latest: async () => { latestCalls += 1; return { reportDate: '2026-11-18', executiveSummary: { text: 'Resumen almacenado.' } }; } }, deepSeekService: { generateStructured: async () => ({ data: { metric: 'summary', confidence: 0.99 } }) } });
   await assert.rejects(agent.answerQuestion({ question: 'indicadores', role: 'COLABORADOR' }), { status: 403 });
   assert.equal(latestCalls, 0);
   const result = await agent.answerQuestion({ question: 'indicadores', role: 'RRHH' });
@@ -97,13 +109,21 @@ test('responde consultas estadísticas únicamente a RRHH usando el último repo
 });
 
 test('responde indicadores específicos desde la instantánea almacenada y pide aclaración si no reconoce el tema', async () => {
-  assert.equal(reportQuestionMetric('¿Cuál fue la tasa de rotación?'), 'turnover');
-  const report = { reportDate: '2026-11-18', indicators: { activeCollaborators: 12 }, executiveSummary: { text: 'Resumen guardado.' } };
-  const agent = createAnalystAgent({ repository: { latest: async () => report } });
+  const report = { reportDate: '2026-11-18', indicators: { activeCollaborators: 12 }, turnover: { yearToDate: { ratePercent: 8.5, distinctExits: 1 } }, executiveSummary: { text: 'Resumen guardado.' } };
+  const results = [
+    { metric: 'activeCollaborators', confidence: 0.99 },
+    { metric: 'turnover', confidence: 0.99 },
+    { metric: 'unknown', confidence: 0.3 }
+  ];
+  const agent = createAnalystAgent({ repository: { latest: async () => report }, deepSeekService: { generateStructured: async () => ({ data: results.shift() }) } });
   const result = await agent.answerQuestion({ question: '¿Cuántos colaboradores activos hubo?', role: 'RRHH' });
   assert.equal(result.answer, 'Reporte diario almacenado del 2026-11-18. Colaboradores activos al 2026-11-18: 12.');
   assert.equal(result.source, 'MySQL: reportes_diarios');
+  const turnover = await agent.answerQuestion({ question: '¿Cómo va la rotación?', role: 'RRHH' });
+  assert.match(turnover.answer, /8\.5%/);
   const unclear = await agent.answerQuestion({ question: 'Muéstrame el contexto general', role: 'RRHH' });
   assert.equal(unclear.resolved, false);
-  assert.match(unclear.answer, /Qué indicador/);
+  assert.match(unclear.answer, /No pude identificar el indicador/);
+  assert.equal(reportMetricSchema.safeParse({ metric: 'unknown', confidence: 0.5 }).success, true);
+  assert.equal(reportMetricSchema.safeParse({ metric: 'salary', confidence: 1 }).success, false);
 });

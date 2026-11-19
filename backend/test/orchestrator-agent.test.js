@@ -22,6 +22,20 @@ function classification(intent, overrides = {}) {
 
 function createHarness({ result = classification('FUERA_DE_ALCANCE'), context = [], analystAgent } = {}) {
   const calls = { classify: [], policies: [], personal: [], analyst: [], complete: [], failed: [] };
+  const keywordRecords = [
+    { id: 1, palabra: 'salario', categoria: 'restringida', tema_asociado: 'REMUNERACION' },
+    { id: 2, palabra: 'sueldo', categoria: 'restringida', tema_asociado: 'REMUNERACION' },
+    { id: 3, palabra: 'gerente', categoria: 'restringida', tema_asociado: 'REMUNERACION' },
+    { id: 4, palabra: 'compañero', categoria: 'restringida', tema_asociado: 'DATOS_PERSONALES' },
+    { id: 5, palabra: 'compañera', categoria: 'restringida', tema_asociado: 'DATOS_PERSONALES' },
+    { id: 6, palabra: 'vacaciones de', categoria: 'restringida', tema_asociado: 'VACACIONES' },
+    { id: 7, palabra: 'película', categoria: 'fuera_alcance', tema_asociado: null },
+    { id: 8, palabra: 'me quedan', categoria: 'dato_personal', tema_asociado: 'VACACIONES' },
+    { id: 9, palabra: 'mis vacaciones', categoria: 'dato_personal', tema_asociado: 'VACACIONES' },
+    { id: 10, palabra: 'vacaciones', categoria: 'politica', tema_asociado: 'VACACIONES' },
+    { id: 11, palabra: 'aguinaldo', categoria: 'politica', tema_asociado: 'REMUNERACION' }
+  ];
+  const keywordModel = { findAll: async (options) => { calls.keywordOptions = options; return keywordRecords; } };
   const repository = {
     reserveMessage: async () => ({ status: 'RESERVED', messageId: MESSAGE_ID, conversationId: CONVERSATION_ID }),
     getConversationContext: async (...args) => { calls.contextArgs = args; return context; },
@@ -62,8 +76,8 @@ function createHarness({ result = classification('FUERA_DE_ALCANCE'), context = 
     }
   };
   const reportAgent = analystAgent || { answerQuestion: async (input) => { calls.analyst.push(input); return { answer: 'Reporte de MySQL.', resolved: true, escalationSuggested: false, escalated: false, citations: [], agentsUsed: ['ANALISTA'], source: 'MySQL: reportes_diarios' }; } };
-  const agent = createOrchestratorAgent({ repository, policyAgent, personalDataAgent, analystAgent: reportAgent, deepSeekService, systemPrompt: 'Prompt de prueba.' });
-  return { agent, calls, repository };
+  const agent = createOrchestratorAgent({ repository, policyAgent, personalDataAgent, analystAgent: reportAgent, keywordModel, deepSeekService, systemPrompt: 'Prompt de prueba.' });
+  return { agent, calls, repository, keywordModel };
 }
 
 test('las consultas estadísticas autorizadas se enrutan al analista y guardan MySQL como fuente', async () => {
@@ -95,6 +109,8 @@ test('rechaza la consulta sobre vacaciones de un compañero en backend antes de 
   assert.equal(calls.personal.length, 0);
   assert.equal(calls.policies.length, 0);
   assert.equal(calls.complete[0].intent, 'RESTRINGIDA');
+  assert.deepEqual(calls.keywordOptions.where, { activa: true });
+  assert.equal(calls.keywordOptions.raw, true);
 });
 
 test('rechaza salarios individuales, incluido el del gerente general', async () => {
@@ -116,7 +132,11 @@ test('una pregunta mixta ejecuta ambos agentes en paralelo y preserva cifras y c
   const gate = new Promise((resolve) => setImmediate(resolve));
   harness.agent = createOrchestratorAgent({
     repository: harness.repository,
-    deepSeekService: { generateStructured: async () => ({ data: classification('MIXTA') }) },
+    keywordModel: harness.keywordModel,
+    deepSeekService: { generateStructured: async (requestBody, schema) => {
+      harness.calls.classify.push({ requestBody, schema });
+      return { data: classification('MIXTA') };
+    } },
     systemPrompt: 'Prompt de prueba.',
     policyAgent: { answer: async (input) => {
       harness.calls.policies.push(input);
@@ -147,12 +167,14 @@ test('una pregunta mixta ejecuta ambos agentes en paralelo y preserva cifras y c
   assert.deepEqual(response.agentsUsed, ['POLITICAS', 'DATOS_COLABORADOR']);
   assert.equal(harness.calls.policies[0].persistAudit, false);
   assert.equal(harness.calls.complete[0].agentsUsed.length, 2);
+  assert.deepEqual(JSON.parse(harness.calls.classify[0].requestBody.messages[1].content).indiciosDeBase, { policy: true, personalData: true });
 });
 
 test('la política sin evidencia responde sin inventar y registra solo al orquestador', async () => {
   const harness = createHarness({ result: classification('POLITICA', { topic: 'BENEFICIOS' }) });
   harness.agent = createOrchestratorAgent({
     repository: harness.repository,
+    keywordModel: harness.keywordModel,
     systemPrompt: 'Prompt de prueba.',
     deepSeekService: { generateStructured: async () => ({ data: classification('POLITICA', { topic: 'BENEFICIOS' }) }) },
     policyAgent: { answer: async (input) => {
@@ -182,6 +204,7 @@ test('orienta preguntas fuera de alcance sin delegar a otros agentes', async () 
   assert.deepEqual(response.agentsUsed, []);
   assert.equal(calls.policies.length, 0);
   assert.equal(calls.personal.length, 0);
+  assert.equal(calls.classify.length, 0);
 });
 
 test('valida el rol RRHH en backend antes de delegar los reportes al analista', async () => {
@@ -221,7 +244,7 @@ test('solicita aclaración con confianza baja y limita contexto a temas del mism
   assert.equal(response.clarificationNeeded, true);
   const modelInput = harness.calls.classify[0].requestBody.messages[1].content;
   assert.match(modelInput, /VACACIONES/);
-  assert.doesNotMatch(modelInput, /password|salario|answer|persona|Juan/i);
+  assert.doesNotMatch(modelInput, /password|salario|Juan/i);
   assert.equal(harness.calls.contextArgs[0], USER_ID);
   assert.equal(harness.calls.contextArgs[1], CONVERSATION_ID);
 });
