@@ -1,5 +1,14 @@
 # Progreso del proyecto
 
+## Corrección de sincronización de Google Drive (19 de noviembre de 2026)
+
+- Se reprodujo el error de ingesta: Google Drive responde exportaciones como ArrayBuffer y el extractor solo convertía Buffer/Uint8Array; esto causaba INVALID_DRIVE_RESPONSE. responseBuffer ahora convierte ArrayBuffer y se agregó una prueba de regresión.
+- Se normalizaron errores de red y permisos de Google Drive a respuestas 503/502 seguras, sin filtrar detalles internos.
+- Se incorporó a Documentos indexados un flujo de revisión manual: candidatos, enlace al original, categoría, vigencia, fuentes oficiales, confirmaciones de privacidad/normativa, piloto y sincronización. No se omite la aprobación RRHH.
+- Verificación real: API de salud 200; listado de candidatos 200 con 10 archivos, todos PENDIENTE_VALIDACION_NORMATIVA; la sincronización completa devuelve 409 PILOT_REQUIRED hasta que RRHH apruebe un documento y complete el piloto. No se indexaron documentos durante la prueba.
+- Pruebas: backend npm test, 90 aprobadas, 0 fallidas, 3 omitidas; frontend npm test, 16 aprobadas; frontend npm run build, 521 módulos compilados.
+
+
 ## Historial de reportes diarios (19 de noviembre de 2026)
 
 - Se generó un historial diario para el período 2026-08-19 a 2026-11-19: 93 fechas consecutivas, con 93 registros únicos persistidos en MySQL.
