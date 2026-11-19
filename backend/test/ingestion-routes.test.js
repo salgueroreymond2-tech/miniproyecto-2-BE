@@ -60,4 +60,15 @@ test('protege endpoints de ingesta para RRHH y valida la aprobación legal', asy
   assert.equal(approved[0].reviewerId, rrhhId);
   assert.equal((await request(app).post(`${route}/pilot`).set('Authorization', `Bearer ${token(rrhhId)}`).send({ driveFileId: 'file-1' })).status, 200);
   assert.equal((await request(app).post(`${route}/pilot`).set('Authorization', `Bearer ${token(rrhhId)}`).send({ extra: true })).status, 400);
+
+  agent.sync = async () => { throw Object.assign(new Error('EACCES: private runtime detail'), { code: 'EACCES' }); };
+  const unavailable = await request(app).post(`${route}/sync`).set('Authorization', `Bearer ${token(rrhhId)}`).send({});
+  assert.equal(unavailable.status, 503);
+  assert.match(unavailable.body.error, /Google Drive/);
+  assert.doesNotMatch(unavailable.body.error, /private runtime detail/);
+
+  agent.sync = async () => { throw Object.assign(new Error('Ejecute primero el piloto.'), { code: 'PILOT_REQUIRED' }); };
+  const pilotRequired = await request(app).post(`${route}/sync`).set('Authorization', `Bearer ${token(rrhhId)}`).send({});
+  assert.equal(pilotRequired.status, 409);
+  assert.match(pilotRequired.body.error, /piloto/);
 });

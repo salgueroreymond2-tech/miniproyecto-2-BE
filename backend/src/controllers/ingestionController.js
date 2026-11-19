@@ -31,6 +31,11 @@ function createIngestionController(agent) {
       return await action();
     } catch (error) {
       if (error instanceof HttpError) throw error;
+      const causes = error instanceof AggregateError ? error.errors : [error];
+      const networkError = causes.find((cause) => ['EACCES', 'ECONNREFUSED', 'ECONNRESET', 'ENOTFOUND', 'ETIMEDOUT'].includes(cause?.code));
+      if (networkError) throw new HttpError(503, 'No se pudo conectar con Google Drive. Verifica la conexión del servidor e inténtalo de nuevo.');
+      const drivePermissionError = causes.find((cause) => [401, 403].includes(cause?.response?.status));
+      if (drivePermissionError) throw new HttpError(502, 'Google Drive rechazó el acceso. Verifica que la cuenta de servicio tenga permiso de lector sobre la carpeta.');
       if (error.name === 'ZodError') throw new HttpError(400, 'Datos de ingesta inválidos.');
       if (statusByCode[error.code]) throw new HttpError(statusByCode[error.code], error.message);
       throw error;

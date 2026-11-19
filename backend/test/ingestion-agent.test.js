@@ -160,6 +160,14 @@ test('extrae texto local de PDF, DOCX, XLSX, TXT, Google Docs y Google Sheets', 
   assert.ok(pageChunks.every((chunk) => chunk.page_number === 1 || chunk.page_number === 2));
 });
 
+test('convierte ArrayBuffer devueltos por la API de exportacion de Google Drive', async () => {
+  const content = 'Policy document returned as ArrayBuffer';
+  const data = Uint8Array.from(Buffer.from(content, 'utf8')).buffer;
+  const file = { id: 'gdoc-arraybuffer', name: 'policy', mimeType: 'application/vnd.google-apps.document' };
+  const extracted = await extractFileText({ files: { export: async () => ({ data }) } }, file);
+  assert.equal(extracted, content);
+});
+
 test('sincroniza un documento aprobado, deja modificaciones pendientes y retira eliminados', async () => {
   const models = makeModels();
   const folderId = 'folder_123456789';

@@ -205,6 +205,7 @@ async function responseBuffer(response) {
   const data = response?.data;
   if (Buffer.isBuffer(data)) return data;
   if (data instanceof Uint8Array) return Buffer.from(data);
+  if (data instanceof ArrayBuffer) return Buffer.from(new Uint8Array(data));
   if (typeof data === 'string') return Buffer.from(data, 'utf8');
   if (data && typeof data[Symbol.asyncIterator] === 'function') {
     const chunks = [];
