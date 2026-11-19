@@ -347,3 +347,7 @@
 
 - Configurar credenciales para un usuario MySQL independiente con permiso `SELECT` y volver a probar solicitudes, departamentos, documentos, reportes, vacaciones y dashboard administrativo desde el portal.
 - Habilitar acceso de escritura a Google Drive para cargar el paquete del proyecto a la carpeta compartida y confirmar el archivo allí.
+
+### Paquete preparado para Drive
+
+- Se generó localmente `tools/nexotico-hr-project.zip` desde los archivos versionados: 232 archivos, 532,927 bytes. Se verificó que no incluye `.env`, `.credentials` ni `node_modules`. El ZIP aún no se ha subido a Drive.
