@@ -1,12 +1,31 @@
 'use strict';
-const { QueryTypes } = require('sequelize');
-const db = require('../config/database');
-async function findByEmail(email) {
-  const rows = await db.getConnection().query('SELECT id, email, password_hash, rol, activo FROM usuarios WHERE email = $email', { bind: { email }, type: QueryTypes.SELECT });
-  return rows[0] ?? null;
+
+const { getConnection } = require('../config/database');
+const { initModels } = require('../models');
+
+function createAuthRepository({ connectionFactory = getConnection, modelsFactory = initModels } = {}) {
+  function usuarioModel() {
+    return modelsFactory(connectionFactory()).Usuario;
+  }
+
+  async function findByEmail(email) {
+    return usuarioModel().findOne({
+      where: { email },
+      attributes: ['id', 'email', 'password_hash', 'rol', 'activo'],
+      raw: true
+    });
+  }
+
+  async function findById(id) {
+    return usuarioModel().findOne({
+      where: { id },
+      attributes: ['id', 'email', 'rol', 'activo'],
+      raw: true
+    });
+  }
+
+  return { findByEmail, findById };
 }
-async function findById(id) {
-  const rows = await db.getConnection().query('SELECT id, email, rol, activo FROM usuarios WHERE id = $id', { bind: { id }, type: QueryTypes.SELECT });
-  return rows[0] ?? null;
-}
-module.exports = { findByEmail, findById };
+
+const defaultRepository = createAuthRepository();
+module.exports = { createAuthRepository, ...defaultRepository };

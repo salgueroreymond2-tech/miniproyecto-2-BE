@@ -1,80 +1,109 @@
 'use strict';
 
-const { QueryTypes } = require('sequelize');
 const { getReadConnection } = require('../config/database');
+const { initModels } = require('../models');
 
 const REQUEST_SORT = Object.freeze({
-  CREATED_AT: 's.creado_en', START_DATE: 's.fecha_inicio', STATUS: 's.estado', TYPE: 's.tipo', EMPLOYEE: 'c.apellidos'
+  CREATED_AT: 'createdAt', START_DATE: 'startDate', STATUS: 'status', TYPE: 'type', EMPLOYEE: 'lastName'
 });
 
-function createAdminReadRepository({ connectionFactory = getReadConnection } = {}) {
-  function select(sql, replacements) {
-    return connectionFactory().query(sql, { replacements, type: QueryTypes.SELECT });
-  }
+function createAdminReadRepository({ connectionFactory = getReadConnection, modelsFactory = initModels } = {}) {
+  function models() { return modelsFactory(connectionFactory()); }
 
-  async function listRequests({ page = 1, pageSize = 25, status, department, search, sortBy = 'CREATED_AT', direction = 'DESC' } = {}) {
-    const clauses = [];
-    const replacements = { limit: pageSize, offset: (page - 1) * pageSize };
-    if (status) { clauses.push('s.estado = :status'); replacements.status = status; }
-    if (department) { clauses.push('d.nombre = :department'); replacements.department = department; }
-    if (search) {
-      clauses.push('(c.codigo LIKE :search OR c.nombres LIKE :search OR c.apellidos LIKE :search OR s.tipo LIKE :search)');
-      replacements.search = `%${search}%`;
-    }
-    const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
-    const orderBy = REQUEST_SORT[sortBy] || REQUEST_SORT.CREATED_AT;
-    const orderDirection = direction === 'ASC' ? 'ASC' : 'DESC';
-    const [items, countRows] = await Promise.all([
-      select(`SELECT s.id, c.codigo AS code, c.nombres AS firstName, c.apellidos AS lastName, d.nombre AS department,
-          s.tipo AS type, s.fecha_inicio AS startDate, s.fecha_fin AS endDate, s.dias_solicitados AS requestedDays,
-          s.estado AS status, s.creado_en AS createdAt
-        FROM solicitudes s JOIN colaboradores c ON c.id=s.colaborador_id JOIN departamentos d ON d.id=c.departamento_id
-        ${where} ORDER BY ${orderBy} ${orderDirection}, s.id ASC LIMIT :limit OFFSET :offset`, replacements),
-      select(`SELECT COUNT(*) AS total FROM solicitudes s JOIN colaboradores c ON c.id=s.colaborador_id JOIN departamentos d ON d.id=c.departamento_id ${where}`, replacements)
-    ]);
-    const total = Number(countRows[0]?.total || 0);
-    return { items, pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) } };
+  async function listRequests({ page = 1, pageSize = 20, status, department, search, sortBy = 'CREATED_AT', direction = 'DESC' } = {}) {
+    const m = models();
+    const where = status ? { estado: status } : {};
+    const rows = await m.Solicitud.findAll({
+      where,
+      attributes: ['id', 'tipo', 'fecha_inicio', 'fecha_fin', 'dias_solicitados', 'estado', 'creado_en'],
+      include: [{ model: m.Colaborador, attributes: ['codigo', 'nombres', 'apellidos'], required: true,
+        include: [{ model: m.Departamento, attributes: ['nombre'], required: true }] }],
+      raw: true, nest: true
+    });
+    const term = String(search || '').trim().toLocaleLowerCase('es');
+    let items = rows.map((row) => ({
+      id: row.id, code: row.Colaborador.codigo, firstName: row.Colaborador.nombres, lastName: row.Colaborador.apellidos,
+      department: row.Colaborador.Departamento.nombre, type: row.tipo, startDate: row.fecha_inicio, endDate: row.fecha_fin,
+      requestedDays: row.dias_solicitados, status: row.estado, createdAt: row.creado_en
+    })).filter((row) => !department || row.department === department)
+      .filter((row) => !term || `${row.code} ${row.firstName} ${row.lastName} ${row.department} ${row.type}`.toLocaleLowerCase('es').includes(term));
+    const field = REQUEST_SORT[sortBy] || REQUEST_SORT.CREATED_AT;
+    const multiplier = String(direction).toUpperCase() === 'ASC' ? 1 : -1;
+    const dateSort = ['createdAt', 'startDate'].includes(field);
+    items.sort((a, b) => {
+      const primary = dateSort
+        ? (new Date(a[field]).getTime() - new Date(b[field]).getTime())
+        : String(a[field] ?? '').localeCompare(String(b[field] ?? ''), 'es');
+      return primary * multiplier || String(a.id).localeCompare(String(b.id));
+    });
+    const total = items.length;
+    const offset = (Math.max(1, Number(page) || 1) - 1) * Math.max(1, Math.min(200, Number(pageSize) || 20));
+    const size = Math.max(1, Math.min(200, Number(pageSize) || 20));
+    return { items: items.slice(offset, offset + size), pagination: { page: Math.max(1, Number(page) || 1), pageSize: size, total, totalPages: Math.ceil(total / size) } };
   }
 
   async function listDepartments() {
-    return select(`SELECT d.id, d.nombre AS name, COUNT(c.id) AS collaborators,
-        SUM(CASE WHEN c.estado='ACTIVO' THEN 1 ELSE 0 END) AS activeCollaborators
-      FROM departamentos d LEFT JOIN colaboradores c ON c.departamento_id=d.id
-      GROUP BY d.id,d.nombre ORDER BY d.nombre`, {});
+    const m = models();
+    const rows = await m.Departamento.findAll({
+      attributes: ['id', 'nombre'],
+      include: [{ model: m.Colaborador, attributes: ['id', 'estado'], required: false }],
+      order: [['nombre', 'ASC']], raw: true, nest: true
+    });
+    const departments = new Map();
+    for (const row of rows) {
+      if (!departments.has(row.id)) departments.set(row.id, { id: row.id, name: row.nombre, collaborators: 0, activeCollaborators: 0 });
+      const department = departments.get(row.id);
+      if (row.Colaborador?.id) {
+        department.collaborators += 1;
+        if (row.Colaborador.estado === 'ACTIVO') department.activeCollaborators += 1;
+      }
+    }
+    return [...departments.values()];
   }
 
-  async function listIndexedDocuments({ page = 1, pageSize = 25, search, status } = {}) {
-    const conditions = ["d.estado = 'VALIDADO'", "c.is_active = 1", "c.validation_status = 'VALIDADO'"];
-    const replacements = { limit: pageSize, offset: (page - 1) * pageSize };
-    if (search) { conditions.push('d.titulo LIKE :search'); replacements.search = `%${search}%`; }
-    if (status && status !== 'VALIDADO') return { items: [], pagination: { page, pageSize, total: 0, totalPages: 0 } };
-    const where = `WHERE ${conditions.join(' AND ')}`;
-    const [items, countRows] = await Promise.all([
-      select(`SELECT d.drive_file_id AS driveFileId, d.titulo AS title, d.version AS version,
-          MIN(c.created_at) AS indexedAt, COUNT(DISTINCT c.id) AS fragmentCount, d.estado AS status,
-          MAX(c.category) AS category, MAX(c.source_url) AS sourceUrl
-        FROM documentos d JOIN document_chunks_e5 c ON c.document_id=d.id ${where}
-        GROUP BY d.id,d.drive_file_id,d.titulo,d.version,d.estado
-        ORDER BY indexedAt DESC,d.titulo ASC LIMIT :limit OFFSET :offset`, replacements),
-      select(`SELECT COUNT(DISTINCT d.id) AS total FROM documentos d JOIN document_chunks_e5 c ON c.document_id=d.id ${where}`, replacements)
-    ]);
-    const total = Number(countRows[0]?.total || 0);
-    return { items, pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) } };
+  async function listIndexedDocuments({ page = 1, pageSize = 20, search } = {}) {
+    const m = models();
+    const chunks = await m.DocumentChunk.findAll({
+      where: { is_active: true, validation_status: 'VALIDADO' },
+      attributes: ['id', 'document_id', 'category', 'source_url', 'created_at'],
+      include: [{ model: m.Documento, attributes: ['id', 'drive_file_id', 'titulo', 'version', 'estado'], where: { estado: 'VALIDADO' }, required: true }],
+      order: [['created_at', 'ASC']], raw: true, nest: true
+    });
+    const grouped = new Map();
+    for (const row of chunks) {
+      const document = row.Documento;
+      if (!document?.id) continue;
+      if (!grouped.has(document.id)) grouped.set(document.id, {
+        id: document.id, driveFileId: document.drive_file_id, title: document.titulo, version: document.version,
+        status: document.estado, fragmentCount: 0, indexedAt: row.created_at, category: row.category, sourceUrl: row.source_url
+      });
+      const item = grouped.get(document.id);
+      item.fragmentCount += 1;
+      if (new Date(row.created_at) < new Date(item.indexedAt)) item.indexedAt = row.created_at;
+    }
+    const term = String(search || '').trim().toLocaleLowerCase('es');
+    const items = [...grouped.values()].filter((item) => !term || item.title.toLocaleLowerCase('es').includes(term))
+      .sort((a, b) => String(b.indexedAt).localeCompare(String(a.indexedAt)) || a.title.localeCompare(b.title, 'es'));
+    const size = Math.max(1, Math.min(200, Number(pageSize) || 20));
+    const currentPage = Math.max(1, Number(page) || 1);
+    const offset = (currentPage - 1) * size;
+    return { items: items.slice(offset, offset + size), pagination: { page: currentPage, pageSize: size, total: items.length, totalPages: Math.ceil(items.length / size) } };
   }
 
-  async function listSynchronizations({ page = 1, pageSize = 25 } = {}) {
-    const replacements = { limit: pageSize, offset: (page - 1) * pageSize };
-    const [items, countRows] = await Promise.all([
-      select(`SELECT id,origen AS source,estado AS status,inicio_en AS startedAt,finalizo_en AS finishedAt,
-          documentos_leidos AS documentsRead,documentos_actualizados AS documentsUpdated
-        FROM sincronizaciones ORDER BY inicio_en DESC LIMIT :limit OFFSET :offset`, replacements),
-      select('SELECT COUNT(*) AS total FROM sincronizaciones', {})
-    ]);
-    const total = Number(countRows[0]?.total || 0);
-    return { items, pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) } };
+  async function listSynchronizations({ page = 1, pageSize = 20 } = {}) {
+    const m = models();
+    const size = Math.max(1, Math.min(200, Number(pageSize) || 20));
+    const currentPage = Math.max(1, Number(page) || 1);
+    const result = await m.Sincronizacion.findAndCountAll({
+      attributes: ['id', 'origen', 'estado', 'inicio_en', 'finalizo_en', 'documentos_leidos', 'documentos_actualizados'],
+      order: [['inicio_en', 'DESC']], limit: size, offset: (currentPage - 1) * size, raw: true
+    });
+    const items = result.rows.map((row) => ({ id: row.id, source: row.origen, status: row.estado, startedAt: row.inicio_en, finishedAt: row.finalizo_en, documentsRead: row.documentos_leidos, documentsUpdated: row.documentos_actualizados }));
+    return { items, pagination: { page: currentPage, pageSize: size, total: result.count, totalPages: Math.ceil(result.count / size) } };
   }
 
   return { listRequests, listDepartments, listIndexedDocuments, listSynchronizations };
 }
 
-module.exports = { REQUEST_SORT, createAdminReadRepository };
+const defaultRepository = createAdminReadRepository();
+module.exports = { REQUEST_SORT, createAdminReadRepository, ...defaultRepository };

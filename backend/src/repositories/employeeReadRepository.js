@@ -1,11 +1,20 @@
 'use strict';
-const { QueryTypes } = require('sequelize');
+
 const { getReadConnection } = require('../config/database');
-// El identificador procede exclusivamente de la sesión autenticada en el servicio llamador.
-async function getOwnVacations(authenticatedUserId) {
-  return getReadConnection().query(
-    'SELECT s.periodo_anual,s.dias_generados,s.dias_disfrutados,s.dias_disponibles FROM saldos_vacaciones s JOIN colaboradores c ON c.id=s.colaborador_id WHERE c.usuario_id=$userId ORDER BY s.periodo_anual DESC',
-    { bind: { userId: authenticatedUserId }, type: QueryTypes.SELECT }
-  );
+const { initModels } = require('../models');
+
+function createEmployeeReadRepository({ connectionFactory = getReadConnection, modelsFactory = initModels } = {}) {
+  async function getOwnVacations(authenticatedUserId) {
+    const models = modelsFactory(connectionFactory());
+    return models.SaldoVacaciones.findAll({
+      attributes: ['periodo_anual', 'dias_generados', 'dias_disfrutados', 'dias_disponibles'],
+      include: [{ model: models.Colaborador, attributes: [], where: { usuario_id: authenticatedUserId }, required: true }],
+      order: [['periodo_anual', 'DESC']],
+      raw: true
+    });
+  }
+  return { getOwnVacations };
 }
-module.exports = { getOwnVacations };
+
+const defaultRepository = createEmployeeReadRepository();
+module.exports = { createEmployeeReadRepository, ...defaultRepository };
