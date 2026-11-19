@@ -1,5 +1,13 @@
 # Progreso del proyecto
 
+## Historial de reportes diarios (19 de noviembre de 2026)
+
+- Se generó un historial diario para el período 2026-08-19 a 2026-11-19: 93 fechas consecutivas, con 93 registros únicos persistidos en MySQL.
+- Se generaron 91 reportes faltantes y se conservaron las dos fechas que ya existían. El reporte heredado del 2026-11-17 tenía un formato anterior; se regeneró con métricas ORM/MySQL y se actualizó con Sequelize.
+- Se validaron los 93 registros con el esquema Zod del analista. El endpoint RRHH GET /api/reports/history?limit=365 devolvió las 93 fechas, desde 2026-08-19 hasta 2026-11-19.
+- La comprobación de disponibilidad de DeepSeek falló por conectividad de red. Los 93 resúmenes quedaron marcados SQL_FALLBACK y se compusieron determinísticamente de los indicadores guardados; no se registraron resúmenes de DeepSeek.
+- Agentes existentes confirmados: orquestador, políticas RAG, datos del colaborador, analista e ingesta.
+
 ## Paquete Markdown local para documentos RAG (19 de noviembre de 2026)
 
 - Se convirtieron los diez documentos del paquete a `.md` bajo `documents/rag/policies/`; el manifiesto conserva sus destinos de Drive (ocho Google Docs, un PDF y un XLSX). `documents/policies/` sigue como fuente canónica.
