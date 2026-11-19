@@ -1,6 +1,12 @@
 # Progreso del proyecto
 
-**Última actualización:** 18 de noviembre de 2026<br>
+## Ajuste de generación manual de reportes (19 de noviembre de 2026)
+
+- Se agregó el botón **Generar reporte de hoy** al dashboard de RRHH y al Historial de reportes. Ambos usan `POST /api/reports/generate`, actualizan la vista con el reporte devuelto y muestran estados de carga, éxito o error.
+- La generación conserva la idempotencia del backend: si ya existe el reporte de hoy, carga el guardado en vez de crear otro.
+- Verificación frontend: 15 de 15 pruebas pasaron y `npm run build` compiló correctamente (521 módulos). La prueba nueva comprueba la llamada al endpoint y la actualización del historial. No se ejecutó una generación real desde la interfaz durante esta verificación.
+
+**Última actualización:** 19 de noviembre de 2026<br>
 **Fase actual:** Portal frontend de Recursos Humanos.<br>
 **Estado:** Implementados los portales autenticados por rol, vistas de colaborador, directorio RRHH y asistente conversacional integrado con la API. Build y pruebas frontend pasaron. Las pruebas end-to-end contra MySQL y DeepSeek quedan limitadas por la configuración de lectura y la disponibilidad del proveedor.
 
