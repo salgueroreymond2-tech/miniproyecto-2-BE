@@ -31,6 +31,8 @@ export const hrService = {
   ingestion: {
     status: () => api.get('/admin/ingestion/status').then(({ data }) => data),
     candidates: () => payload(api.get('/admin/ingestion/candidates'), 'candidates'),
+    approve: (review) => api.post('/admin/ingestion/approvals', review).then(({ data }) => data),
+    pilot: (driveFileId) => api.post('/admin/ingestion/pilot', { driveFileId }).then(({ data }) => data),
     sync: () => api.post('/admin/ingestion/sync', {}).then(({ data }) => data)
   },
   chat: {

@@ -649,6 +649,23 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .admin-external-link { display: inline-flex; align-items: center; gap: 3px; color: #385A7C; font-size: 10px; font-weight: 650; text-decoration: none; white-space: nowrap; }
 .admin-external-link:hover { text-decoration: underline; }
 .admin-external-link .material-symbols-rounded { font-size: 14px; }
+.admin-doc-actions { display: flex; align-items: center; gap: 9px; }
+.admin-ingestion-review { display: grid; gap: 14px; }
+.admin-review-notice { margin: 0; padding: 11px 12px; border: 1px solid #E8D5AA; border-radius: 8px; background: #FFFAF0; color: #745A2A; font-size: 11px; line-height: 1.55; }
+.admin-candidate-list { display: grid; max-height: 220px; gap: 8px; overflow: auto; padding-right: 3px; }
+.admin-candidate { display: grid; gap: 7px; padding: 11px; border: 1px solid #E5E9EE; border-radius: 8px; background: #fff; }
+.admin-candidate.selected { border-color: #7890A9; background: #F5F8FA; }
+.admin-candidate-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.admin-candidate-heading > strong { color: #26384C; font-size: 11px; line-height: 1.5; }
+.admin-candidate-type { color: #8290A0; font-size: 9px; overflow-wrap: anywhere; }
+.admin-review-form { display: grid; gap: 11px; padding-top: 13px; border-top: 1px solid #E9EDF0; }
+.admin-review-form h3 { margin: 0; color: #26384C; font: 700 14px Manrope, sans-serif; }
+.admin-review-form textarea { width: 100%; min-height: 74px; padding: 10px 12px; border: 1px solid #C9D1DB; border-radius: 8px; color: #172033; font-size: 12px; resize: vertical; }
+.admin-review-form textarea:focus { border-color: #547C9F; outline: 0; box-shadow: 0 0 0 3px rgb(56 90 124 / 13%); }
+.admin-review-check { display: flex; align-items: flex-start; gap: 8px; color: #495567; font-size: 11px; line-height: 1.55; }
+.admin-review-check input { margin-top: 2px; accent-color: #385A7C; }
+.admin-pilot-action { display: grid; gap: 10px; padding-top: 13px; border-top: 1px solid #E9EDF0; }
+.admin-pilot-action p { margin: 0; color: #495567; font-size: 11px; line-height: 1.55; }
 .admin-sync-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; }
 .admin-sync-card { display: flex; min-width: 0; min-height: 88px; flex-direction: column; align-items: flex-start; justify-content: center; gap: 10px; padding: 15px; }
 .admin-sync-card > strong { color: #34465B; font-size: 11px; font-weight: 600; }
@@ -703,6 +720,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .admin-generate-report { flex-direction: column; align-items: stretch; }
   .admin-generate-report > .button { width: 100%; }
   .admin-report-meta { align-items: flex-start; flex-direction: column; }
+  .admin-doc-actions { width: 100%; align-items: stretch; flex-direction: column; }
+  .admin-doc-actions > .button { width: 100%; }
   .admin-table-footer { align-items: flex-start; flex-direction: column; }
   .admin-pagination { align-self: flex-end; }
   .admin-state-counts > div { flex: 1 1 100%; }

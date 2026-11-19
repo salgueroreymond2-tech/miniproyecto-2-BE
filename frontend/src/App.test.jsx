@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { App } from './App';
@@ -157,6 +157,54 @@ describe('autenticación y permisos de navegación', () => {
     expect(await screen.findByRole('option', { name: /16 nov 2026/ })).toBeInTheDocument();
     await user.selectOptions(screen.getByLabelText('Fecha del reporte'), '2026-11-16');
     expect(screen.getAllByText(/Fecha: 16 nov 2026/).length).toBeGreaterThan(0);
+  }, 20000);
+
+  it('requiere aprobación explícita y ejecuta el piloto antes de sincronizar Drive', async () => {
+    mockAuthenticatedSession({ role: 'RRHH' });
+    const candidate = {
+      driveFileId: 'drive-policy-1',
+      title: 'Política ficticia de vacaciones',
+      mimeType: 'application/vnd.google-apps.document',
+      contentHash: 'a'.repeat(64),
+      status: 'PENDIENTE_VALIDACION_NORMATIVA'
+    };
+    let pilotComplete = false;
+    vi.spyOn(api, 'get').mockImplementation(async (url) => {
+      if (url === '/auth/me') return { data: { usuario: employeeUser('RRHH') } };
+      if (url === '/admin/ingestion/status') return { data: { configured: true, pilotComplete, initialSyncComplete: false } };
+      if (url === '/admin/ingestion/candidates') return { data: { candidates: [candidate] } };
+      return responseFor(url);
+    });
+    const post = vi.spyOn(api, 'post').mockImplementation(async (url) => {
+      if (url === '/admin/ingestion/pilot') { pilotComplete = true; return { data: { indexed: 1 } }; }
+      if (url === '/admin/ingestion/sync') return { data: { documentsUpdated: 1 } };
+      return { data: { approval: { status: 'APROBADO' } } };
+    });
+    const user = userEvent.setup();
+    renderApp('/rrhh/documentos');
+    expect(await screen.findByRole('heading', { name: 'Documentos indexados' }, { timeout: 10000 })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Sincronizar Drive' }));
+    await user.click(screen.getByRole('button', { name: 'Iniciar sincronización' }));
+    expect(await screen.findByRole('dialog', { name: 'Revisión de candidatos de Drive' })).toBeInTheDocument();
+    expect(await screen.findByText('Política ficticia de vacaciones')).toBeInTheDocument();
+    await user.selectOptions(screen.getByLabelText('Categoría documental'), 'POLITICA');
+    fireEvent.change(screen.getByLabelText('Fuentes oficiales verificadas'), { target: { value: 'https://www.mtss.go.cr/temas-laborales/' } });
+    await user.click(screen.getByLabelText('Confirmo que revisé el documento y no contiene datos personales.'));
+    await user.click(screen.getByLabelText('Confirmo que revisé el contenido frente a las fuentes normativas oficiales indicadas.'));
+    await user.click(screen.getByRole('button', { name: 'Registrar aprobación' }));
+    expect(await screen.findByText(/Revisión registrada/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Ejecutar piloto y sincronizar carpeta' }));
+    expect(await screen.findByText(/Sincronización terminada/)).toBeInTheDocument();
+    expect(post).toHaveBeenCalledWith('/admin/ingestion/approvals', expect.objectContaining({
+      driveFileId: candidate.driveFileId,
+      contentHash: candidate.contentHash,
+      category: 'POLITICA',
+      legalSources: ['https://www.mtss.go.cr/temas-laborales/'],
+      reviewedNoPersonalData: true,
+      reviewedNormativeContent: true
+    }));
+    expect(post).toHaveBeenCalledWith('/admin/ingestion/pilot', { driveFileId: candidate.driveFileId });
+    expect(post).toHaveBeenCalledWith('/admin/ingestion/sync', {});
   }, 20000);
 });
 
