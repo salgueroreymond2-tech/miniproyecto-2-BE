@@ -323,3 +323,27 @@
 - Los cinco agentes existen como módulos independientes, pero el versionado homogéneo de sus instrucciones no está completo: cuatro agentes usan prompts LLM separados y el de ingesta es determinista, sin prompt; el estado queda parcial y no se añadió un prompt sin consumidor.
 - MySQL de solo lectura continúa sin configurar, DeepSeek real falló con `DEEPSEEK_NETWORK_ERROR`, y la lectura de metadatos Drive quedó bloqueada por `EACCES`. No hay evidencia actual de conteos, reportes leídos, corpus aprobado/indexado, citas de respuesta real, sincronización real, fuga cero E2E ni latencias del banco.
 - Los informes de investigación y las políticas son material documental investigado; no reemplazan aprobación humana ni dictamen jurídico. La evaluación integral del portal se mantiene pendiente de las dependencias anteriores.
+
+## Integración real del frontend y consultas ORM — 2026-11-19
+
+### Completado
+
+- Se cambiaron los repositorios de autenticación, perfil/datos propios, consultas administrativas y agregación de reportes para usar modelos Sequelize con atributos y filtros explícitos. Las formas JSON de solicitudes, departamentos, sincronizaciones y documentos conservan los nombres que consume React.
+- `backend/src` ya no contiene llamadas ejecutables a `sequelize.query()` ni SQL escrito a mano en los repositorios. Las transacciones, inclusiones y filtros se expresan con los modelos/operadores ORM. Los cálculos del reporte agrupan los registros retornados por Sequelize y deduplican personas ausentes por día.
+- Se reemplazaron pruebas de repositorios que inspeccionaban SQL manual por pruebas que inspeccionan filtros/options de Sequelize, campos seleccionados, relaciones, aislamiento y contratos.
+- La prueba de navegación del frontend ahora espera la opción de fecha antes de seleccionarla; se ampliaron los límites de tiempo para los recorridos de UI. La suite frontend pasó **14/14**.
+- Verificación real con Sequelize contra MySQL: **50 colaboradores, 50 usuarios, 30 solicitudes, 6 departamentos, 0 documentos indexados y 1 reporte persistido**. Un JWT de prueba permitió consultar `GET /api/auth/me` y `GET /api/colaboradores/me`; ambos respondieron HTTP 200.
+- `npm run db:mysql:verify` confirmó la conexión de la aplicación. `GET /api/health`, el frontend Vite y Swagger respondieron HTTP 200 durante la comprobación.
+- La suite backend pasó **84 pruebas, 0 fallidas y 4 omitidas**. `npm run build` compiló 520 módulos correctamente.
+
+### Errores, límites y verificación pendiente
+
+- Las lecturas administrativas y algunas integraciones que requieren la cuenta de solo lectura no se pudieron completar por falta de `DB_READ_USER` y `DB_READ_PASSWORD`; el endpoint RRHH de departamentos devolvió HTTP 503. Se mantuvo el requisito de permisos mínimos y no se reutilizó la cuenta de escritura como cuenta lectora. Se necesita provisionar una cuenta MySQL con permiso `SELECT` para probar esas pantallas con registros reales.
+- MySQL contiene cero documentos indexados; por eso la vista de documentos no tiene registros reales que mostrar.
+- El smoke test HTTP y los conteos de modelos fueron reales; Vitest recorre la interfaz con respuestas controladas. No hay una sesión de navegador automatizada conectada al MySQL local.
+- No se cargó el proyecto a la carpeta de Drive. El acceso disponible del proyecto tiene alcance de solo lectura y no hay en esta sesión un conector de Drive con permisos de escritura. La carpeta no debe considerarse actualizada.
+
+### Pendiente
+
+- Configurar credenciales para un usuario MySQL independiente con permiso `SELECT` y volver a probar solicitudes, departamentos, documentos, reportes, vacaciones y dashboard administrativo desde el portal.
+- Habilitar acceso de escritura a Google Drive para cargar el paquete del proyecto a la carpeta compartida y confirmar el archivo allí.
