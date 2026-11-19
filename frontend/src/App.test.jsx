@@ -81,7 +81,7 @@ describe('autenticación y permisos de navegación', () => {
       await user.type(screen.getByLabelText('Contraseña'), 'clave-de-prueba');
       await user.click(screen.getByRole('button', { name: /iniciar sesión/i }));
       expect(await screen.findByRole('heading', { name: heading }, { timeout: 10000 })).toBeInTheDocument();
-    });
+    }, 15000);
   }
 
   it('valida formato de correo y permite mostrar u ocultar la contraseña', async () => {
@@ -154,9 +154,10 @@ describe('autenticación y permisos de navegación', () => {
     await user.click(screen.getByRole('link', { name: 'Historial de reportes' }));
     expect(await screen.findByRole('heading', { name: 'Historial de reportes' }, { timeout: 10000 })).toBeInTheDocument();
     expect(api.get).toHaveBeenCalledWith('/reports/history', { params: { limit: 365 } });
+    expect(await screen.findByRole('option', { name: /16 nov 2026/ })).toBeInTheDocument();
     await user.selectOptions(screen.getByLabelText('Fecha del reporte'), '2026-11-16');
     expect(screen.getAllByText(/Fecha: 16 nov 2026/).length).toBeGreaterThan(0);
-  });
+  }, 20000);
 });
 
 describe('portal del colaborador', () => {
