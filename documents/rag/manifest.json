@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "nexotico.rag-manifest.v1",
+  "company": "NexoTico Servicios Tecnológicos, S.R.L.",
+  "targetDriveFolderUrl": "https://drive.google.com/drive/u/0/folders/1V-RW77JqHQW_Ji2QMrfL9KXma2SHOMVe",
+  "preparedOn": "2026-11-19",
+  "status": "PREPARED_LOCALLY_NOT_UPLOADED",
+  "totalPolicies": 10,
+  "targetFormats": {
+    "GOOGLE_DOC": 8,
+    "PDF": 1,
+    "XLSX": 1
+  },
+  "jsonIsAcceptedByCurrentIngestionAgent": false,
+  "policies": [
+    {
+      "id": "NT-PC-01",
+      "title": "Política de vacaciones y feriados",
+      "version": "1.0",
+      "file": "01-vacaciones-y-feriados.json",
+      "driveFormat": "GOOGLE_DOC",
+      "driveMimeType": "application/vnd.google-apps.document",
+      "approvedForIndexing": false
+    },
+    {
+      "id": "NT-PC-02",
+      "title": "Política de permisos y licencias",
+      "version": "1.0",
+      "file": "02-permisos-y-licencias.json",
+      "driveFormat": "GOOGLE_DOC",
+      "driveMimeType": "application/vnd.google-apps.document",
+      "approvedForIndexing": false
+    },
+    {
+      "id": "NT-PC-03",
+      "title": "Política de incapacidades",
+      "version": "1.1",
+      "file": "03-incapacidades.json",
+      "driveFormat": "PDF",
+      "driveMimeType": "application/pdf",
+      "approvedForIndexing": false
+    },
+    {
+      "id": "NT-PC-04",
+      "title": "Política de jornada laboral y teletrabajo",
+      "version": "1.1",
+      "file": "04-jornada-y-teletrabajo.json",
+      "driveFormat": "GOOGLE_DOC",
+      "driveMimeType": "application/vnd.google-apps.document",
+      "approvedForIndexing": false
+    },
+    {
+      "id": "NT-PC-05",
+      "title": "Política de remuneración y calendario de pagos",
+      "version": "1.0",
+      "file": "05-remuneracion-y-pagos.json",
+      "driveFormat": "GOOGLE_DOC",
+      "driveMimeType": "application/vnd.google-apps.document",
+      "approvedForIndexing": false
+    },
+    {
+      "id": "NT-PC-06",
+      "title": "Política de beneficios corporativos",
+      "version": "1.0",
+      "file": "06-beneficios-corporativos.json",
+      "driveFormat": "XLSX",
+      "driveMimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "approvedForIndexing": false
+    },
+    {
+      "id": "NT-PC-07",
+      "title": "Política de onboarding y salida de colaboradores",
+      "version": "1.0",
+      "file": "07-onboarding-y-salida.json",
+      "driveFormat": "GOOGLE_DOC",
+      "driveMimeType": "application/vnd.google-apps.document",
+      "approvedForIndexing": false
+    },
+    {
+      "id": "NT-PC-08",
+      "title": "Política de evaluación del desempeño",
+      "version": "1.0",
+      "file": "08-evaluacion-del-desempeno.json",
+      "driveFormat": "GOOGLE_DOC",
+      "driveMimeType": "application/vnd.google-apps.document",
+      "approvedForIndexing": false
+    },
+    {
+      "id": "NT-PC-09",
+      "title": "Código de conducta y protocolo de denuncias",
+      "version": "1.0",
+      "file": "09-conducta-y-denuncias.json",
+      "driveFormat": "GOOGLE_DOC",
+      "driveMimeType": "application/vnd.google-apps.document",
+      "approvedForIndexing": false
+    },
+    {
+      "id": "NT-PC-10",
+      "title": "Política de protección de datos personales",
+      "version": "1.0",
+      "file": "10-proteccion-de-datos.json",
+      "driveFormat": "GOOGLE_DOC",
+      "driveMimeType": "application/vnd.google-apps.document",
+      "approvedForIndexing": false
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "nexotico.rag-policy.v1",
+  "metadata": {
+    "id": "NT-PC-06",
+    "company": "NexoTico Servicios Tecnológicos, S.R.L.",
+    "title": "Política de beneficios corporativos",
+    "version": "1.0",
+    "effectiveDate": "17 de noviembre de 2026",
+    "responsible": "Gerencia de Personas y Cultura",
+    "sourceFile": "documents/policies/06-beneficios-corporativos.md",
+    "sourceSha256": "6e7a6b76881d756597cb8cfeee96d68da1f7a09c07ffb0753edf7288436ad4ab"
+  },
+  "driveTarget": {
+    "format": "XLSX",
+    "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "fileName": "06-beneficios-corporativos.xlsx",
+    "folderUrl": "https://drive.google.com/drive/u/0/folders/1V-RW77JqHQW_Ji2QMrfL9KXma2SHOMVe"
+  },
+  "workflow": {
+    "uploadedToDrive": false,
+    "indexedInRag": false,
+    "approvedForIndexing": false
+  },
+  "sections": [
+    {
+      "heading": "Objetivo",
+      "plainText": "Describir los beneficios internos ficticios de NexoTico de manera transparente, evitando presentarlos como derechos legales o componentes permanentes de la remuneración."
+    },
+    {
+      "heading": "Alcance",
+      "plainText": "Aplica a personas colaboradoras activas de NexoTico, salvo que el beneficio indique requisitos de elegibilidad distintos. No aplica a personas proveedoras, candidatas ni excolaboradoras."
+    },
+    {
+      "heading": "Obligaciones legales verificadas",
+      "plainText": "* Las obligaciones laborales mínimas, seguros sociales, vacaciones, feriados y pagos legales se rigen por fuentes oficiales y no dependen de esta política de beneficios.\n* El MTSS advierte que salario en efectivo y salario en especie pueden incidir en otros derechos laborales. Por ello cualquier beneficio con posible naturaleza salarial se revisará con asesoría legal y nómina antes de implementarse."
+    },
+    {
+      "heading": "Política interna ficticia",
+      "plainText": "NexoTico ofrece, sujeto a presupuesto anual y reglas de elegibilidad publicadas en el Portal Personas, los siguientes beneficios internos:\n* Programa de bienestar emocional con orientación confidencial por proveedor autorizado.\n* Presupuesto anual de aprendizaje para formación vinculada al puesto y aprobada previamente.\n* Día libre remunerado durante el mes de cumpleaños, coordinado con la jefatura.\n* Préstamo temporal de equipo corporativo necesario para la modalidad autorizada de teletrabajo.\n* Actividades de integración y voluntariado sin obligación de asistencia fuera de la jornada.\n\nLos beneficios no se acumulan, no son transferibles, no se canjean por dinero y pueden modificarse o suspenderse mediante versión publicada, salvo que una condición contractual o legal disponga otra cosa."
+    },
+    {
+      "heading": "Procedimiento",
+      "plainText": "1. Personas y Cultura publica catálogo, elegibilidad, cupos y documentos necesarios para cada beneficio.\n2. La persona solicita el beneficio en el portal y declara información mínima necesaria.\n3. La jefatura valida relación con el puesto cuando aplique; Finanzas valida presupuesto cuando corresponda.\n4. Personas y Cultura comunica aprobación, condiciones y vigencia.\n5. Los proveedores reciben solo los datos estrictamente necesarios y están sujetos a controles de confidencialidad."
+    },
+    {
+      "heading": "Excepciones y escalamiento",
+      "plainText": "No se condiciona un beneficio a revelar diagnósticos, embarazo, creencias, afiliación, orientación sexual u otros datos sensibles. Si una persona requiere un ajuste por discapacidad, condición de salud o situación protegida, Personas y Cultura realiza una evaluación individual, no una exclusión automática. Consultas sobre naturaleza salarial, impuestos o efectos de salida se escalan a Finanzas y asesoría legal."
+    },
+    {
+      "heading": "Preguntas que esta política responde",
+      "plainText": "* ¿Qué beneficios internos ofrece NexoTico?\n* ¿El presupuesto de aprendizaje es automático?\n* ¿Puedo convertir un beneficio en efectivo?\n* ¿Quién puede ver mis datos de bienestar?"
+    },
+    {
+      "heading": "Fuentes verificadas",
+      "plainText": "1. MTSS, Asuntos laborales, consultado el 17 de noviembre de 2026: https://www.mtss.go.cr/temas-laborales/\n2. SCIJ/PGR, Código de Trabajo, Ley N.° 2, consultado el 17 de noviembre de 2026: https://pgrweb.go.cr/scij/Busqueda/Normativa/Normas/nrm_texto_completo.aspx?nValor1=1&nValor2=8045&nValor3=129508&param1=NRTC&strTipM=TC"
+    }
+  ],
+  "plainText": "Política de beneficios corporativos\n\nCódigo: NT-PC-06 \nVersión: 1.0 \nVigencia: 17 de noviembre de 2026 \nResponsable: Gerencia de Personas y Cultura \nEmpresa: NexoTico Servicios Tecnológicos, S.R.L.\n\nObjetivo\n\nDescribir los beneficios internos ficticios de NexoTico de manera transparente, evitando presentarlos como derechos legales o componentes permanentes de la remuneración.\n\nAlcance\n\nAplica a personas colaboradoras activas de NexoTico, salvo que el beneficio indique requisitos de elegibilidad distintos. No aplica a personas proveedoras, candidatas ni excolaboradoras.\n\nObligaciones legales verificadas\n* Las obligaciones laborales mínimas, seguros sociales, vacaciones, feriados y pagos legales se rigen por fuentes oficiales y no dependen de esta política de beneficios.\n* El MTSS advierte que salario en efectivo y salario en especie pueden incidir en otros derechos laborales. Por ello cualquier beneficio con posible naturaleza salarial se revisará con asesoría legal y nómina antes de implementarse.\n\nPolítica interna ficticia\n\nNexoTico ofrece, sujeto a presupuesto anual y reglas de elegibilidad publicadas en el Portal Personas, los siguientes beneficios internos:\n* Programa de bienestar emocional con orientación confidencial por proveedor autorizado.\n* Presupuesto anual de aprendizaje para formación vinculada al puesto y aprobada previamente.\n* Día libre remunerado durante el mes de cumpleaños, coordinado con la jefatura.\n* Préstamo temporal de equipo corporativo necesario para la modalidad autorizada de teletrabajo.\n* Actividades de integración y voluntariado sin obligación de asistencia fuera de la jornada.\n\nLos beneficios no se acumulan, no son transferibles, no se canjean por dinero y pueden modificarse o suspenderse mediante versión publicada, salvo que una condición contractual o legal disponga otra cosa.\n\nProcedimiento\n\n1. Personas y Cultura publica catálogo, elegibilidad, cupos y documentos necesarios para cada beneficio.\n2. La persona solicita el beneficio en el portal y declara información mínima necesaria.\n3. La jefatura valida relación con el puesto cuando aplique; Finanzas valida presupuesto cuando corresponda.\n4. Personas y Cultura comunica aprobación, condiciones y vigencia.\n5. Los proveedores reciben solo los datos estrictamente necesarios y están sujetos a controles de confidencialidad.\n\nExcepciones y escalamiento\n\nNo se condiciona un beneficio a revelar diagnósticos, embarazo, creencias, afiliación, orientación sexual u otros datos sensibles. Si una persona requiere un ajuste por discapacidad, condición de salud o situación protegida, Personas y Cultura realiza una evaluación individual, no una exclusión automática. Consultas sobre naturaleza salarial, impuestos o efectos de salida se escalan a Finanzas y asesoría legal.\n\nPreguntas que esta política responde\n* ¿Qué beneficios internos ofrece NexoTico?\n* ¿El presupuesto de aprendizaje es automático?\n* ¿Puedo convertir un beneficio en efectivo?\n* ¿Quién puede ver mis datos de bienestar?\n\nFuentes verificadas\n\n1. MTSS, Asuntos laborales, consultado el 17 de noviembre de 2026: https://www.mtss.go.cr/temas-laborales/\n2. SCIJ/PGR, Código de Trabajo, Ley N.° 2, consultado el 17 de noviembre de 2026: https://pgrweb.go.cr/scij/Busqueda/Normativa/Normas/nrm_texto_completo.aspx?nValor1=1&nValor2=8045&nValor3=129508&param1=NRTC&strTipM=TC",
+  "contentMarkdown": "# Política de beneficios corporativos\n\n**Código:** NT-PC-06  \n**Versión:** 1.0  \n**Vigencia:** 17 de noviembre de 2026  \n**Responsable:** Gerencia de Personas y Cultura  \n**Empresa:** NexoTico Servicios Tecnológicos, S.R.L.\n\n## Objetivo\n\nDescribir los beneficios internos ficticios de NexoTico de manera transparente, evitando presentarlos como derechos legales o componentes permanentes de la remuneración.\n\n## Alcance\n\nAplica a personas colaboradoras activas de NexoTico, salvo que el beneficio indique requisitos de elegibilidad distintos. No aplica a personas proveedoras, candidatas ni excolaboradoras.\n\n## Obligaciones legales verificadas\n\n- Las obligaciones laborales mínimas, seguros sociales, vacaciones, feriados y pagos legales se rigen por fuentes oficiales y no dependen de esta política de beneficios.\n- El MTSS advierte que salario en efectivo y salario en especie pueden incidir en otros derechos laborales. Por ello cualquier beneficio con posible naturaleza salarial se revisará con asesoría legal y nómina antes de implementarse.\n\n## Política interna ficticia\n\nNexoTico ofrece, sujeto a presupuesto anual y reglas de elegibilidad publicadas en el Portal Personas, los siguientes beneficios internos:\n\n- Programa de bienestar emocional con orientación confidencial por proveedor autorizado.\n- Presupuesto anual de aprendizaje para formación vinculada al puesto y aprobada previamente.\n- Día libre remunerado durante el mes de cumpleaños, coordinado con la jefatura.\n- Préstamo temporal de equipo corporativo necesario para la modalidad autorizada de teletrabajo.\n- Actividades de integración y voluntariado sin obligación de asistencia fuera de la jornada.\n\nLos beneficios no se acumulan, no son transferibles, no se canjean por dinero y pueden modificarse o suspenderse mediante versión publicada, salvo que una condición contractual o legal disponga otra cosa.\n\n## Procedimiento\n\n1. Personas y Cultura publica catálogo, elegibilidad, cupos y documentos necesarios para cada beneficio.\n2. La persona solicita el beneficio en el portal y declara información mínima necesaria.\n3. La jefatura valida relación con el puesto cuando aplique; Finanzas valida presupuesto cuando corresponda.\n4. Personas y Cultura comunica aprobación, condiciones y vigencia.\n5. Los proveedores reciben solo los datos estrictamente necesarios y están sujetos a controles de confidencialidad.\n\n## Excepciones y escalamiento\n\nNo se condiciona un beneficio a revelar diagnósticos, embarazo, creencias, afiliación, orientación sexual u otros datos sensibles. Si una persona requiere un ajuste por discapacidad, condición de salud o situación protegida, Personas y Cultura realiza una evaluación individual, no una exclusión automática. Consultas sobre naturaleza salarial, impuestos o efectos de salida se escalan a Finanzas y asesoría legal.\n\n## Preguntas que esta política responde\n\n- ¿Qué beneficios internos ofrece NexoTico?\n- ¿El presupuesto de aprendizaje es automático?\n- ¿Puedo convertir un beneficio en efectivo?\n- ¿Quién puede ver mis datos de bienestar?\n\n## Fuentes verificadas\n\n1. MTSS, *Asuntos laborales*, consultado el 17 de noviembre de 2026: https://www.mtss.go.cr/temas-laborales/\n2. SCIJ/PGR, *Código de Trabajo, Ley N.° 2*, consultado el 17 de noviembre de 2026: https://pgrweb.go.cr/scij/Busqueda/Normativa/Normas/nrm_texto_completo.aspx?nValor1=1&nValor2=8045&nValor3=129508&param1=NRTC&strTipM=TC\n\n"
+}

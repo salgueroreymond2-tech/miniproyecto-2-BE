@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "nexotico.rag-policy.v1",
+  "metadata": {
+    "id": "NT-PC-08",
+    "company": "NexoTico Servicios Tecnológicos, S.R.L.",
+    "title": "Política de evaluación del desempeño",
+    "version": "1.0",
+    "effectiveDate": "17 de noviembre de 2026",
+    "responsible": "Gerencia de Personas y Cultura",
+    "sourceFile": "documents/policies/08-evaluacion-del-desempeno.md",
+    "sourceSha256": "b30ba2e10068d1a0b092c0229b20d5ceb6dc797ccc67a78e986d37435f622dec"
+  },
+  "driveTarget": {
+    "format": "GOOGLE_DOC",
+    "mimeType": "application/vnd.google-apps.document",
+    "fileName": "08-evaluacion-del-desempeno",
+    "folderUrl": "https://drive.google.com/drive/u/0/folders/1V-RW77JqHQW_Ji2QMrfL9KXma2SHOMVe"
+  },
+  "workflow": {
+    "uploadedToDrive": false,
+    "indexedInRag": false,
+    "approvedForIndexing": false
+  },
+  "sections": [
+    {
+      "heading": "Objetivo",
+      "plainText": "Crear un proceso interno, consistente y auditable de conversación sobre desempeño, crecimiento y resultados, sin convertir la evaluación en una sanción automática o en un sustituto de los procedimientos legales aplicables."
+    },
+    {
+      "heading": "Alcance",
+      "plainText": "Aplica a personas colaboradoras con al menos tres meses de antigüedad al cierre del ciclo. Las personas en incapacidad, licencia o ausencia protegida participan mediante ajustes razonables; la falta de presencia no se califica como bajo desempeño."
+    },
+    {
+      "heading": "Obligaciones legales verificadas",
+      "plainText": "* El Código de Trabajo regula derechos, obligaciones y eventuales consecuencias de la relación laboral. Una evaluación interna no desplaza el debido análisis legal de una medida disciplinaria, cambio contractual o terminación.\n* La información de desempeño vinculada con una persona identificable es dato personal y debe tratarse con propósito definido, acceso limitado y medidas de seguridad acordes con la Ley N.° 8968."
+    },
+    {
+      "heading": "Política interna ficticia",
+      "plainText": "NexoTico realiza dos ciclos por año: conversación de objetivos en marzo y revisión de avance en septiembre. Evalúa resultados acordados, colaboración, calidad técnica, seguridad de la información, aprendizaje y conducta alineada con el Código de Conducta. No usa rankings forzados, vigilancia de actividad ni métricas aisladas como única base de decisión.\n\nLa escala descriptiva interna es: “consolida objetivos”, “cumple expectativas”, “requiere acompañamiento” y “aún sin evidencia suficiente”. La escala guía un plan de desarrollo y no determina por sí sola una compensación, sanción o terminación."
+    },
+    {
+      "heading": "Procedimiento",
+      "plainText": "1. Jefatura y persona acuerdan entre tres y cinco objetivos verificables, con evidencias esperadas y apoyos requeridos.\n2. La persona realiza autoevaluación y adjunta resultados, no datos confidenciales de clientes fuera de los sistemas autorizados.\n3. La jefatura prepara retroalimentación concreta, basada en hechos observables y ejemplos relevantes.\n4. Personas y Cultura revisa consistencia, sesgos evidentes, acceso y cumplimiento del calendario.\n5. Se celebra conversación bidireccional, se registran acuerdos y se crea, si procede, un plan de desarrollo con seguimiento."
+    },
+    {
+      "heading": "Excepciones y escalamiento",
+      "plainText": "Cuando existan alegaciones de discriminación, represalia, hostigamiento, conflicto de interés, cambio de jefatura, ausencia protegida o evidencia insuficiente, Personas y Cultura pausa la calificación final y define un mecanismo alterno. La persona puede presentar una observación documentada dentro de diez días hábiles; la revisión no depende solo de quien emitió la calificación inicial."
+    },
+    {
+      "heading": "Preguntas que esta política responde",
+      "plainText": "* ¿Cuándo se evalúa el desempeño?\n* ¿Qué criterios se usan?\n* ¿Una calificación baja implica despido automático?\n* ¿Cómo solicito revisión de mi evaluación?"
+    },
+    {
+      "heading": "Fuentes verificadas",
+      "plainText": "1. SCIJ/PGR, Código de Trabajo, Ley N.° 2, consultado el 17 de noviembre de 2026: https://pgrweb.go.cr/scij/Busqueda/Normativa/Normas/nrm_texto_completo.aspx?nValor1=1&nValor2=8045&nValor3=129508&param1=NRTC&strTipM=TC\n2. Ley N.° 8968 en SCIJ/PGR, consultada el 17 de noviembre de 2026: https://www.pgrweb.go.cr/DOCS/NORMAS/1/VIGENTE/L/2010-2019/2010-2014/2011/1153F/DCEF7.HTML"
+    }
+  ],
+  "plainText": "Política de evaluación del desempeño\n\nCódigo: NT-PC-08 \nVersión: 1.0 \nVigencia: 17 de noviembre de 2026 \nResponsable: Gerencia de Personas y Cultura \nEmpresa: NexoTico Servicios Tecnológicos, S.R.L.\n\nObjetivo\n\nCrear un proceso interno, consistente y auditable de conversación sobre desempeño, crecimiento y resultados, sin convertir la evaluación en una sanción automática o en un sustituto de los procedimientos legales aplicables.\n\nAlcance\n\nAplica a personas colaboradoras con al menos tres meses de antigüedad al cierre del ciclo. Las personas en incapacidad, licencia o ausencia protegida participan mediante ajustes razonables; la falta de presencia no se califica como bajo desempeño.\n\nObligaciones legales verificadas\n* El Código de Trabajo regula derechos, obligaciones y eventuales consecuencias de la relación laboral. Una evaluación interna no desplaza el debido análisis legal de una medida disciplinaria, cambio contractual o terminación.\n* La información de desempeño vinculada con una persona identificable es dato personal y debe tratarse con propósito definido, acceso limitado y medidas de seguridad acordes con la Ley N.° 8968.\n\nPolítica interna ficticia\n\nNexoTico realiza dos ciclos por año: conversación de objetivos en marzo y revisión de avance en septiembre. Evalúa resultados acordados, colaboración, calidad técnica, seguridad de la información, aprendizaje y conducta alineada con el Código de Conducta. No usa rankings forzados, vigilancia de actividad ni métricas aisladas como única base de decisión.\n\nLa escala descriptiva interna es: “consolida objetivos”, “cumple expectativas”, “requiere acompañamiento” y “aún sin evidencia suficiente”. La escala guía un plan de desarrollo y no determina por sí sola una compensación, sanción o terminación.\n\nProcedimiento\n\n1. Jefatura y persona acuerdan entre tres y cinco objetivos verificables, con evidencias esperadas y apoyos requeridos.\n2. La persona realiza autoevaluación y adjunta resultados, no datos confidenciales de clientes fuera de los sistemas autorizados.\n3. La jefatura prepara retroalimentación concreta, basada en hechos observables y ejemplos relevantes.\n4. Personas y Cultura revisa consistencia, sesgos evidentes, acceso y cumplimiento del calendario.\n5. Se celebra conversación bidireccional, se registran acuerdos y se crea, si procede, un plan de desarrollo con seguimiento.\n\nExcepciones y escalamiento\n\nCuando existan alegaciones de discriminación, represalia, hostigamiento, conflicto de interés, cambio de jefatura, ausencia protegida o evidencia insuficiente, Personas y Cultura pausa la calificación final y define un mecanismo alterno. La persona puede presentar una observación documentada dentro de diez días hábiles; la revisión no depende solo de quien emitió la calificación inicial.\n\nPreguntas que esta política responde\n* ¿Cuándo se evalúa el desempeño?\n* ¿Qué criterios se usan?\n* ¿Una calificación baja implica despido automático?\n* ¿Cómo solicito revisión de mi evaluación?\n\nFuentes verificadas\n\n1. SCIJ/PGR, Código de Trabajo, Ley N.° 2, consultado el 17 de noviembre de 2026: https://pgrweb.go.cr/scij/Busqueda/Normativa/Normas/nrm_texto_completo.aspx?nValor1=1&nValor2=8045&nValor3=129508&param1=NRTC&strTipM=TC\n2. Ley N.° 8968 en SCIJ/PGR, consultada el 17 de noviembre de 2026: https://www.pgrweb.go.cr/DOCS/NORMAS/1/VIGENTE/L/2010-2019/2010-2014/2011/1153F/DCEF7.HTML",
+  "contentMarkdown": "# Política de evaluación del desempeño\n\n**Código:** NT-PC-08  \n**Versión:** 1.0  \n**Vigencia:** 17 de noviembre de 2026  \n**Responsable:** Gerencia de Personas y Cultura  \n**Empresa:** NexoTico Servicios Tecnológicos, S.R.L.\n\n## Objetivo\n\nCrear un proceso interno, consistente y auditable de conversación sobre desempeño, crecimiento y resultados, sin convertir la evaluación en una sanción automática o en un sustituto de los procedimientos legales aplicables.\n\n## Alcance\n\nAplica a personas colaboradoras con al menos tres meses de antigüedad al cierre del ciclo. Las personas en incapacidad, licencia o ausencia protegida participan mediante ajustes razonables; la falta de presencia no se califica como bajo desempeño.\n\n## Obligaciones legales verificadas\n\n- El Código de Trabajo regula derechos, obligaciones y eventuales consecuencias de la relación laboral. Una evaluación interna no desplaza el debido análisis legal de una medida disciplinaria, cambio contractual o terminación.\n- La información de desempeño vinculada con una persona identificable es dato personal y debe tratarse con propósito definido, acceso limitado y medidas de seguridad acordes con la Ley N.° 8968.\n\n## Política interna ficticia\n\nNexoTico realiza dos ciclos por año: conversación de objetivos en marzo y revisión de avance en septiembre. Evalúa resultados acordados, colaboración, calidad técnica, seguridad de la información, aprendizaje y conducta alineada con el Código de Conducta. No usa rankings forzados, vigilancia de actividad ni métricas aisladas como única base de decisión.\n\nLa escala descriptiva interna es: “consolida objetivos”, “cumple expectativas”, “requiere acompañamiento” y “aún sin evidencia suficiente”. La escala guía un plan de desarrollo y no determina por sí sola una compensación, sanción o terminación.\n\n## Procedimiento\n\n1. Jefatura y persona acuerdan entre tres y cinco objetivos verificables, con evidencias esperadas y apoyos requeridos.\n2. La persona realiza autoevaluación y adjunta resultados, no datos confidenciales de clientes fuera de los sistemas autorizados.\n3. La jefatura prepara retroalimentación concreta, basada en hechos observables y ejemplos relevantes.\n4. Personas y Cultura revisa consistencia, sesgos evidentes, acceso y cumplimiento del calendario.\n5. Se celebra conversación bidireccional, se registran acuerdos y se crea, si procede, un plan de desarrollo con seguimiento.\n\n## Excepciones y escalamiento\n\nCuando existan alegaciones de discriminación, represalia, hostigamiento, conflicto de interés, cambio de jefatura, ausencia protegida o evidencia insuficiente, Personas y Cultura pausa la calificación final y define un mecanismo alterno. La persona puede presentar una observación documentada dentro de diez días hábiles; la revisión no depende solo de quien emitió la calificación inicial.\n\n## Preguntas que esta política responde\n\n- ¿Cuándo se evalúa el desempeño?\n- ¿Qué criterios se usan?\n- ¿Una calificación baja implica despido automático?\n- ¿Cómo solicito revisión de mi evaluación?\n\n## Fuentes verificadas\n\n1. SCIJ/PGR, *Código de Trabajo, Ley N.° 2*, consultado el 17 de noviembre de 2026: https://pgrweb.go.cr/scij/Busqueda/Normativa/Normas/nrm_texto_completo.aspx?nValor1=1&nValor2=8045&nValor3=129508&param1=NRTC&strTipM=TC\n2. Ley N.° 8968 en SCIJ/PGR, consultada el 17 de noviembre de 2026: https://www.pgrweb.go.cr/DOCS/NORMAS/1/VIGENTE/L/2010-2019/2010-2014/2011/1153F/DCEF7.HTML\n\n"
+}

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "nexotico.rag-policy.v1",
+  "metadata": {
+    "id": "NT-PC-05",
+    "company": "NexoTico Servicios Tecnológicos, S.R.L.",
+    "title": "Política de remuneración y calendario de pagos",
+    "version": "1.0",
+    "effectiveDate": "17 de noviembre de 2026",
+    "responsible": "Finanzas y Gerencia de Personas y Cultura",
+    "sourceFile": "documents/policies/05-remuneracion-y-pagos.md",
+    "sourceSha256": "5ed090a3819ae454539950fda44c465d2120cc10346d065453a0b4a573678099"
+  },
+  "driveTarget": {
+    "format": "GOOGLE_DOC",
+    "mimeType": "application/vnd.google-apps.document",
+    "fileName": "05-remuneracion-y-pagos",
+    "folderUrl": "https://drive.google.com/drive/u/0/folders/1V-RW77JqHQW_Ji2QMrfL9KXma2SHOMVe"
+  },
+  "workflow": {
+    "uploadedToDrive": false,
+    "indexedInRag": false,
+    "approvedForIndexing": false
+  },
+  "sections": [
+    {
+      "heading": "Objetivo",
+      "plainText": "Comunicar un proceso claro, trazable y confidencial para remuneración, comprobantes de pago y consultas de nómina de las personas colaboradoras ficticias de NexoTico."
+    },
+    {
+      "heading": "Alcance",
+      "plainText": "Aplica al salario contractual, deducciones autorizadas o legales, pagos ordinarios, pagos adicionales autorizados y aguinaldo. No regula tarifas de proveedores independientes."
+    },
+    {
+      "heading": "Obligaciones legales verificadas",
+      "plainText": "* La remuneración debe respetar como mínimo el salario aplicable vigente. El MTSS publica las listas y decretos de salarios mínimos, por lo que Personas y Cultura debe contrastar cada puesto con la fuente actual antes de contratar o modificar una remuneración.\n* El MTSS explica que el aguinaldo en el sector privado se calcula con salarios ordinarios y extraordinarios del período legal de referencia y debe pagarse, como máximo, el 20 de diciembre. Los casos de incapacidad, suspensión y maternidad tienen reglas que deben revisarse en la fuente oficial.\n* Las deducciones no se crean por costumbre interna. Nómina documenta su fundamento y conserva el comprobante correspondiente."
+    },
+    {
+      "heading": "Política interna ficticia",
+      "plainText": "NexoTico paga por transferencia bancaria en colones costarricenses dos veces al mes: el día 15 y el último día hábil de cada mes. Si la fecha cae en día no bancario, Finanzas informa el día efectivo antes del cierre de nómina. Cada persona recibe un comprobante digital con componentes de pago, deducciones y período.\n\nLos aumentos, bonos o reconocimientos no son automáticos: requieren aprobación documentada, presupuesto disponible y comunicación individual. Ninguna persona gestora puede prometer pagos fuera del proceso de nómina. La información salarial es confidencial, sin impedir los derechos de consulta o reclamo de cada titular."
+    },
+    {
+      "heading": "Procedimiento",
+      "plainText": "1. Finanzas publica el calendario anual de cortes y pagos en el Portal Personas.\n2. Las jefaturas aprueban cambios de jornada, horas adicionales autorizadas o componentes variables antes del corte indicado.\n3. Nómina contrasta el cálculo, retenciones y cuenta bancaria registrada; las modificaciones de cuenta requieren validación reforzada.\n4. Se deposita el pago y se habilita el comprobante individual.\n5. La persona reporta discrepancias dentro de cinco días hábiles. Nómina confirma recepción, investiga y comunica corrección o explicación documentada."
+    },
+    {
+      "heading": "Excepciones y escalamiento",
+      "plainText": "Errores de depósito, embargo, pensión alimentaria, retención judicial, ajuste retroactivo, incapacidad, terminación contractual o cambio de salario mínimo se escalan a Finanzas y Personas y Cultura. El asistente RAG nunca calcula una liquidación, salario neto o aguinaldo con datos incompletos; debe dirigir al canal de nómina."
+    },
+    {
+      "heading": "Preguntas que esta política responde",
+      "plainText": "* ¿Cuándo paga NexoTico?\n* ¿Dónde consulto mi comprobante de pago?\n* ¿Cómo reporto un error de nómina?\n* ¿Cuándo se paga el aguinaldo?"
+    },
+    {
+      "heading": "Fuentes verificadas",
+      "plainText": "1. MTSS, Asuntos laborales, consultado el 17 de noviembre de 2026: https://www.mtss.go.cr/temas-laborales/\n2. MTSS, Aguinaldo en el sector privado, consultado el 17 de noviembre de 2026: https://www.mtss.go.cr/temas-laborales/aguinaldo/aguinaldo.html\n3. MTSS, Salarios mínimos en Costa Rica, consultado el 17 de noviembre de 2026: https://mtss.go.cr/temas-laborales/salarios/salario_minimo.html"
+    }
+  ],
+  "plainText": "Política de remuneración y calendario de pagos\n\nCódigo: NT-PC-05 \nVersión: 1.0 \nVigencia: 17 de noviembre de 2026 \nResponsable: Finanzas y Gerencia de Personas y Cultura \nEmpresa: NexoTico Servicios Tecnológicos, S.R.L.\n\nObjetivo\n\nComunicar un proceso claro, trazable y confidencial para remuneración, comprobantes de pago y consultas de nómina de las personas colaboradoras ficticias de NexoTico.\n\nAlcance\n\nAplica al salario contractual, deducciones autorizadas o legales, pagos ordinarios, pagos adicionales autorizados y aguinaldo. No regula tarifas de proveedores independientes.\n\nObligaciones legales verificadas\n* La remuneración debe respetar como mínimo el salario aplicable vigente. El MTSS publica las listas y decretos de salarios mínimos, por lo que Personas y Cultura debe contrastar cada puesto con la fuente actual antes de contratar o modificar una remuneración.\n* El MTSS explica que el aguinaldo en el sector privado se calcula con salarios ordinarios y extraordinarios del período legal de referencia y debe pagarse, como máximo, el 20 de diciembre. Los casos de incapacidad, suspensión y maternidad tienen reglas que deben revisarse en la fuente oficial.\n* Las deducciones no se crean por costumbre interna. Nómina documenta su fundamento y conserva el comprobante correspondiente.\n\nPolítica interna ficticia\n\nNexoTico paga por transferencia bancaria en colones costarricenses dos veces al mes: el día 15 y el último día hábil de cada mes. Si la fecha cae en día no bancario, Finanzas informa el día efectivo antes del cierre de nómina. Cada persona recibe un comprobante digital con componentes de pago, deducciones y período.\n\nLos aumentos, bonos o reconocimientos no son automáticos: requieren aprobación documentada, presupuesto disponible y comunicación individual. Ninguna persona gestora puede prometer pagos fuera del proceso de nómina. La información salarial es confidencial, sin impedir los derechos de consulta o reclamo de cada titular.\n\nProcedimiento\n\n1. Finanzas publica el calendario anual de cortes y pagos en el Portal Personas.\n2. Las jefaturas aprueban cambios de jornada, horas adicionales autorizadas o componentes variables antes del corte indicado.\n3. Nómina contrasta el cálculo, retenciones y cuenta bancaria registrada; las modificaciones de cuenta requieren validación reforzada.\n4. Se deposita el pago y se habilita el comprobante individual.\n5. La persona reporta discrepancias dentro de cinco días hábiles. Nómina confirma recepción, investiga y comunica corrección o explicación documentada.\n\nExcepciones y escalamiento\n\nErrores de depósito, embargo, pensión alimentaria, retención judicial, ajuste retroactivo, incapacidad, terminación contractual o cambio de salario mínimo se escalan a Finanzas y Personas y Cultura. El asistente RAG nunca calcula una liquidación, salario neto o aguinaldo con datos incompletos; debe dirigir al canal de nómina.\n\nPreguntas que esta política responde\n* ¿Cuándo paga NexoTico?\n* ¿Dónde consulto mi comprobante de pago?\n* ¿Cómo reporto un error de nómina?\n* ¿Cuándo se paga el aguinaldo?\n\nFuentes verificadas\n\n1. MTSS, Asuntos laborales, consultado el 17 de noviembre de 2026: https://www.mtss.go.cr/temas-laborales/\n2. MTSS, Aguinaldo en el sector privado, consultado el 17 de noviembre de 2026: https://www.mtss.go.cr/temas-laborales/aguinaldo/aguinaldo.html\n3. MTSS, Salarios mínimos en Costa Rica, consultado el 17 de noviembre de 2026: https://mtss.go.cr/temas-laborales/salarios/salario_minimo.html",
+  "contentMarkdown": "# Política de remuneración y calendario de pagos\n\n**Código:** NT-PC-05  \n**Versión:** 1.0  \n**Vigencia:** 17 de noviembre de 2026  \n**Responsable:** Finanzas y Gerencia de Personas y Cultura  \n**Empresa:** NexoTico Servicios Tecnológicos, S.R.L.\n\n## Objetivo\n\nComunicar un proceso claro, trazable y confidencial para remuneración, comprobantes de pago y consultas de nómina de las personas colaboradoras ficticias de NexoTico.\n\n## Alcance\n\nAplica al salario contractual, deducciones autorizadas o legales, pagos ordinarios, pagos adicionales autorizados y aguinaldo. No regula tarifas de proveedores independientes.\n\n## Obligaciones legales verificadas\n\n- La remuneración debe respetar como mínimo el salario aplicable vigente. El MTSS publica las listas y decretos de salarios mínimos, por lo que Personas y Cultura debe contrastar cada puesto con la fuente actual antes de contratar o modificar una remuneración.\n- El MTSS explica que el aguinaldo en el sector privado se calcula con salarios ordinarios y extraordinarios del período legal de referencia y debe pagarse, como máximo, el 20 de diciembre. Los casos de incapacidad, suspensión y maternidad tienen reglas que deben revisarse en la fuente oficial.\n- Las deducciones no se crean por costumbre interna. Nómina documenta su fundamento y conserva el comprobante correspondiente.\n\n## Política interna ficticia\n\nNexoTico paga por transferencia bancaria en colones costarricenses dos veces al mes: el día 15 y el último día hábil de cada mes. Si la fecha cae en día no bancario, Finanzas informa el día efectivo antes del cierre de nómina. Cada persona recibe un comprobante digital con componentes de pago, deducciones y período.\n\nLos aumentos, bonos o reconocimientos no son automáticos: requieren aprobación documentada, presupuesto disponible y comunicación individual. Ninguna persona gestora puede prometer pagos fuera del proceso de nómina. La información salarial es confidencial, sin impedir los derechos de consulta o reclamo de cada titular.\n\n## Procedimiento\n\n1. Finanzas publica el calendario anual de cortes y pagos en el Portal Personas.\n2. Las jefaturas aprueban cambios de jornada, horas adicionales autorizadas o componentes variables antes del corte indicado.\n3. Nómina contrasta el cálculo, retenciones y cuenta bancaria registrada; las modificaciones de cuenta requieren validación reforzada.\n4. Se deposita el pago y se habilita el comprobante individual.\n5. La persona reporta discrepancias dentro de cinco días hábiles. Nómina confirma recepción, investiga y comunica corrección o explicación documentada.\n\n## Excepciones y escalamiento\n\nErrores de depósito, embargo, pensión alimentaria, retención judicial, ajuste retroactivo, incapacidad, terminación contractual o cambio de salario mínimo se escalan a Finanzas y Personas y Cultura. El asistente RAG nunca calcula una liquidación, salario neto o aguinaldo con datos incompletos; debe dirigir al canal de nómina.\n\n## Preguntas que esta política responde\n\n- ¿Cuándo paga NexoTico?\n- ¿Dónde consulto mi comprobante de pago?\n- ¿Cómo reporto un error de nómina?\n- ¿Cuándo se paga el aguinaldo?\n\n## Fuentes verificadas\n\n1. MTSS, *Asuntos laborales*, consultado el 17 de noviembre de 2026: https://www.mtss.go.cr/temas-laborales/\n2. MTSS, *Aguinaldo en el sector privado*, consultado el 17 de noviembre de 2026: https://www.mtss.go.cr/temas-laborales/aguinaldo/aguinaldo.html\n3. MTSS, *Salarios mínimos en Costa Rica*, consultado el 17 de noviembre de 2026: https://mtss.go.cr/temas-laborales/salarios/salario_minimo.html\n\n"
+}

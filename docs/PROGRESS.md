@@ -1,5 +1,11 @@
 # Progreso del proyecto
 
+## Paquete JSON local para documentos RAG (19 de noviembre de 2026)
+
+- Se creó `documents/rag/` con JSON para las diez políticas fuente. Cada archivo conserva `contentMarkdown`, secciones, `plainText` para pegar sin formato, metadatos de versión y hash SHA-256; el manifiesto asigna ocho políticas a Google Docs, una a PDF y una a XLSX.
+- Validación de contenido: diez JSON parsean correctamente; distribución 8/1/1, todos tienen ID, versión y secciones, y los hashes coinciden con los Markdown fuente.
+- Pendiente externo: los archivos no se han subido a Drive ni aprobado/indexado. La cuenta de servicio configurada usa `drive.readonly`, no hay un conector Drive instalado en esta sesión y el agente actual no acepta JSON. Para completar la carpeta nativa de Drive se requiere acceso de escritura y crear las salidas PDF/XLSX/Docs antes de la aprobación RAG.
+
 ## Ajuste de generación manual de reportes (19 de noviembre de 2026)
 
 - Se agregó el botón **Generar reporte de hoy** al dashboard de RRHH y al Historial de reportes. Ambos usan `POST /api/reports/generate`, actualizan la vista con el reporte devuelto y muestran estados de carga, éxito o error.
