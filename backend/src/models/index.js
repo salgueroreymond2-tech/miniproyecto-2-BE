@@ -1,6 +1,7 @@
 'use strict';
 const { DataTypes: D } = require('sequelize');
 const { getConnection } = require('../config/database');
+const definePalabraClave = require('./PalabraClave');
 
 function initModels(sequelize = getConnection()) {
   if (sequelize.models.Usuario) return sequelize.models;
@@ -48,6 +49,7 @@ function initModels(sequelize = getConnection()) {
   });
   const DriveIngestionState = sequelize.define('DriveIngestionState', { folder_id: { type: D.STRING(255), primaryKey: true }, bootstrap_token: D.TEXT, cursor_token: D.TEXT, pilot_done: D.BOOLEAN, initial_sync_done: D.BOOLEAN, updated_at: D.DATE }, { tableName: 'drive_ingestion_state', timestamps: false, freezeTableName: true });
   const VectorCacheState = sequelize.define('VectorCacheState', { id: { type: D.TINYINT, primaryKey: true }, revision: D.BIGINT.UNSIGNED }, { tableName: 'vector_cache_state', timestamps: false, freezeTableName: true });
+  definePalabraClave(sequelize);
 
   Usuario.hasOne(Colaborador, { foreignKey: 'usuario_id' }); Colaborador.belongsTo(Usuario, { foreignKey: 'usuario_id' });
   Departamento.hasMany(Puesto, { foreignKey: 'departamento_id' }); Puesto.belongsTo(Departamento, { foreignKey: 'departamento_id' });

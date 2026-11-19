@@ -9,7 +9,7 @@ test('se registran los modelos y relaciones solicitadas sin conexión', async ()
   const sequelize = new Sequelize('demo', 'demo', 'demo', { dialect: 'mysql', logging: false });
   try {
     const m = initModels(sequelize);
-    assert.equal(Object.keys(m).length, 21);
+    assert.equal(Object.keys(m).length, 22);
     assert.equal(m.TrabajoProgramado.tableName, 'trabajos_programados');
     assert.equal(m.Usuario.associations.Colaborador.associationType, 'HasOne');
     assert.equal(m.Colaborador.associations.Solicituds.associationType, 'HasMany');
@@ -21,6 +21,12 @@ test('se registran los modelos y relaciones solicitadas sin conexión', async ()
       ['resolucion', 'latencia_ms', 'fragmentos_utilizados', 'documentos_citados'].includes(name)
     )).sort(), ['documentos_citados', 'fragmentos_utilizados', 'latencia_ms', 'resolucion']);
     assert.equal(m.IngestionApproval.rawAttributes.normative_reviewed.type.key, 'BOOLEAN');
+    assert.equal(m.PalabraClave.tableName, 'palabras_clave');
+    assert.equal(m.PalabraClave.rawAttributes.id.autoIncrement, true);
+    assert.equal(m.PalabraClave.rawAttributes.palabra.allowNull, false);
+    assert.deepEqual(m.PalabraClave.rawAttributes.categoria.values, ['restringida', 'fuera_alcance', 'politica', 'dato_personal', 'tema_dashboard']);
+    assert.equal(m.PalabraClave.rawAttributes.created_at.type.key, 'DATE');
+    assert.equal(m.PalabraClave.rawAttributes.updated_at.type.key, 'DATE');
   } finally { await sequelize.close(); }
 });
 
