@@ -351,3 +351,20 @@
 ### Paquete preparado para Drive
 
 - Se generó localmente `tools/nexotico-hr-project.zip` desde los archivos versionados: 232 archivos, 532,927 bytes. Se verificó que no incluye `.env`, `.credentials` ni `node_modules`. El ZIP aún no se ha subido a Drive.
+
+## Cuenta MySQL de solo lectura y validación del portal — 2026-11-19
+
+### Completado
+
+- Se creó la cuenta MySQL dedicada `portal_rrhh_reader` limitada al host local y con permiso `SELECT` sobre `portal_rrhh.*`. La contraseña aleatoria quedó solo en `backend/.env`, archivo ignorado por Git; no se mostró ni se versionó. `SHOW GRANTS` confirmó que no tiene privilegios de escritura.
+- Sequelize autenticó con esa cuenta y ejecutó los modelos de colaboradores, departamentos, solicitudes, documentos y el recolector completo de métricas. Resultado observado: 47 colaboradores activos, 6 departamentos, 30 solicitudes, 0 documentos indexados y 15 grupos de métricas.
+- La integración de datos personales pasó contra MySQL real y verificó el aislamiento entre dos colaboradores. La integración del analista pasó y comparó indicadores contra consultas SQL independientes de solo lectura.
+- La suite backend pasó **85 pruebas, 0 fallidas y 3 omitidas**. La prueba de datos personales, que requiere habilitar su bandera, se ejecutó aparte y pasó **1/1**.
+- Tras reiniciar Express para cargar la cuenta nueva, los endpoints RRHH de departamentos, solicitudes, documentos, sincronizaciones, reportes y vacaciones propias respondieron HTTP 200. El endpoint documental devolvió cero registros porque no hay documentos indexados.
+- El servidor recuperó y guardó el reporte del día con estado `COMPLETADO`. DeepSeek no tuvo conectividad de red en esa ejecución y el agente guardó el resumen de respaldo SQL.
+
+### Pendientes y límites
+
+- Las pruebas opcionales de persistencia vectorial y embeddings MySQL siguen omitidas porque sus banderas de integración no se habilitaron.
+- La sincronización de Google Drive y la disponibilidad externa de DeepSeek requieren que sus servicios respondan; la conectividad real de DeepSeek falló con `DEEPSEEK_NETWORK_ERROR` durante la generación automatizada.
+- No se modificó `backend/.env.example` con valores de acceso; conserva campos vacíos para que cada entorno configure sus propias credenciales.
