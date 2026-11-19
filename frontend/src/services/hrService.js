@@ -25,7 +25,8 @@ export const hrService = {
   reports: {
     latest: () => payload(api.get('/reports/latest'), 'report'),
     history: (params = {}) => payload(api.get('/reports/history', { params }), 'reports'),
-    byDate: (date) => payload(api.get(`/reports/${encodeURIComponent(date)}`), 'report')
+    byDate: (date) => payload(api.get(`/reports/${encodeURIComponent(date)}`), 'report'),
+    generate: () => api.post('/reports/generate', {}).then(({ data }) => data)
   },
   ingestion: {
     status: () => api.get('/admin/ingestion/status').then(({ data }) => data),

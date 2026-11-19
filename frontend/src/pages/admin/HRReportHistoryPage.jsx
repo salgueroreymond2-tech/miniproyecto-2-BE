@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AdminStatusBadge, AdminTable } from '../../components/admin/AdminTable';
+import { GenerateReportButton } from '../../components/admin/GenerateReportButton';
 import { Card } from '../../components/ui/Card';
 import { PageHeader } from '../../components/PageHeader';
 import { LoadingBlock, ResourceError } from '../../components/ResourceState';
@@ -47,9 +48,19 @@ export function HRReportHistoryPage() {
     finally { setSelecting(false); }
   }
 
+  function showGeneratedReport(generated) {
+    setHistory((current) => [generated, ...current.filter((item) => item.reportDate !== generated.reportDate)]);
+    setReport(generated);
+    setSelectedDate(generated.reportDate);
+    setError(null);
+  }
+
   return <div className="admin-page">
     <PageHeader eyebrow="REPORTES DIARIOS" title="Historial de reportes" description="Consulta snapshots de indicadores guardados en MySQL. Las cifras no se recalculan al abrir un reporte."
-      action={<label className="admin-report-selector" htmlFor="history-report-date"><span>Fecha del reporte</span><select id="history-report-date" value={selectedDate} onChange={selectReport} disabled={!history.length || loading}><option value="">Selecciona una fecha</option>{history.map((item) => <option key={item.reportDate} value={item.reportDate}>{formatDate(item.reportDate)}</option>)}</select></label>} />
+      action={<div className="admin-report-actions">
+        <label className="admin-report-selector" htmlFor="history-report-date"><span>Fecha del reporte</span><select id="history-report-date" value={selectedDate} onChange={selectReport} disabled={!history.length || loading}><option value="">Selecciona una fecha</option>{history.map((item) => <option key={item.reportDate} value={item.reportDate}>{formatDate(item.reportDate)}</option>)}</select></label>
+        <GenerateReportButton onGenerated={showGeneratedReport} />
+      </div>} />
     {loading || selecting ? <LoadingBlock lines={5} /> : error ? <ResourceError error={error} onRetry={() => setAttempt((value) => value + 1)} /> : !report ? <Card className="admin-content-card"><div className="admin-empty-message"><h2>No hay reportes guardados</h2><p>Cuando se genere el primer reporte diario, aparecerá en este historial.</p></div></Card> : <>
       <div className="admin-report-meta"><span>Fecha: {formatDate(report.reportDate)}</span><span>Guardado: {dateTime(report.storedAt)}</span><span>Resumen: <AdminStatusBadge value={report.executiveSummary.origin} label={report.executiveSummary.origin === 'DEEPSEEK' ? 'DeepSeek' : 'Respaldo SQL'} /></span></div>
       <Card className="admin-content-card admin-history-summary"><p className="eyebrow">RESUMEN EJECUTIVO</p><p>{report.executiveSummary.text}</p></Card>

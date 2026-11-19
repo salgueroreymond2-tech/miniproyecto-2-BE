@@ -5,6 +5,7 @@ import { EmptyState } from '../../components/ui/Feedback';
 import { LoadingBlock, ResourceError } from '../../components/ResourceState';
 import { PageHeader } from '../../components/PageHeader';
 import { AdminStatusBadge } from '../../components/admin/AdminTable';
+import { GenerateReportButton } from '../../components/admin/GenerateReportButton';
 import { AbsenceDepartmentChart, AbsenceTrendChart, RequestStatusChart, TopicChart } from '../../components/admin/ReportCharts';
 import { hrService } from '../../services/hrService';
 import { formatDate, formatNumber } from '../../utils/format';
@@ -68,6 +69,14 @@ export function AdminDashboardPage() {
     finally { setSelecting(false); }
   }
 
+  function showGeneratedReport(generated) {
+    setReport(generated);
+    setSelectedDate(generated.reportDate);
+    setHistory((current) => [generated, ...current.filter((item) => item.reportDate !== generated.reportDate)]);
+    setError(null);
+    setHistoryError(null);
+  }
+
   const reportOptions = useMemo(() => [...new Set([report?.reportDate, ...history.map((item) => item.reportDate)].filter(Boolean))].sort().reverse(), [report, history]);
   const kpis = report ? [
     { icon: 'groups', label: 'Colaboradores activos', value: formatNumber(report.indicators.activeCollaborators, 0), description: 'Registros con estado activo.' },
@@ -82,9 +91,12 @@ export function AdminDashboardPage() {
 
   return <div className="admin-dashboard-page">
     <PageHeader eyebrow="RECURSOS HUMANOS · ADMINISTRACIÓN" title="Panel de RRHH" description="Indicadores y actividad construidos a partir del último reporte diario almacenado en MySQL."
-      action={<label className="admin-report-selector" htmlFor="dashboard-report-date"><span>Reporte</span><select id="dashboard-report-date" value={selectedDate} onChange={chooseDate} disabled={loading || !reportOptions.length}>
-        {reportOptions.length ? reportOptions.map((date) => <option key={date} value={date}>{formatDate(date)}</option>) : <option value="">Sin reportes</option>}
-      </select></label>} />
+      action={<div className="admin-report-actions">
+        <label className="admin-report-selector" htmlFor="dashboard-report-date"><span>Reporte</span><select id="dashboard-report-date" value={selectedDate} onChange={chooseDate} disabled={loading || !reportOptions.length}>
+          {reportOptions.length ? reportOptions.map((date) => <option key={date} value={date}>{formatDate(date)}</option>) : <option value="">Sin reportes</option>}
+        </select></label>
+        <GenerateReportButton onGenerated={showGeneratedReport} />
+      </div>} />
     {loading || selecting ? <LoadingBlock lines={8} /> : error ? <ResourceError error={error} onRetry={reload} /> : !report ? <Card className="admin-empty-card"><EmptyState icon="analytics" title="Aún no hay reportes diarios" text="Cuando el agente analista guarde el primer reporte, sus indicadores aparecerán aquí." /></Card> : <>
       <div className="admin-report-meta"><span><MaterialIcon name="calendar_today" /> Generado {formatDateTime(report.storedAt)}</span><span><MaterialIcon name="database" /> Fuente: MySQL · {report.reportDate}</span></div>
       {historyError && <div className="admin-history-note" role="status">El historial de fechas no se pudo cargar. <button type="button" onClick={reload}>Reintentar</button></div>}

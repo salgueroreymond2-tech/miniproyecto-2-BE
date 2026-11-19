@@ -586,6 +586,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .admin-kpi-description { margin: 9px 0 0; color: #738092; font-size: 11px; line-height: 1.45; }
 .admin-report-selector { display: flex; align-items: center; gap: 10px; color: #657286; font-size: 11px; font-weight: 650; }
 .admin-report-selector select, .admin-filter select { min-height: 38px; max-width: 230px; border: 1px solid #D9E0E7; border-radius: 8px; background: white; color: #26374B; padding: 0 30px 0 11px; font: 500 12px Inter, sans-serif; }
+.admin-report-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; flex-wrap: wrap; }
+.admin-generate-report { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.admin-generate-feedback, .admin-generate-error { font-size: 10px; line-height: 1.4; }
+.admin-generate-feedback { color: #327C61; }
+.admin-generate-error { color: #B42318; }
 .admin-report-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 9px 22px; color: #637184; font-size: 11px; }
 .admin-report-meta > span { display: inline-flex; align-items: center; gap: 6px; }
 .admin-report-meta .material-symbols-rounded { font-size: 15px; color: #8390A0; }
@@ -694,6 +699,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .admin-history-kpis > .surface-card { padding: 12px; }
   .admin-report-selector { width: 100%; justify-content: space-between; }
   .admin-report-selector select { max-width: 65%; }
+  .admin-report-actions { align-items: stretch; flex-direction: column; }
+  .admin-generate-report { flex-direction: column; align-items: stretch; }
+  .admin-generate-report > .button { width: 100%; }
   .admin-report-meta { align-items: flex-start; flex-direction: column; }
   .admin-table-footer { align-items: flex-start; flex-direction: column; }
   .admin-pagination { align-self: flex-end; }

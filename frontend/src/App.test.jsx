@@ -212,6 +212,20 @@ describe('portal del colaborador', () => {
   });
 });
 
+describe('generación administrativa de reportes', () => {
+  it('envía la solicitud al endpoint existente y muestra el reporte generado', async () => {
+    mockAuthenticatedSession({ role: 'RRHH' });
+    const generate = vi.spyOn(api, 'post').mockResolvedValue({ data: { report: reportFixture, created: true, reused: false } });
+    const user = userEvent.setup();
+    renderApp('/rrhh/reportes');
+    expect(await screen.findByRole('heading', { name: 'Historial de reportes' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Generar reporte de hoy' }));
+    expect(generate).toHaveBeenCalledWith('/reports/generate', {});
+    expect(await screen.findByRole('status')).toHaveTextContent('Reporte generado y guardado.');
+    expect(screen.getByText('Resumen creado desde las cifras almacenadas.')).toBeInTheDocument();
+  });
+});
+
 describe('asistente inteligente', () => {
   const citation = { reference: 1, title: 'Política de vacaciones', section: 'Acumulación', version: '1.0', page: 4, link: 'https://drive.google.com/file/d/documento-ficticio/view' };
   const savedMessage = { id: MESSAGE_ID, conversationId: CONVERSATION_ID, question: '¿Qué dice la política de vacaciones?', answer: 'La política describe las condiciones documentadas. **Revisa la sección indicada.**', intent: 'POLITICA', topic: 'VACACIONES', agentsUsed: ['POLITICAS'], citations: [citation], documentsCited: [], resolved: true, escalationSuggested: false, createdAt: '2026-11-01T10:00:00Z' };
