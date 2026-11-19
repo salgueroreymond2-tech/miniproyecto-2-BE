@@ -1,24 +1,15 @@
-# Paquete JSON de políticas para RAG
+# Políticas RAG en Markdown
 
-Este directorio contiene una representación JSON por cada una de las diez políticas fuente de `documents/policies/`. Cada JSON conserva el Markdown original en `contentMarkdown`, presenta las secciones y ofrece `plainText` sin marcas Markdown ni HTML para copiar el contenido limpio.
+`policies/` contiene diez archivos Markdown de lectura y vista previa, copiados sin cambios desde `documents/policies/`. Esta última carpeta sigue siendo la fuente canónica. `manifest.json` relaciona cada archivo con el formato que se preparará para Drive: ocho documentos de Google, un PDF y un XLSX.
 
-## Formatos previstos para Drive
+## Vista previa y copia
 
-| Código | Formato previsto |
-| --- | --- |
-| NT-PC-03 — Incapacidades | PDF |
-| NT-PC-06 — Beneficios corporativos | XLSX |
-| Las otras ocho políticas | Documento de Google |
+- En VS Code, abre cualquier `.md` y presiona **Ctrl+Shift+V** para abrir la vista previa. **Ctrl+K**, luego **V**, la abre al lado del texto.
+- En Google Docs, **Ctrl+Shift+V** pega texto sin formato; no convierte el Markdown ni crea el archivo en Drive.
 
-`manifest.json` incluye el enlace de destino y la distribución. Los campos `workflow` indican que estos archivos todavía no están en Drive ni aprobados para indexación.
+## Estado de Drive e ingesta
 
-## Copiar texto limpio
-
-Para llevar el texto de una política a Google Docs, copia el valor de `plainText` y pégalo con **Ctrl+Shift+V**. Ese atajo pega texto sin formato; no convierte el JSON en un documento de Google ni sube archivos a Drive.
-
-## Estado y compatibilidad
-
-- Los JSON son un paquete de intercambio y respaldo, no documentos nativos de Google Drive.
-- El agente de ingesta actual acepta PDF, DOCX, XLSX, TXT, Google Docs y Google Sheets; **no acepta JSON**. Antes de indexar, hay que crear los formatos indicados arriba y completar el flujo RRHH de revisión/aprobación.
-- No se ha ejecutado una subida. El backend solicita el scope `drive.readonly` y no puede crear ni editar archivos. La integración Google Drive de esta sesión tampoco está conectada.
-- Los metadatos y textos se copiaron de los Markdown versionados; no se alteró el contenido legal ni se afirma una aprobación nueva.
+- Los Markdown están preparados localmente; no se han subido a Drive, aprobado ni indexado.
+- `manifest.json` es solo el índice del paquete; los diez documentos de política son `.md`.
+- El agente de ingesta actual acepta PDF, DOCX, XLSX, TXT, Google Docs y Google Sheets; no acepta Markdown directamente. Hay que crear los formatos de Drive del manifiesto y completar la revisión/aprobación de RRHH antes de indexarlos.
+- El backend conserva scope `drive.readonly`; la integración no puede crear archivos. Comparte la carpeta con la cuenta de servicio como Lector para que pueda leerlos después de subirlos.

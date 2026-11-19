@@ -1,10 +1,10 @@
 # Progreso del proyecto
 
-## Paquete JSON local para documentos RAG (19 de noviembre de 2026)
+## Paquete Markdown local para documentos RAG (19 de noviembre de 2026)
 
-- Se creó `documents/rag/` con JSON para las diez políticas fuente. Cada archivo conserva `contentMarkdown`, secciones, `plainText` para pegar sin formato, metadatos de versión y hash SHA-256; el manifiesto asigna ocho políticas a Google Docs, una a PDF y una a XLSX.
-- Validación de contenido: diez JSON parsean correctamente; distribución 8/1/1, todos tienen ID, versión y secciones, y los hashes coinciden con los Markdown fuente.
-- Pendiente externo: los archivos no se han subido a Drive ni aprobado/indexado. La cuenta de servicio configurada usa `drive.readonly`, no hay un conector Drive instalado en esta sesión y el agente actual no acepta JSON. Para completar la carpeta nativa de Drive se requiere acceso de escritura y crear las salidas PDF/XLSX/Docs antes de la aprobación RAG.
+- Se convirtieron los diez documentos del paquete a `.md` bajo `documents/rag/policies/`; el manifiesto conserva sus destinos de Drive (ocho Google Docs, un PDF y un XLSX). `documents/policies/` sigue como fuente canónica.
+- Se comparó SHA-256 entre cada Markdown canónico y su copia antes de retirar los JSON de política. Los diez hashes coincidieron. Un JSON tenía alterada la estructura del bloque `metadata`, así que se usó la fuente Markdown verificada para la conversión.
+- Los archivos están listos para vista previa local, pero no se han subido, aprobado ni indexado. La ingesta actual no admite `.md`; se deben crear los formatos del manifiesto y completar la aprobación RRHH. El backend usa `drive.readonly`, suficiente para leer una carpeta compartida con la cuenta de servicio como Lector, pero no para subir archivos.
 
 ## Ajuste de generación manual de reportes (19 de noviembre de 2026)
 
