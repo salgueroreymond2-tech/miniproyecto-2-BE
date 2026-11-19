@@ -652,6 +652,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .admin-doc-actions { display: flex; align-items: center; gap: 9px; }
 .admin-candidate-loading > p { margin: 0 0 14px; color: #58677A; font-size: 12px; line-height: 1.55; }
 .admin-ingestion-review { display: grid; gap: 14px; }
+.admin-auto-sync-note { margin: 0; padding: 11px 12px; border: 1px solid #D9E1E9; border-radius: 8px; background: #F6F8FA; color: #58677A; font-size: 11px; line-height: 1.55; }
 .admin-review-notice { margin: 0; padding: 11px 12px; border: 1px solid #E8D5AA; border-radius: 8px; background: #FFFAF0; color: #745A2A; font-size: 11px; line-height: 1.55; }
 .admin-candidate-list { display: grid; max-height: 220px; gap: 8px; overflow: auto; padding-right: 3px; }
 .admin-candidate { display: grid; gap: 7px; padding: 11px; border: 1px solid #E5E9EE; border-radius: 8px; background: #fff; }

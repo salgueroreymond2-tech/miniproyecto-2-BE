@@ -186,6 +186,7 @@ describe('autenticación y permisos de navegación', () => {
     await user.click(screen.getByRole('button', { name: 'Sincronizar Drive' }));
     await user.click(screen.getByRole('button', { name: 'Iniciar sincronización' }));
     expect(await screen.findByRole('dialog', { name: 'Revisión de candidatos de Drive' })).toBeInTheDocument();
+    expect(await screen.findByText(/permiso Editor de Drive no sustituye la revisión interna de RRHH/)).toBeInTheDocument();
     expect(await screen.findByText('Política ficticia de vacaciones')).toBeInTheDocument();
     await user.selectOptions(screen.getByLabelText('Categoría documental'), 'POLITICA');
     fireEvent.change(screen.getByLabelText('Fuentes oficiales verificadas'), { target: { value: 'https://www.mtss.go.cr/temas-laborales/' } });

@@ -181,6 +181,7 @@ export function HRDocumentsPage() {
     {reviewOpen && <Modal title="Revisión de candidatos de Drive" onClose={() => setReviewOpen(false)}>
       {candidateLoading ? <div className="admin-candidate-loading"><p>Consultando Drive y verificando texto y datos personales de los documentos. Esto puede tardar unos segundos.</p><LoadingBlock lines={5} /></div> : <div className="admin-ingestion-review">
         {!reviewStatus?.configured && <p className="admin-review-notice" role="alert">Google Drive no está configurado en el servidor.</p>}
+        {reviewStatus?.configured && <p className="admin-auto-sync-note" role="status">La carpeta ya es legible por el servicio. El permiso Editor de Drive no sustituye la revisión interna de RRHH. Tras completar el primer piloto, el servidor intentará sincronizar automáticamente cada día a las 6:00 a. m. (hora de Costa Rica); debe permanecer activo.</p>}
         {reviewStatus?.configured && !reviewStatus.pilotComplete && <p className="admin-review-notice" role="status">Antes de la sincronización completa, RRHH debe revisar un documento, registrar su aprobación y comprobar el piloto. Los demás documentos sin aprobación permanecerán pendientes.</p>}
         {candidates.length ? <div className="admin-candidate-list" aria-label="Candidatos de Drive">
           {candidates.map((candidate) => <article className={`admin-candidate ${candidate.driveFileId === selectedCandidateId ? 'selected' : ''}`} key={candidate.driveFileId}>

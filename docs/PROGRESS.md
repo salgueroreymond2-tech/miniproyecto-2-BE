@@ -11,6 +11,9 @@
 
 - Seguimiento del modal: la consulta real de candidatos respondió 200 en 5.4 segundos con 10 archivos; se agregó texto de carga y se quitó el toast rojo de prerrequisito para no confundirlo con otro error. Frontend: 16 pruebas aprobadas y build de 521 módulos.
 
+- Comparación de metadatos de Drive y manifest.json: coincidencia exacta de los diez títulos normalizados y formatos (8 Google Docs, 1 XLSX y 1 PDF). La carpeta configura permiso de lectura para el servicio.
+- La sincronización automática ya está programada con node-cron todos los días a las 6:00 a. m., zona America/Costa_Rica, mientras el backend permanezca activo; empieza a operar luego del primer documento aprobado y piloto.
+
 ## Historial de reportes diarios (19 de noviembre de 2026)
 
 - Se generó un historial diario para el período 2026-08-19 a 2026-11-19: 93 fechas consecutivas, con 93 registros únicos persistidos en MySQL.
